@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- `docs/repository-restructure.md`: how the original repository was analyzed and restructured.
+- Rule to document continuously during development (`CLAUDE.md`, README).
+
 ## 2026-10-28 — Monorepo restructure
 
 ### Added

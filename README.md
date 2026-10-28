@@ -68,6 +68,7 @@ The frontend deploys to Netlify (`apps/web/netlify.toml`):
 
 ## Documentation
 
+- [Repository restructure](docs/repository-restructure.md)
 - [Auth flow](docs/auth-flow.md)
 - [Backend QA checklist](docs/backend-qa-checklist.md)
 - [Frontend / backend handoff](docs/frontend-backend-handoff.md)
@@ -77,3 +78,4 @@ The frontend deploys to Netlify (`apps/web/netlify.toml`):
 
 - Write all code, comments, commits and documentation in English.
 - Record notable changes in [CHANGELOG.md](CHANGELOG.md).
+- Document as you go: every feature, decision or setup change gets docs in `docs/` (or the app README) in the same pull request.
