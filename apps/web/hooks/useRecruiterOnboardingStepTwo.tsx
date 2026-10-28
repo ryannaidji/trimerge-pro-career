@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useUser } from "@/contexts/userContext/userContext";
 import { useState } from "react";
 
@@ -25,7 +26,7 @@ export const useRecruiterOnboardingStepTwo = () => {
     try {
       let response: Response;
       if (data instanceof FormData) {
-        response = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/onboarding/recruiter/step-2`, {
+        response = await fetch(`${API_URL}/api/v1/onboarding/recruiter/step-2`, {
             headers:{
                 Authorization: `Bearer ${localStorage.getItem("tm_token")}`
             },
@@ -33,7 +34,7 @@ export const useRecruiterOnboardingStepTwo = () => {
           body: data, // browser sets multipart/form-data boundary
         });
       } else {
-        response = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/onboarding/recruiter/step-2`, {
+        response = await fetch(`${API_URL}/api/v1/onboarding/recruiter/step-2`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("tm_token")}` },
           body: JSON.stringify(data),

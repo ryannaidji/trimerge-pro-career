@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useCallback, useEffect, useState } from 'react'
 import { useRefreshToken } from './useAuth'
 
@@ -29,7 +30,7 @@ export const useGetApplicationsForJob = (jobId?: string, params?: ApplicationsFo
     // const base = '/.netlify/functions/applicationsForJob'
     // const q = qs.toString()
     // return `${base}?jobId=${encodeURIComponent(jobIdParam)}${q ? `&${q}` : ''}`
-   const base = 'https://trimerge-pro-career.onrender.com/api/v1/applications/job'
+   const base = `${API_URL}/api/v1/applications/job`
     const q = qs.toString()
     return `${base}/${encodeURIComponent(jobIdParam)}${q ? `?${q}` : ''}`
   }

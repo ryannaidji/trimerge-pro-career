@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useState } from "react";
 
 
@@ -20,7 +21,7 @@ export const useRegister = () => {
     try {
       // Call the local Netlify function directly. In production on Netlify
       // the function is available at /.netlify/functions/registerCandidate
-      const response = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/onboarding/register`, {
+      const response = await fetch(`${API_URL}/api/v1/onboarding/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

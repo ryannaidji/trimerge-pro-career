@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useState } from 'react';
 
 type ApplyParams = {
@@ -19,7 +20,7 @@ export default function useApplyForJob() {
     setLoading(true);
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('tm_token') : null;
-      const url = 'https://trimerge-pro-career.onrender.com/api/v1/applications';
+      const url = `${API_URL}/api/v1/applications`;
 
       let res: Response;
       const fd = new FormData();

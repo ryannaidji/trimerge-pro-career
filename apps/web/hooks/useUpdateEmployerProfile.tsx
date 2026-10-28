@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useState } from 'react'
 import { useRefreshToken } from './useAuth'
 
@@ -22,7 +23,7 @@ export const useUpdateEmployerProfile = () => {
     setError(null)
     try {
       const token = localStorage.getItem('tm_token')
-      const res = await fetch('https://trimerge-pro-career.onrender.com/api/v1/employers/me', {
+      const res = await fetch(`${API_URL}/api/v1/employers/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +38,7 @@ export const useUpdateEmployerProfile = () => {
       if (res.status === 401) {
         const refreshed = await refresh()
         if (refreshed) {
-          const retry = await fetch('https://trimerge-pro-career.onrender.com/api/v1/employers/me', {
+          const retry = await fetch(`${API_URL}/api/v1/employers/me`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
