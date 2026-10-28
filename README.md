@@ -68,6 +68,7 @@ The frontend deploys to Netlify (`apps/web/netlify.toml`):
 
 ## Documentation
 
+- [MVP launch plan](docs/launch-plan.md)
 - [Repository restructure](docs/repository-restructure.md)
 - [Auth flow](docs/auth-flow.md)
 - [Backend QA checklist](docs/backend-qa-checklist.md)
