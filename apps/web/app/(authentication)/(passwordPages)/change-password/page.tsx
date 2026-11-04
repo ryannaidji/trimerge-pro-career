@@ -10,21 +10,21 @@ export default function Page() {
                 Change Password
             </h1>
             <span style={{ display: 'flex', flexDirection: 'column', rowGap: '1.5rem', width: '100%', marginTop: '3rem'}}>
-                <input type="password" placeholder="Current Password *" style={{
+                <input type="password" aria-label="Current password" autoComplete="current-password" required placeholder="Current Password *" style={{
                     padding: '0.75rem',
                     border: '1px solid #D1D5DB',
                     width: '50%',
                     backgroundColor: 'white',
                     borderRadius: '0.375rem',
                 }} />
-                <input type="password" placeholder="New Password *" style={{
+                <input type="password" aria-label="New password" autoComplete="new-password" required placeholder="New Password *" style={{
                     padding: '0.75rem',
                     border: '1px solid #D1D5DB',
                     width: '50%',
                     backgroundColor: 'white',
                     borderRadius: '0.375rem',
                 }} />
-                <input type="password" placeholder="Confirm New Password *" style={{
+                <input type="password" aria-label="Confirm new password" autoComplete="new-password" required placeholder="Confirm New Password *" style={{
                     padding: '0.75rem',
                     border: '1px solid #D1D5DB',
                     width: '50%',

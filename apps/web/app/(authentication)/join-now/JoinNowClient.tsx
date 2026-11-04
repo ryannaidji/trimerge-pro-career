@@ -150,14 +150,14 @@ export default function JoinNowClient() {
                             <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Password</span>
                             <div style={{ position: 'relative' }}>
                                 <input type={showPassword ? 'text' : 'password'} placeholder='Password *' value={password} onChange={(e) => setPassword(e.target.value)} className="tp-card" style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.5rem 0.95rem 1rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)' }} />
-                                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+                                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                             </div>
                         </label>
                         <label style={{ display: 'grid', gap: '0.45rem' }}>
                             <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Confirm password</span>
                             <div style={{ position: 'relative' }}>
                                 <input type={showConfirmPassword ? 'text' : 'password'} placeholder='Confirm password *' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="tp-card" style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.5rem 0.95rem 1rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)' }} />
-                                <button type="button" onClick={() => setShowConfirmPassword((current) => !current)} aria-label="Toggle confirm password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+                                <button type="button" onClick={() => setShowConfirmPassword((current) => !current)} aria-label="Toggle confirm password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                             </div>
                         </label>
                     </div>
