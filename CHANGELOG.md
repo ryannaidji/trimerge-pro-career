@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `scripts/seed-demo.mjs`: demo candidate, employer (with 3 jobs) and admin logins for local testing.
 - Job departments aligned with TriMerge's 12 sectors (Government & Public Sector, Technology, Accounting & Finance, Emergency Management…); legacy values still accepted and shown with readable labels (#62).
 - Employer applicant manager: real candidate details, cover letter, documents, search and status filter, and a status control (New, Reviewed, Shortlisted, Not selected, Hired) with email to the candidate (#47, #48).
 - Candidate account menu (My applications, Recommended jobs, Saved jobs, My profile, Settings, Log out), keyboard accessible, also in the mobile menu (#49).
@@ -110,6 +111,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## 2026-10-28 — Monorepo restructure
 
 ### Added
+- `scripts/seed-demo.mjs`: demo candidate, employer (with 3 jobs) and admin logins for local testing.
 - `CHANGELOG.md` to track notable changes.
 - Root `CLAUDE.md` with project rules (English-only outputs, changelog, branching).
 - `dev` integration branch; `main` is now the default, protected production branch.
