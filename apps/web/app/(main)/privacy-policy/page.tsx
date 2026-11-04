@@ -41,7 +41,7 @@ const sections = [
       "Device information",
       "Operating system",
       "Cookies",
-      "Website usage analytics",
+      
     ],
   },
   {
@@ -64,7 +64,7 @@ const sections = [
     items: [
       "Employers using TriMergePRO Careers",
       "Service providers supporting our operations",
-      "Technology vendors providing hosting or analytics",
+      "Technology vendors providing hosting, storage or email",
       "Government agencies when required by law",
       "We do not sell your personal information.",
     ],
@@ -341,13 +341,73 @@ export default function PrivacyPolicyPage() {
             </div>
 
             <p className="text-gray-600 leading-8">
-              TriMergePRO Careers uses cookies and similar
-              technologies to improve website functionality,
-              remember user preferences, analyze website
-              traffic, and enhance the user experience. You
-              may disable cookies through your browser,
-              although certain features may not function
-              properly.
+              TriMergePRO Careers uses your browser&apos;s
+              storage and strictly necessary cookies to keep
+              you signed in and to remember basic preferences.
+              We do not currently use advertising or
+              third-party analytics cookies. If you block
+              browser storage, you will not be able to sign in.
+            </p>
+          </div>
+
+          {/* Added 2026-11-03 to reflect actual data handling (#11). Draft: legal review required. */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <Globe color="#2563eb" />
+              <h3 className="text-2xl font-bold">
+                Service Providers
+              </h3>
+            </div>
+
+            <p className="text-gray-600 leading-8">
+              We use a small number of service providers to run the
+              platform. They process personal information only on our
+              behalf and only for these purposes:
+            </p>
+            <ul className="space-y-2 text-gray-600 mt-2">
+              <li>• Website and application hosting</li>
+              <li>• Database hosting (account, profile, job and application data)</li>
+              <li>• Secure file storage for resumes, cover letters and company logos</li>
+              <li>• Transactional email (verification codes, password resets, application updates)</li>
+            </ul>
+            <p className="text-gray-600 leading-8 mt-2">
+              A current list of providers is available on request at
+              careers@trimergeconsulting.com.
+            </p>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <FileText color="#2563eb" />
+              <h3 className="text-2xl font-bold">
+                Resume Processing and Automated Tools
+              </h3>
+            </div>
+
+            <p className="text-gray-600 leading-8">
+              When you upload a resume, we extract its text so that it
+              can be searched and, if you choose, used to pre-fill your
+              profile. Any automated match score shown to employers is
+              advisory only: hiring decisions are always made by people.
+              If we enable an external AI service to help with matching,
+              we will update this policy before doing so.
+            </p>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <Database color="#2563eb" />
+              <h3 className="text-2xl font-bold">
+                Data Retention
+              </h3>
+            </div>
+
+            <p className="text-gray-600 leading-8">
+              We keep your account and application data while your
+              account is active. You can ask us to delete your account
+              at any time; we then delete your profile, resume files,
+              bookmarks and applications, except where the law requires
+              us to keep certain records.
             </p>
           </div>
 
@@ -380,7 +440,7 @@ export default function PrivacyPolicyPage() {
               <li>• Access your personal information</li>
               <li>• Correct inaccurate information</li>
               <li>• Update your profile</li>
-              <li>• Delete your account</li>
+              <li>• Ask us to delete your account (email careers@trimergeconsulting.com)</li>
               <li>
                 • Request removal of personal information
                 where permitted by law

@@ -9,6 +9,7 @@ const FALLBACK_COUNTRIES: { country: string; cities?: string[] }[] = [
 
 import React, { useState, useEffect, useRef } from 'react';
 // avoid useSearchParams (requires Suspense boundary) — read from window.location in effects instead
+import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice';
 import { JobCard } from '@/app/components/ui/JobCard';
 import { JobDetailDrawer } from '@/app/components/ui/JobDetailDrawer';
 import { ApplicationWizard } from '@/app/components/ui/ApplicationWizard';
@@ -627,9 +628,12 @@ function BrowseJobs() {
           <div className="flex gap-10 flex-col overflow-y-scroll max-h-[70vh] tp-job-scroll" role="region" aria-label="Job listings" tabIndex={0} style={{ rowGap: 20, paddingBottom: "5rem", paddingRight: '0.5rem' }}>
             {/* top-match card removed — anonymous users now see public jobs, and personalized top-match is hidden */}
             {loadingJobs ? (
-              <div style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>Loading jobs...</div>
+              <div role="status" style={{ padding: 32, textAlign: 'center', color: '#64748B', display: 'grid', gap: 12 }}>
+                <span>Loading jobs…</span>
+                <SlowRequestNotice active={loadingJobs} />
+              </div>
             ) : filteredJobs.length === 0 ? (
-              <div style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>No jobs found</div>
+              <div role="status" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>No jobs match your search. Try other keywords or clear the location.</div>
             ) : (
               displayedJobs.map((job, index) => (
                 // Map the API job object to the JobCard props. JobCard expects a few fields; ensure defaults.

@@ -56,7 +56,7 @@ function Page() {
               <textarea name='professionalSummary' value={professionalSummary} onChange={(e) => setProfessionalSummary(e.target.value)} placeholder="Professional Summary *" className="tp-card" style={{ width: '100%', minHeight: '12rem', resize: 'vertical', boxSizing: 'border-box', padding: '1rem', borderRadius: '18px', border: '1px solid rgba(148,163,184,0.2)' }} />
             </label>
 
-            {error && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
+            {error && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
 
             <button onClick={handleSubmit} disabled={loading} className="tp-btn-primary" style={{ width: '100%', cursor: loading ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Saving…' : 'Save and continue'}

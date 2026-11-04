@@ -22,6 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `scripts/backup-db.sh` / `scripts/restore-db.sh` and `docs/backup-and-recovery.md`; restore verified (#25).
 - `docs/security-review.md` (route authorization matrix) and `docs/issues.md` (defect log) (#8, #19).
 - `docs/audits.md`: Lighthouse/axe results; all public pages now score 100 for accessibility, best practices and SEO (#7).
+- Secret scanning with gitleaks in CI (`secrets` job) and `docs/secrets.md` (inventory, review results, rotation plan) (#22).
+- `SlowRequestNotice`: after 4 s of waiting (login, sign-up, job list) users are told the server may be starting up (#32).
 - Rate limiting: 10 attempts / 15 min per IP + email on login, registration, OTP and password reset; 600 requests / min per IP on the whole API (#20).
 - Docker: `Dockerfile` for `apps/api` and `apps/web`, `docker-compose.yml` with MongoDB (#26).
 - Adapter route running the Netlify Functions outside Netlify (#27).
@@ -48,6 +50,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The web app falls back to the local API instead of the production API when `NEXT_PUBLIC_API_URL` is missing.
 
 ### Changed
+- "Ask TriMerge AI" widget renamed "Ask TriMerge": typed questions are now answered from a built-in FAQ (14 topics, keyword matching in the browser, no AI provider, no cost, no data sent) instead of a canned "I can't answer yet" reply (#35).
+- Privacy policy: added Service Providers, Resume Processing and Automated Tools, and Data Retention sections; removed claims about analytics cookies the platform does not use; account deletion is by request (#11). Draft, needs legal review.
+- Error messages are announced to screen readers (`role="alert"`) and no longer disappear after 3.5 s on sign-up; blocking `alert()` removed (#32).
 - Accessibility: sequential headings, contrast fix, 40 px password toggles, labels on search/password/OTP fields, always-visible keyboard focus, reduced-motion support (#24).
 - Responsive: browse jobs stacks on phones with a full-screen job panel; stacked search bar; navbar buttons no longer wrap (#31).
 - Brand name unified to "TriMergePRO" across the web app (#15).
