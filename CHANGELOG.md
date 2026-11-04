@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `docs/plan-phase-2.md`: audit of API features missing from the website and the phase 2 plan; GitHub milestones M7–M10 and issues #47–#70 on the fork.
 - Local email driver (`MAIL_DRIVER=console`): emails and OTP codes are printed in the API logs, so no Mailgun account is needed locally.
 - Storage abstraction (`apps/api/src/lib/storage.ts`) with a local disk driver (`STORAGE_DRIVER=local`) next to Cloudinary; files get random names.
 - API tests for the local storage driver, error handling and CORS (27 tests in total).
