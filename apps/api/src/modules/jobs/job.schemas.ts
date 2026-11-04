@@ -1,6 +1,7 @@
+import { ALL_DEPARTMENTS } from './departments';
 import { z } from 'zod';
 
-const departmentEnum = z.enum(['ENGINEERING', 'MARKETING', 'HR', 'SALES', 'DESIGN', 'OPERATIONS']);
+const departmentEnum = z.enum(ALL_DEPARTMENTS);
 
 export const createJobSchema = z.object({
   title: z.string().trim().min(1),

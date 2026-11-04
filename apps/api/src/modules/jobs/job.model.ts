@@ -1,3 +1,4 @@
+import { ALL_DEPARTMENTS } from './departments';
 import { Schema, model } from 'mongoose';
 import { JobDocument } from './job.types';
 
@@ -15,7 +16,7 @@ const jobSchema = new Schema<JobDocument>(
     },
     department: {
       type: String,
-      enum: ['ENGINEERING', 'MARKETING', 'HR', 'SALES', 'DESIGN', 'OPERATIONS'],
+      enum: [...ALL_DEPARTMENTS],
       required: true,
       index: true,
     },

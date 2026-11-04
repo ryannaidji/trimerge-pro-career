@@ -55,9 +55,8 @@ jobs:
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
       - run: npm ci
-      # Existing lint errors predate CI; non-blocking until they are fixed
+      # Lint is blocking: errors fail the build; warnings are reported (#63)
       - run: npm run lint
-        continue-on-error: true
       - run: npx tsc --noEmit
       - run: npm run build
 

@@ -130,8 +130,8 @@ export default function PrivacyPolicyPage() {
                 maxWidth: "44rem",
               }}
             >
-              TriMerge Consulting Group, P.A. ("TriMerge,"
-              "TriMergePRO Careers," "we," "our," or "us")
+              TriMerge Consulting Group, P.A. (&quot;TriMerge,&quot;
+              &quot;TriMergePRO Careers,&quot; &quot;we,&quot; &quot;our,&quot; or &quot;us&quot;)
               respects your privacy and is committed to protecting
               the personal information you provide while using the
               TriMergePRO Careers platform.

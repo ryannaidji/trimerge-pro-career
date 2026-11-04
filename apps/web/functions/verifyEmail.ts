@@ -1,6 +1,7 @@
+import type { NetlifyEvent } from './types';
 // import setCookieParser from 'set-cookie-parser';
 
-export const handler = async (event: any) => {
+export const handler = async (event: NetlifyEvent) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,

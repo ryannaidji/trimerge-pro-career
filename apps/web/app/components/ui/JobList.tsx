@@ -3,6 +3,7 @@
 // Simple accessible list of job cards used by Saved jobs (#51) and Recommended jobs (#52).
 // Author: Ryan Naidji
 import Link from "next/link";
+import { departmentLabel } from "@/app/util/departments";
 import SaveJobButton from "./SaveJobButton";
 
 export type JobSummary = {
@@ -25,7 +26,7 @@ export default function JobList({ jobs }: { jobs: JobSummary[] }) {
           <div>
             <h2 style={{ margin: 0, fontSize: "1.1rem" }}>{j.title || "Untitled job"}</h2>
             <p style={{ margin: "0.25rem 0 0", color: "#475569", fontSize: "0.92rem" }}>
-              {[pretty(j.department), j.location, pretty(j.employmentType)].filter(Boolean).join(" · ")}
+              {[departmentLabel(j.department), j.location, pretty(j.employmentType)].filter(Boolean).join(" · ")}
               {j.status && j.status !== "OPEN" && <strong style={{ color: "#92400E" }}> · No longer accepting applications</strong>}
             </p>
             {j.reason && <p style={{ margin: "0.35rem 0 0", fontSize: "0.88rem", color: "#1e3a8a" }}>{j.reason}</p>}

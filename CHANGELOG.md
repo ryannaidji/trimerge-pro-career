@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Job departments aligned with TriMerge's 12 sectors (Government & Public Sector, Technology, Accounting & Finance, Emergency Management…); legacy values still accepted and shown with readable labels (#62).
 - Employer applicant manager: real candidate details, cover letter, documents, search and status filter, and a status control (New, Reviewed, Shortlisted, Not selected, Hired) with email to the candidate (#47, #48).
 - Candidate account menu (My applications, Recommended jobs, Saved jobs, My profile, Settings, Log out), keyboard accessible, also in the mobile menu (#49).
 - "My profile" page: edit details and skills, replace the resume, "Visible to employers in talent search" setting (#50, #60).
@@ -86,10 +87,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Mailgun and Cloudinary variables are now optional; they are only required when their driver is selected.
 
 ### Removed
+- Dead code: unused components (ActionMenu, ApplicantsList, chart, CreateListingModal, PostJobModal), hooks (useApplicationAIMatch, useAutoAuth, useGetApplicationsForJob, useGetUser), the orphan `/candidate-overview` route and two unused `*Old` API functions (#64).
 - MFA mockup pages (`/mfa`, `/mfa/set-up`) that looked functional but did nothing (#61).
 - Mockup change-password page (now redirects to Settings).
 
 ### Fixed
+- ESLint: 0 errors (was 51); lint is now blocking in CI; `set-state-in-effect` kept as a documented warning (#63).
+- Resume/cover-letter picker in the application form is a real button (keyboard and screen readers); editor toolbar works with Enter/Space (#63).
+- Applying for a job uses the session-renewing fetch, so an expired token no longer fails the application.
 - Visitors could open the application form and only get an error at the end; "Apply" now asks them to log in first.
 - Account deletion (admin or self-service) now also deletes the user's uploaded files.
 - `PUT /candidates/me` creates the profile if the candidate skipped onboarding.
