@@ -22,7 +22,7 @@ export const handler = async (event: unknown) => {
   try {
     parsed = JSON.parse(ev.body || '{}');
   } catch (e) {
-    console.log('Failed to parse JSON body for recruiter step-3:', e);
+    console.error('Failed to parse JSON body for recruiter step-3:', e);
   }
 
   // safely extract expected fields
@@ -54,7 +54,6 @@ export const handler = async (event: unknown) => {
     });
 
     const data = await response.json();
-    console.log('Response from API:', response);
 
     if (!response.ok) {
       throw new Error(data?.message || data?.error || 'Could not complete onboarding step 3');
@@ -65,7 +64,7 @@ export const handler = async (event: unknown) => {
       body: JSON.stringify(data),
     };
   } catch (err: unknown) {
-    console.log(err);
+    console.error(err);
     const message = err instanceof Error ? err.message : String(err);
     return {
       statusCode: 500,

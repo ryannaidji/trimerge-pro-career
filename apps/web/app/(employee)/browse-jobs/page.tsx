@@ -8,7 +8,9 @@ const FALLBACK_COUNTRIES: { country: string; cities?: string[] }[] = [
 
 
 import React, { useState, useEffect, useRef } from 'react';
+import { fetchLocations } from '@/app/util/locations';
 // avoid useSearchParams (requires Suspense boundary) — read from window.location in effects instead
+import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice';
 import { JobCard } from '@/app/components/ui/JobCard';
 import { JobDetailDrawer } from '@/app/components/ui/JobDetailDrawer';
 import { ApplicationWizard } from '@/app/components/ui/ApplicationWizard';
@@ -269,7 +271,7 @@ function BrowseJobs() {
     if (countriesData || countriesLoading) return
     // defer loading state update to avoid synchronous setState in effect
     setTimeout(() => setCountriesLoading(true), 0)
-    fetch('https://countriesnow.space/api/v0.1/countries')
+    fetchLocations('countries')
       .then(res => res.json())
       .then((json) => {
         const list = Array.isArray(json?.data) ? json.data : null
@@ -302,7 +304,7 @@ function BrowseJobs() {
   setCitiesForState(null)
   setStateProvince('')
 
-    fetch('https://countriesnow.space/api/v0.1/countries/states', {
+    fetchLocations('countries/states', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country }),
@@ -347,7 +349,7 @@ function BrowseJobs() {
   setTimeout(() => setCitiesLoading(true), 0)
   setCitiesForState(null)
 
-    fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+    fetchLocations('countries/state/cities', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country, state: stateProvince }),
@@ -455,7 +457,6 @@ function BrowseJobs() {
       status: statusInput,
     }
 
-    console.log(payload)
 
     const res = await createJob(payload)
     if (res) {
@@ -586,7 +587,7 @@ function BrowseJobs() {
         {/* Page header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Career marketplace</p>
+            <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Career marketplace</p>
             <h1 style={{ margin: '0.2rem 0 0', fontSize: 'clamp(1.4rem, 2.5vw, 1.9rem)', letterSpacing: '-0.04em', color: '#0f172a', fontWeight: 800 }}>Browse jobs</h1>
           </div>
           <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#64748b' }}>
@@ -594,26 +595,28 @@ function BrowseJobs() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'row', gap: 32, alignItems: 'flex-start', height: '80vh' }}>
+        <div className="bj-layout" style={{ display: 'flex', flexDirection: 'row', gap: 32, alignItems: 'flex-start', height: '80vh' }}>
         {/* Left: Job List */}
-  <div style={{ flex: '0 0 52%', minWidth: 0, maxWidth: '52%' }}>
+  <div className="bj-list" style={{ flex: '0 0 52%', minWidth: 0, maxWidth: '52%' }}>
           {/* Indeed-style dual search bar */}
-          <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: 14, border: '1px solid rgba(148,163,184,0.22)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.12)', marginBottom: 24, overflow: 'hidden' }}>
+          <div className="bj-search" style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: 14, border: '1px solid rgba(148,163,184,0.22)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.12)', marginBottom: 24, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', flex: 1, padding: '0.7rem 1rem', borderRight: '1px solid rgba(148,163,184,0.2)' }}>
-              <svg style={{ width: 18, height: 18, color: '#94a3b8', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+              <svg style={{ width: 18, height: 18, color: '#64748b', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
               <input
                 type="text"
                 placeholder="Job title, keywords, or company"
+                aria-label="Search jobs by title, keyword or company"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 15, color: '#0f172a' }}
               />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', flex: 1, padding: '0.7rem 1rem' }}>
-              <svg style={{ width: 18, height: 18, color: '#94a3b8', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              <svg style={{ width: 18, height: 18, color: '#64748b', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
               <input
                 type="text"
                 placeholder="City, state, or remote"
+                aria-label="Filter jobs by location"
                 value={locationTerm}
                 onChange={e => setLocationTerm(e.target.value)}
                 style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 15, color: '#0f172a' }}
@@ -621,12 +624,17 @@ function BrowseJobs() {
             </div>
           </div>
 
-          <div className="flex gap-10 flex-col overflow-y-scroll max-h-[70vh] tp-job-scroll" style={{ rowGap: 20, paddingBottom: "5rem", paddingRight: '0.5rem' }}>
+          {/* Section heading for screen readers keeps heading levels sequential (h1 > h2 > h3 job titles) */}
+          <h2 className="sr-only">Job listings</h2>
+          <div className="flex gap-10 flex-col overflow-y-scroll max-h-[70vh] tp-job-scroll" role="region" aria-label="Job listings" tabIndex={0} style={{ rowGap: 20, paddingBottom: "5rem", paddingRight: '0.5rem' }}>
             {/* top-match card removed — anonymous users now see public jobs, and personalized top-match is hidden */}
             {loadingJobs ? (
-              <div style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>Loading jobs...</div>
+              <div role="status" style={{ padding: 32, textAlign: 'center', color: '#64748B', display: 'grid', gap: 12 }}>
+                <span>Loading jobs…</span>
+                <SlowRequestNotice active={loadingJobs} />
+              </div>
             ) : filteredJobs.length === 0 ? (
-              <div style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>No jobs found</div>
+              <div role="status" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>No jobs match your search. Try other keywords or clear the location.</div>
             ) : (
               displayedJobs.map((job, index) => (
                 // Map the API job object to the JobCard props. JobCard expects a few fields; ensure defaults.
@@ -657,9 +665,9 @@ function BrowseJobs() {
         </div>
 
         {/* Right: Job Details Placeholder or Drawer */}
-  <div className="hide-scrollbar" style={{ flex: '0 0 48%', minWidth: 0, maxWidth: '48%', borderRadius: 24, minHeight: 400, padding: 0, overflowY: 'auto', maxHeight: '70vh', display: selectedJob ? 'none' : 'block' }}>
+  <div className="hide-scrollbar bj-placeholder" style={{ flex: '0 0 48%', minWidth: 0, maxWidth: '48%', borderRadius: 24, minHeight: 400, padding: 0, overflowY: 'auto', maxHeight: '70vh', display: selectedJob ? 'none' : 'block' }}>
           {!selectedJob && (
-            <div style={{ textAlign: 'center', color: '#94a3b8', marginTop: 0, minHeight: 420, display: 'grid', placeItems: 'center', padding: '2rem', background: 'white', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.15)' }}>
+            <div style={{ textAlign: 'center', color: '#64748b', marginTop: 0, minHeight: 420, display: 'grid', placeItems: 'center', padding: '2rem', background: 'white', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.15)' }}>
               <div>
                 <div style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#0f172a' }}>Select a job to view details</div>
                 <div style={{ fontSize: '0.95rem', lineHeight: 1.65, color: '#64748b' }}>Open a listing to see the full description, skills, and available actions.</div>
@@ -675,7 +683,7 @@ function BrowseJobs() {
 
         {/* If a job is selected, show the details in a floating drawer (for now, you can later refactor to show inline) */}
         {selectedJob && (
-          <div className="hide-scrollbar" style={{ flex: '0 0 48%', minWidth: 0, maxWidth: '48%', overflowY: 'auto', height: '83vh' }}>
+          <div className="hide-scrollbar bj-detail" role="dialog" aria-label="Job details" style={{ flex: '0 0 48%', minWidth: 0, maxWidth: '48%', overflowY: 'auto', height: '83vh' }}>
             {
               // Map the selected job into the shape expected by JobDetailDrawer
             }
@@ -704,7 +712,7 @@ function BrowseJobs() {
                 <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.5rem', letterSpacing: '-0.04em', fontWeight: 800 }}>Create job posting</h2>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Fill in the job details below to publish a new listing.</p>
               </div>
-              <button onClick={closeCreateModal} aria-label="Close create job" style={{ border: 'none', background: 'transparent', padding: '0.25rem', borderRadius: 8, cursor: 'pointer', color: '#94a3b8', fontSize: '1.1rem' }}>✕</button>
+              <button onClick={closeCreateModal} aria-label="Close create job" style={{ border: 'none', background: 'transparent', padding: '0.25rem', borderRadius: 8, cursor: 'pointer', color: '#64748b', fontSize: '1.1rem' }}>✕</button>
             </div>
             <form onSubmit={handleCreateSubmit}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -749,16 +757,7 @@ function BrowseJobs() {
                         ))}
                       </select>
                     ) : (
-                      <select
-                        value={city}
-                        onChange={e => setCity(e.target.value)}
-                        aria-label="Select city or location"
-                        style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff', cursor: 'pointer', appearance: 'none' }}
-                      >
-                        {((countriesData ?? FALLBACK_COUNTRIES).find(c => c.country === country)?.cities ?? []).map(ct => (
-                          <option key={ct} value={ct}>{ct}</option>
-                        ))}
-                      </select>
+                      <input type="text" value={city} onChange={e => setCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff' }} />
                     )}
                   </div>
 
@@ -766,16 +765,7 @@ function BrowseJobs() {
                   {statesForCountry && (
                     <div style={{ gridColumn: '1 / span 2' }}>
                       <label style={{ display: 'block', fontSize: '0.875rem', color: '#4A5568', marginBottom: '0.25rem' }}>City / Location</label>
-                      <select
-                        value={city}
-                        onChange={e => setCity(e.target.value)}
-                        aria-label="Select city or location"
-                        style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff', cursor: 'pointer', appearance: 'none' }}
-                      >
-                        {(citiesForState ?? []).map(ct => (
-                          <option key={ct} value={ct}>{ct}</option>
-                        ))}
-                      </select>
+                      <input type="text" value={city} onChange={e => setCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff' }} />
                     </div>
                   )}
                 </div>

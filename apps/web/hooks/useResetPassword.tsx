@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useState } from "react";
 
 type ResetPasswordPayload = {
@@ -17,7 +18,7 @@ export const useResetPassword = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/auth/reset-password`, {
+      const response = await fetch(`${API_URL}/api/v1/auth/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

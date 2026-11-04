@@ -50,7 +50,7 @@ function Navbar() {
         </button>
         {profileOpen && (
           <div style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'white', borderRadius: '12px', boxShadow: '0 8px 24px rgba(15,23,42,0.12)', border: '1px solid rgba(148,163,184,0.18)', padding: '0.75rem 1rem', minWidth: '210px', zIndex: 200 }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>Signed in as</div>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>Signed in as</div>
             <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all' }}>{user!.email}</div>
           </div>
         )}
@@ -64,7 +64,7 @@ function Navbar() {
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(148,163,184,0.18)', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(18px)', boxShadow: '0 1px 3px rgba(15,23,42,0.06)' }}>
         <div className="tp-container" style={{ padding: '0.75rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
-            <Image src="/Logo.png" alt="TriMergePro Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.4rem', width: 'auto' }} />
+            <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.4rem', width: 'auto' }} />
           </Link>
           {CandidateControls}
         </div>
@@ -86,10 +86,12 @@ function Navbar() {
         <div className="tp-container" style={{ padding: '0.65rem 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
             <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
-              <Image src="/Logo.png" alt="TriMergePro Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.2rem', width: 'auto' }} />
+              <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.2rem', width: 'auto' }} />
             </Link>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <Link href="/employer-dashboard" className="tp-nav-link nav-emp-dash" style={{ fontSize: '0.875rem' }}>Dashboard</Link>
+              <Link href="/talent-search" className="tp-nav-link" style={{ fontSize: '0.875rem' }}>Find talent</Link>
               {/* <Link href="/help" className="tp-nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.875rem', color: '#475569' }}>
                 <HelpCircle size={15} />
                 Help
@@ -109,12 +111,12 @@ function Navbar() {
                 <div style={{ width: '24px', height: '24px', borderRadius: '999px', background: 'linear-gradient(135deg, #07172e, #1d4ed8)', color: 'white', display: 'grid', placeItems: 'center', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>
                   {(displayName ?? 'R').charAt(0).toUpperCase()}
                 </div>
-                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0f172a', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="nav-email" style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0f172a', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user.email}
                 </span>
               </div>
 
-              <button onClick={() => logout()} title="Logout" style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8', display: 'grid', placeItems: 'center' }}>
+              <button onClick={() => logout()} title="Logout" style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b', display: 'grid', placeItems: 'center' }}>
                 <LogOut size={16} />
               </button>
             </div>
@@ -139,7 +141,7 @@ function Navbar() {
       <div className="tp-container" style={{ padding: '1rem 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
           <Link href={isCandidate ? '/browse-jobs' : '/'} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-            <Image src="/Logo.png" alt="TriMergePro Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.8rem', width: 'auto' }} />
+            <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.8rem', width: 'auto' }} />
           </Link>
 
           {!isCandidate && (
@@ -173,11 +175,11 @@ function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/login" className="tp-btn-secondary hidden sm:inline-flex" style={{ padding: '0.8rem 1rem' }}>
+                <Link href="/login" className="tp-btn-secondary nav-login-btn" style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>
                   Log In
                 </Link>
-                <Link href="/join-now" className="tp-btn-primary" style={{ padding: '0.8rem 1rem' }}>
-                  Sign-up
+                <Link href="/join-now" className="tp-btn-primary" style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>
+                  Sign up
                   <ChevronRight size={16} />
                 </Link>
               </>

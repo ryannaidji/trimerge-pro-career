@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useEffect, useState } from 'react'
 import { useUser } from '@/contexts/userContext/userContext'
 import { useRefreshToken } from './useAuth'
@@ -19,7 +20,7 @@ export const useGetUser = () => {
       try {
         const token = localStorage.getItem('tm_token')
         // const res = await fetch('/.netlify/functions/getUser', {
-      const res = await fetch('https://trimerge-pro-career.onrender.com/api/v1/auth/me', {
+      const res = await fetch(`${API_URL}/api/v1/auth/me`, {
 
           method: 'GET',
           headers: {
@@ -40,7 +41,7 @@ export const useGetUser = () => {
         if (res.status === 401) {
           const refreshed = await refresh()
           if (refreshed) {
-            const retry = await fetch('https://trimerge-pro-career.onrender.com/api/v1/auth/me', {
+            const retry = await fetch(`${API_URL}/api/v1/auth/me`, {
               method: 'GET',
               headers: { Authorization: `Bearer ${localStorage.getItem('tm_token')}` },
             })

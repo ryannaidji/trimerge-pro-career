@@ -237,7 +237,7 @@ export default function Home() {
                   Why Choose TriMergePRO Careers
                 </h2>
                 <p style={{ fontSize: '1.08rem', margin: '0.6rem 0 0', maxWidth: '40rem', color: 'var(--tp-ink)', lineHeight: 1.75 }}>
-                  TriMergePRO Careers is a trusted professional services firm with opportunities across multiple industries. Secure candidate profiles and an easy application process make it simple to get started, while employer and recruiter tools support hiring on a growing, AI-enabled workforce platform.
+                  TriMergePRO Careers is powered by TriMerge Consulting Group, P.A., a trusted professional services firm with opportunities across multiple industries. Secure candidate profiles and an easy application process make it simple to get started, while employer and recruiter tools support hiring on a growing, AI-enabled workforce platform.
                 </p>
               </div>
             </div>

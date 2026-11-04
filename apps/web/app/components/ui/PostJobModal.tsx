@@ -428,7 +428,7 @@ export default function PostJobModal({ onClose, onSuccess }: { onClose: () => vo
               </div>
 
               {error && (
-                <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.75rem 1rem', borderRadius: '12px', fontWeight: 700, fontSize: '0.9rem' }}>
+                <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.75rem 1rem', borderRadius: '12px', fontWeight: 700, fontSize: '0.9rem' }}>
                   {error}
                 </div>
               )}

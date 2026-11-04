@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useState } from 'react'
 
 export const useDeleteJob = () => {
@@ -9,7 +10,7 @@ export const useDeleteJob = () => {
     setError(null)
     try {
       const token = localStorage.getItem('tm_token')
-      const res = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/jobs/${id}`, {
+      const res = await fetch(`${API_URL}/api/v1/jobs/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: token ? `Bearer ${token}` : '',

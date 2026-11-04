@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useCallback, useState } from 'react'
 import { useUser } from '@/contexts/userContext/userContext'
 
@@ -15,7 +16,7 @@ export const useMe = () => {
     setError(null)
     try {
       const token = localStorage.getItem('tm_token')
-      const res = await fetch('https://trimerge-pro-career.onrender.com/api/v1/auth/me', {
+      const res = await fetch(`${API_URL}/api/v1/auth/me`, {
         method: 'GET',
         headers: {
           Authorization: token ? `Bearer ${token}` : '',
@@ -58,7 +59,7 @@ export const useRefreshToken = () => {
         return null
       }
 
-      const res = await fetch('https://trimerge-pro-career.onrender.com/api/v1/auth/refresh-token', {
+      const res = await fetch(`${API_URL}/api/v1/auth/refresh-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),

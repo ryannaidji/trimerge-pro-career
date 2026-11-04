@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useCallback, useState } from 'react'
 
 type GetJobsParams = {
@@ -36,7 +37,7 @@ type ListJobsResponse = {
   pagination: { page: number; limit: number; total: number; totalPages: number }
 }
 
-const BASE_URL = 'https://trimerge-pro-career.onrender.com/api/v1/public/jobs'
+const BASE_URL = `${API_URL}/api/v1/public/jobs`
 
 export const useGetPublicJobs = () => {
   const [loading, setLoading] = useState(false)

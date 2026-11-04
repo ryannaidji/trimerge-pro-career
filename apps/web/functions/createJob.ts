@@ -17,7 +17,7 @@ export const handler = async (event: unknown) => {
   try {
     parsed = JSON.parse(ev.body || '{}');
   } catch (e) {
-    console.log('Failed to parse createJob body:', e);
+    console.error('Failed to parse createJob body:', e);
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
@@ -87,7 +87,7 @@ export const handler = async (event: unknown) => {
       body: typeof data === 'string' ? JSON.stringify({ error: data }) : JSON.stringify(data),
     };
   } catch (err: unknown) {
-    console.log('createJob error:', err);
+    console.error('createJob error:', err);
     const message = err instanceof Error ? err.message : String(err);
     return { statusCode: 500, body: JSON.stringify({ error: message }) };
   }

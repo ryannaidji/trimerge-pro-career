@@ -57,7 +57,7 @@ export default function ResetPasswordClient() {
         <AuthShell
             eyebrow="Secure password reset"
             title="Create a new password in a secure step."
-            subtitle="Use the reset code from your email to prove ownership and set a new password for your TriMergePro Careers account."
+            subtitle="Use the reset code from your email to prove ownership and set a new password for your TriMergePRO Careers account."
             bullets={[
                 'The reset flow is aligned with the backend OTP endpoint.',
                 'Use the email address tied to the account you want to recover.',
@@ -102,7 +102,7 @@ export default function ResetPasswordClient() {
                         <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>New password</span>
                         <div style={{ position: 'relative' }}>
                             <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type={showPassword ? 'text' : 'password'} placeholder="New password *" className="tp-card" style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.5rem 0.95rem 1rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)' }} />
-                            <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle new password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+                            <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle new password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                         </div>
                     </label>
 
@@ -110,13 +110,13 @@ export default function ResetPasswordClient() {
                         <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Confirm password</span>
                         <div style={{ position: 'relative' }}>
                             <input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm new password *" className="tp-card" style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.5rem 0.95rem 1rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)' }} />
-                            <button type="button" onClick={() => setShowConfirmPassword((current) => !current)} aria-label="Toggle confirm password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+                            <button type="button" onClick={() => setShowConfirmPassword((current) => !current)} aria-label="Toggle confirm password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                         </div>
                     </label>
                 </div>
 
-                {localError && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{localError}</div>}
-                {error && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
+                {localError && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{localError}</div>}
+                {error && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
                 {success && <div style={{ color: '#166534', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{success}</div>}
 
                 <button type="submit" disabled={loading} className="tp-btn-primary" style={{ width: '100%', cursor: loading ? 'not-allowed' : 'pointer' }}>

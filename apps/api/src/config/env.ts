@@ -22,11 +22,19 @@ const envSchema = z.object({
     .min(1, 'CORS_ORIGIN is required')
     .transform((val) => val.split(',').map((origin) => origin.trim())),
 
-  MAILGUN_API_KEY: z.string().min(1, 'MAILGUN_API_KEY is required'),
-  MAILGUN_DOMAIN: z.string().min(1, 'MAILGUN_DOMAIN is required'),
-  MAILGUN_SENDER: z.string().min(1, 'MAILGUN_SENDER is required'),
+  // Public base URL of this API, used to build links to locally stored files
+  PUBLIC_API_URL: z.string().default('http://localhost:4000'),
 
-  CLOUDINARY_URL: z.string().min(1, 'CLOUDINARY_URL is required'),
+  // Email: "console" logs emails (local development, no account needed), "mailgun" sends them
+  MAIL_DRIVER: z.enum(['console', 'mailgun']).default('console'),
+  MAILGUN_API_KEY: z.string().optional(),
+  MAILGUN_DOMAIN: z.string().optional(),
+  MAILGUN_SENDER: z.string().optional(),
+
+  // File storage: "local" writes to ./uploads (no account needed), "cloudinary" uploads to Cloudinary
+  STORAGE_DRIVER: z.enum(['local', 'cloudinary']).default('local'),
+  UPLOADS_DIR: z.string().default('uploads'),
+  CLOUDINARY_URL: z.string().optional(),
 
   OPENAI_API_KEY: z.string().optional(),
   OPENAI_MODEL: z.string().default('gpt-4.1-mini'),
@@ -36,7 +44,26 @@ const envSchema = z.object({
     .transform((value) => value === 'true'),
 });
 
-const _env = envSchema.safeParse(process.env);
+const _env = envSchema
+  .superRefine((val, ctx) => {
+    if (val.MAIL_DRIVER === 'mailgun') {
+      for (const key of ['MAILGUN_API_KEY', 'MAILGUN_DOMAIN', 'MAILGUN_SENDER'] as const) {
+        if (!val[key]) ctx.addIssue({ code: 'custom', path: [key], message: `${key} is required when MAIL_DRIVER=mailgun` });
+      }
+    }
+    // CORS must be an explicit allowlist; in production only HTTPS origins,
+    // except localhost so the Docker stack can run in production mode locally (#23)
+    const isLocalhost = (origin: string) => /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+    for (const origin of val.CORS_ORIGIN) {
+      if (origin === '*' || (val.NODE_ENV === 'production' && !origin.startsWith('https://') && !isLocalhost(origin))) {
+        ctx.addIssue({ code: 'custom', path: ['CORS_ORIGIN'], message: `Invalid CORS origin "${origin}"` });
+      }
+    }
+    if (val.STORAGE_DRIVER === 'cloudinary' && !val.CLOUDINARY_URL) {
+      ctx.addIssue({ code: 'custom', path: ['CLOUDINARY_URL'], message: 'CLOUDINARY_URL is required when STORAGE_DRIVER=cloudinary' });
+    }
+  })
+  .safeParse(process.env);
 
 if (!_env.success) {
   console.error('❌ Invalid environment variables:', _env.error.format());

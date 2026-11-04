@@ -1,0 +1,13 @@
+{
+  "name": "trimerge-e2e",
+  "private": true,
+  "description": "Browser smoke tests for TriMergePRO Careers (run against the Docker stack)",
+  "scripts": {
+    "test": "playwright test",
+    "workflows": "node ../scripts/e2e-workflows.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.1",
+    "@playwright/test": "1.49.1"
+  }
+}

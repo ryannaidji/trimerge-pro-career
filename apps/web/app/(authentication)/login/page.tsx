@@ -1,6 +1,7 @@
 "use client"
 
 import { useUser } from '@/contexts/userContext/userContext';
+import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice'
 import { useLogin } from '@/hooks/useLogin';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -41,7 +42,12 @@ function LoginPage() {
 
     const hasProfile = Boolean(resolvedUser?.profile && Object.keys(resolvedUser.profile).length > 0);
 
-    if (accountType === 'candidate') {
+    if (accountType === 'admin') {
+      router.replace('/admin');
+      return;
+    }
+
+    if (accountType === 'candidate' || accountType === 'talent') {
       router.replace(hasProfile ? '/browse-jobs' : '/personal-information/step-one');
       return;
     }
@@ -109,6 +115,8 @@ function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               type="email"
               id="email"
+              name="email"
+              autoComplete="email"
               placeholder="you@email.com"
               required
               className="tp-card"
@@ -125,19 +133,22 @@ function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               type={showPassword ? 'text' : 'password'}
               id="password"
+              name="password"
+              autoComplete="current-password"
               placeholder="••••••••"
               required
               className="tp-card"
               style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 3rem 0.95rem 2.5rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)', outline: 'none', boxShadow: 'none' }}
             />
-            <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>
+            <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
         </label>
 
-        {error && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
+        {error && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
 
+        <SlowRequestNotice active={loading} />
         <button type="submit" disabled={loading} className="tp-btn-primary" style={{ width: '100%', cursor: loading ? 'not-allowed' : 'pointer' }}>
           {loading ? 'Logging in…' : 'Log in'}
           {!loading && <ArrowRight size={16} />}

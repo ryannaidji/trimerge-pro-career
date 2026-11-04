@@ -1,59 +1,15 @@
 import path from 'path';
-import streamifier from 'streamifier';
 import { AppError } from '../../utils/app-error';
 import { UserModel } from '../users/user.model';
 import { CandidateProfileModel } from '../candidates/candidate.model';
-import { cloudinary } from '../../lib/cloudinary';
+import { storeFile, StoredFile } from '../../lib/storage';
 import { extractResumeText } from './resume-parser.service';
-
-type CloudinaryUploadResult = {
-  secure_url: string;
-  public_id: string;
-  resource_type: string;
-  bytes: number;
-  format: string;
-  original_filename?: string;
-};
 
 function sanitizeOriginalName(filename: string) {
   return filename
     .trim()
     .replace(/\s+/g, '-')
     .replace(/[^a-zA-Z0-9.\-_]/g, '');
-}
-
-function uploadBufferToCloudinary(
-  file: Express.Multer.File
-): Promise<CloudinaryUploadResult> {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'trimerge/resumes',
-        resource_type: 'raw',
-        use_filename: true,
-        unique_filename: true,
-        overwrite: false,
-      },
-      (error, result) => {
-        if (error) {
-          console.error('Cloudinary callback error:', error);
-          reject(error);
-          return;
-        }
-
-        if (!result) {
-          reject(new Error('Cloudinary upload failed'));
-          return;
-        }
-
-        console.log('Cloudinary upload success:', result);
-
-        resolve(result as CloudinaryUploadResult);
-      }
-    );
-
-    streamifier.createReadStream(file.buffer).pipe(uploadStream);
-  });
 }
 
 export const resumeService = {
@@ -79,11 +35,12 @@ export const resumeService = {
     const originalName = sanitizeOriginalName(file.originalname);
     const extension = path.extname(file.originalname).toLowerCase();
 
-    let uploadedFile: CloudinaryUploadResult;
+    let uploadedFile: StoredFile;
 
     try {
-      uploadedFile = await uploadBufferToCloudinary(file);
-    } catch (_error) {
+      uploadedFile = await storeFile(file, 'resumes');
+    } catch (error) {
+      if (error instanceof AppError) throw error;
       throw new AppError('Failed to upload resume to cloud storage', 500);
     }
 

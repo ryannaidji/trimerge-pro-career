@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { Bot, Briefcase, FileText, HelpCircle, Search, Send, User as UserIcon, X } from 'lucide-react'
 import { useUser } from '@/contexts/userContext/userContext'
+import { findAnswer } from './helpFaq'
 
 type ChatMessage = {
   id: number
@@ -25,7 +26,7 @@ export default function AskTriMergeAI() {
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: nextId(), role: 'bot', text: "Hi! I'm TriMerge AI. Ask a question or pick a quick action below to get started." },
+    { id: nextId(), role: 'bot', text: "Hi! I'm the TriMerge help assistant. Ask a question (for example: how do I apply?) or pick a quick action below." },
   ])
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
@@ -63,10 +64,9 @@ export default function AskTriMergeAI() {
     const trimmed = input.trim()
     if (!trimmed) return
     setInput('')
-    respond(
-      trimmed,
-      "Thanks for the message! I'm a preview of TriMerge AI, so I can't fully answer that yet. Try one of the quick actions above, or reach out to our team directly."
-    )
+    // Answered from the built-in FAQ (no AI provider, no data leaves the browser)
+    const match = findAnswer(trimmed)
+    respond(trimmed, match.answer, match.link)
   }
 
   return (
@@ -76,9 +76,9 @@ export default function AskTriMergeAI() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', padding: '1rem 1.1rem', borderBottom: '1px solid rgba(148,163,184,0.16)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
               <Bot size={18} color="var(--tp-primary)" />
-              <span style={{ fontWeight: 800 }}>Ask TriMerge AI</span>
+              <span style={{ fontWeight: 800 }}>Ask TriMerge</span>
             </div>
-            <button onClick={() => setOpen(false)} aria-label="Close Ask TriMerge AI" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)', display: 'grid', placeItems: 'center', padding: '0.2rem' }}>
+            <button onClick={() => setOpen(false)} aria-label="Close Ask TriMerge" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)', display: 'grid', placeItems: 'center', padding: '0.2rem' }}>
               <X size={16} />
             </button>
           </div>
@@ -97,12 +97,12 @@ export default function AskTriMergeAI() {
             ))}
           </div>
 
-          <div ref={scrollRef} style={{ display: 'grid', gap: '0.6rem', padding: '0.9rem 1.1rem', maxHeight: '16rem', overflowY: 'auto' }}>
+          <div ref={scrollRef} role="log" aria-live="polite" aria-label="Conversation" style={{ display: 'grid', gap: '0.6rem', padding: '0.9rem 1.1rem', maxHeight: '16rem', overflowY: 'auto' }}>
             {messages.map((message) => (
               <div key={message.id} style={{ display: 'flex', flexDirection: 'column', alignItems: message.role === 'user' ? 'flex-end' : 'flex-start', gap: '0.35rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--tp-muted)', fontSize: '0.72rem', fontWeight: 700 }}>
                   {message.role === 'bot' ? <Bot size={12} /> : <UserIcon size={12} />}
-                  {message.role === 'bot' ? 'TriMerge AI' : 'You'}
+                  {message.role === 'bot' ? 'TriMerge' : 'You'}
                 </div>
                 <div style={{
                   maxWidth: '85%',
@@ -124,7 +124,7 @@ export default function AskTriMergeAI() {
             ))}
             {typing && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--tp-muted)', fontSize: '0.82rem' }}>
-                <Bot size={12} /> TriMerge AI is typing&hellip;
+                <Bot size={12} /> TriMerge is typing&hellip;
               </div>
             )}
           </div>
@@ -151,7 +151,7 @@ export default function AskTriMergeAI() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message..."
-              aria-label="Message TriMerge AI"
+              aria-label="Ask a question"
               style={{ flex: 1, minWidth: 0, padding: '0.65rem 0.85rem', borderRadius: '999px', border: '1px solid rgba(148,163,184,0.24)', outline: 'none', fontSize: '0.88rem' }}
             />
             <button type="submit" disabled={!input.trim()} aria-label="Send message" className="tp-btn-primary" style={{ padding: '0.65rem', borderRadius: '999px', opacity: input.trim() ? 1 : 0.5, cursor: input.trim() ? 'pointer' : 'not-allowed' }}>
@@ -169,7 +169,7 @@ export default function AskTriMergeAI() {
         style={{ borderRadius: '999px', padding: '0.9rem 1.25rem' }}
       >
         <Bot size={18} />
-        Ask TriMerge AI
+        Ask TriMerge
       </button>
     </div>
   )

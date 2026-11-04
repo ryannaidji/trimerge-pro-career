@@ -4,7 +4,7 @@ import path from 'path';
 import { requireAuth } from '../../middleware/auth';
 import { requireRole } from '../../middleware/roles';
 import { AppError } from '../../utils/app-error';
-import { uploadResume } from './resume.controller';
+import { parseResume, uploadResume } from './resume.controller';
 
 const router = Router();
 
@@ -93,6 +93,31 @@ router.post(
     });
   },
   uploadResume
+);
+
+/**
+ * @swagger
+ * /api/v1/resumes/parse:
+ *   post:
+ *     summary: Suggest profile fields from a resume (nothing is stored)
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/parse',
+  requireAuth,
+  requireRole('TALENT'),
+  (req, res, next) => {
+    upload.single('resume')(req, res, (err: any) => {
+      if (err instanceof multer.MulterError) {
+        return next(new AppError(err.code === 'LIMIT_FILE_SIZE' ? 'Resume file must be 5 MB or smaller' : `Upload error: ${err.message}`, 400));
+      }
+      if (err) return next(err);
+      next();
+    });
+  },
+  parseResume
 );
 
 export default router;

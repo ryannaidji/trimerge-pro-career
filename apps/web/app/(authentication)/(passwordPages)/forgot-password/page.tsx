@@ -32,7 +32,7 @@ function Page() {
             subtitle="Enter the email tied to your account and we’ll send the OTP needed to reset your password through the current backend flow."
             bullets={[
                 'The reset step uses the existing auth endpoints and keeps the flow secure.',
-                'If the address exists, TriMergePro will send a code to that inbox.',
+                'If the address exists, TriMergePRO will send a code to that inbox.',
                 'After sending, you can continue to the reset password screen with the code you receive.',
             ]}
             footer={(
@@ -59,7 +59,7 @@ function Page() {
                     </div>
                 </label>
 
-                {error && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
+                {error && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
                 {success && <div style={{ color: '#166534', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{success}</div>}
 
                 <button type="submit" disabled={loading} className="tp-btn-primary" style={{ width: '100%', cursor: loading ? 'not-allowed' : 'pointer' }}>

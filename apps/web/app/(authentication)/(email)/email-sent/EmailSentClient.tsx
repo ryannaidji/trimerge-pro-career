@@ -161,7 +161,7 @@ export default function EmailSentClient()  {
                             inputMode='numeric'
                             pattern='\d*'
                             maxLength={1}
-                            aria-label={`digit-${i + 1}`}
+                            aria-label={`Verification code digit ${i + 1}`}
                             value={c}
                             onChange={(e) => handleChange(e, i)}
                             onKeyDown={(e) => handleKeyDown(e, i)}

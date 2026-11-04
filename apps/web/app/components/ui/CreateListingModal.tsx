@@ -20,7 +20,6 @@ export function CreateListingModal({ onClose }: CreateListingModalProps) {
   const locations = ['Remote', 'On-site', 'Hybrid'];
 
   const handleSubmit = (isDraft: boolean) => {
-    console.log('Submitting form:', { ...formData, isDraft });
     onClose();
   };
 

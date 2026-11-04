@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useCallback, useEffect, useState } from 'react'
 import { useRefreshToken } from './useAuth'
 
@@ -12,7 +13,7 @@ export const useGetEmployer = () => {
     setError(null)
     try {
       const token = localStorage.getItem('tm_token')
-      const res = await fetch('https://trimerge-pro-career.onrender.com/api/v1/employers/me', {
+      const res = await fetch(`${API_URL}/api/v1/employers/me`, {
         method: 'GET',
         headers: {
           Authorization: token ? `Bearer ${token}` : '',
@@ -30,7 +31,7 @@ export const useGetEmployer = () => {
       if (res.status === 401) {
         const refreshed = await refresh()
         if (refreshed) {
-          const retry = await fetch('https://trimerge-pro-career.onrender.com/api/v1/employers/me', {
+          const retry = await fetch(`${API_URL}/api/v1/employers/me`, {
             method: 'GET',
             headers: { Authorization: `Bearer ${localStorage.getItem('tm_token')}` },
           })

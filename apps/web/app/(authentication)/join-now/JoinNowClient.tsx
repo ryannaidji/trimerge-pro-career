@@ -4,7 +4,8 @@ import { useRegister } from '@/hooks/useRegister';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice'
 import { AuthShell } from '../../components/ui/AuthShell';
 import { ChevronRight, Eye, EyeOff, Mail } from 'lucide-react';
 
@@ -70,18 +71,12 @@ export default function JoinNowClient() {
         }
     };
 
-    useEffect(() => {
-        if (!error && !localError) return;
-        const t = setTimeout(() => {
-            setError(null);
-            setLocalError(null);
-        }, 3500);
-        return () => clearTimeout(t);
-    }, [error, localError, setError]);
+    // Errors stay visible until the user changes the form or submits again (WCAG 2.2.1: no
+    // time limit on reading). They used to disappear after 3.5 seconds (#32).
 
     return (
         <AuthShell
-            eyebrow="Join TriMergePro Careers"
+            eyebrow="Join TriMergePRO Careers"
             title="Create your account and get started."
             subtitle="Choose whether you're looking for opportunities or hiring talent, then create your account to get started."
             bullets={[
@@ -150,14 +145,14 @@ export default function JoinNowClient() {
                             <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Password</span>
                             <div style={{ position: 'relative' }}>
                                 <input type={showPassword ? 'text' : 'password'} placeholder='Password *' value={password} onChange={(e) => setPassword(e.target.value)} className="tp-card" style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.5rem 0.95rem 1rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)' }} />
-                                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+                                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                             </div>
                         </label>
                         <label style={{ display: 'grid', gap: '0.45rem' }}>
                             <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Confirm password</span>
                             <div style={{ position: 'relative' }}>
                                 <input type={showConfirmPassword ? 'text' : 'password'} placeholder='Confirm password *' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="tp-card" style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.5rem 0.95rem 1rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)' }} />
-                                <button type="button" onClick={() => setShowConfirmPassword((current) => !current)} aria-label="Toggle confirm password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+                                <button type="button" onClick={() => setShowConfirmPassword((current) => !current)} aria-label="Toggle confirm password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>{showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                             </div>
                         </label>
                     </div>
@@ -171,16 +166,17 @@ export default function JoinNowClient() {
 
                     <label style={{ display: 'flex', gap: '0.7rem', alignItems: 'flex-start', color: 'var(--tp-muted)', fontSize: '0.95rem', lineHeight: 1.55 }}>
                         <input type='checkbox' id='updates' name='updates' checked={updates} onChange={(e) => setUpdates(e.target.checked)} style={{ marginTop: '0.2rem' }} />
-                        I&apos;d like to receive updates, job opportunities, and news from TriMergePro.
+                        I&apos;d like to receive updates, job opportunities, and news from TriMergePRO.
                     </label>
                 </div>
 
-                {(localError || error) && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{localError || error}</div>}
+                {(localError || error) && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{localError || error}</div>}
 
                 <div style={{ fontSize: '0.92rem', color: 'var(--tp-muted)', lineHeight: 1.6 }}>
                     Password must be at least 8 characters. We will send you to email verification after registration.
                 </div>
 
+                <SlowRequestNotice active={loading} />
                 <button type='submit' disabled={loading} className="tp-btn-primary" style={{ width: '100%', cursor: loading ? 'not-allowed' : 'pointer' }}>
                     {loading ? 'Creating account…' : 'Create account'}
                     {!loading && <ChevronRight size={16} />}

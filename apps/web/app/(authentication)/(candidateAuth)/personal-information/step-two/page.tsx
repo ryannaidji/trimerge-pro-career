@@ -12,6 +12,18 @@ function Page() {
     const [skillsText, setSkillsText] = React.useState('')
     const [professionalSummary, setProfessionalSummary] = React.useState('')
 
+    // Pre-fill from the resume suggestions saved on the previous step (#34); editable by the candidate
+    React.useEffect(() => {
+        try {
+            const raw = sessionStorage.getItem('tm_resume_suggestions')
+            if (!raw) return
+            const saved = JSON.parse(raw) as { skills?: string[]; professionalSummary?: string }
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            if (saved.skills?.length) setSkillsText((current) => current || saved.skills!.join(', '))
+            if (saved.professionalSummary) setProfessionalSummary((current) => current || saved.professionalSummary!)
+        } catch { /* storage unavailable or invalid */ }
+    }, [])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // convert skills string to array by comma and always send an array
@@ -56,7 +68,7 @@ function Page() {
               <textarea name='professionalSummary' value={professionalSummary} onChange={(e) => setProfessionalSummary(e.target.value)} placeholder="Professional Summary *" className="tp-card" style={{ width: '100%', minHeight: '12rem', resize: 'vertical', boxSizing: 'border-box', padding: '1rem', borderRadius: '18px', border: '1px solid rgba(148,163,184,0.2)' }} />
             </label>
 
-            {error && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
+            {error && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
 
             <button onClick={handleSubmit} disabled={loading} className="tp-btn-primary" style={{ width: '100%', cursor: loading ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Saving…' : 'Save and continue'}

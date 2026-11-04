@@ -301,15 +301,29 @@ a {
   box-shadow: 0 6px 18px rgba(13, 60, 150, 0.18);
 }
 
-/* Focus-visible for interactive elements */
+/* Focus-visible for interactive elements (WCAG 2.4.7 / 1.4.11, #24).
+   !important: several components set `outline: none` inline, which would otherwise
+   hide the keyboard focus. Solid #1d4ed8 has > 3:1 contrast on white and light grey. */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible {
-  outline: 3px solid rgba(29,78,216,0.35);
-  outline-offset: 3px;
+select:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #1d4ed8 !important;
+  outline-offset: 2px;
   border-radius: 8px;
+}
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .tp-nav-link {
@@ -337,7 +351,9 @@ select:focus-visible {
 }
 
 .tp-float {
-  animation: floatSlow 7s ease-in-out infinite;
+  /* Plays once and stays under 5 s: endless motion next to a form breaks WCAG 2.2.2
+     (Pause, Stop, Hide) and kept the form moving (#24, #36). Was: 7s infinite. */
+  animation: floatSlow 4.5s ease-in-out 1;
 }
 
 .tp-sector-tile {
@@ -523,4 +539,55 @@ select:focus-visible {
   font-size: 1.05em !important;
   font-weight: 700 !important;
   margin: 0.5em 0 0.25em !important;
+}
+
+/* ---- Responsive fixes (#31) ---- */
+/* Navbar: the Log In button is in the mobile menu below 640px */
+.nav-login-btn { display: none !important; }
+@media (min-width: 640px) {
+  .nav-login-btn { display: inline-flex !important; }
+}
+
+/* Browse jobs: stack list and details on phones and small tablets */
+@media (max-width: 899px) {
+  .bj-layout { flex-direction: column !important; height: auto !important; gap: 16px !important; }
+  .bj-list { flex: 1 1 auto !important; max-width: 100% !important; width: 100%; }
+  .bj-placeholder { display: none !important; }
+  .bj-search { flex-direction: column !important; align-items: stretch !important; }
+  .bj-search > * { width: 100% !important; border-right: none !important; }
+  .bj-search > * + * { border-top: 1px solid rgba(148,163,184,0.2); }
+  .bj-detail {
+    position: fixed !important;
+    inset: 0;
+    z-index: 2147483000;
+    max-width: 100% !important;
+    height: 100% !important;
+    background: #f8fafc;
+    padding: 0.75rem;
+  }
+}
+
+
+/* Job creation wizard on phones (#31, found by the mobile browser tests) */
+@media (max-width: 640px) {
+  .jc-modal { width: 100vw; max-width: 100vw; }
+  .jc-top, .jc-footer { padding: 0.75rem 1rem !important; }
+  .jc-steps { padding: 0 0.5rem !important; overflow-x: auto; }
+  .jc-step-label, .jc-step-hint { display: none; }
+  .jc-content { padding: 1rem !important; }
+  .jc-content > div > div { padding: 1.25rem !important; }
+  .jc-content [style*="grid-template-columns: 1fr 1fr"], .jc-content [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  .jc-footer { flex-wrap: wrap; }
+  .jc-footer > span { flex-basis: 100% !important; }
+}
+
+/* Employer dashboard and navbar on phones (#31) */
+@media (max-width: 767px) {
+  .ed-layout { flex-direction: column !important; }
+  .ed-aside { width: 100% !important; height: auto !important; position: static !important; border-right: none !important; border-bottom: 1px solid rgba(148,163,184,0.15); }
+  .ed-main { padding: 1rem !important; }
+  .ed-main > div > div:first-child { flex-wrap: wrap; }
+}
+@media (max-width: 640px) {
+  .nav-email, .nav-emp-dash { display: none !important; }
 }

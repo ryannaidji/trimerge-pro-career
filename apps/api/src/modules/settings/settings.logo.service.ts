@@ -1,53 +1,14 @@
 import path from 'path';
-import streamifier from 'streamifier';
 import { AppError } from '../../utils/app-error';
 import { UserModel } from '../users/user.model';
 import { EmployerProfileModel } from '../employers/employer.model';
-import { cloudinary } from '../../lib/cloudinary';
-
-type CloudinaryUploadResult = {
-  secure_url: string;
-  public_id: string;
-  resource_type: string;
-  bytes: number;
-  format: string;
-  original_filename?: string;
-};
+import { storeFile, StoredFile } from '../../lib/storage';
 
 function sanitizeOriginalName(filename: string) {
   return filename
     .trim()
     .replace(/\s+/g, '-')
     .replace(/[^a-zA-Z0-9.\-_]/g, '');
-}
-
-function uploadBufferToCloudinary(file: Express.Multer.File): Promise<CloudinaryUploadResult> {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'trimerge/company-logos',
-        resource_type: 'image',
-        use_filename: true,
-        unique_filename: true,
-        overwrite: false,
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        if (!result) {
-          reject(new Error('Cloudinary upload failed'));
-          return;
-        }
-
-        resolve(result as CloudinaryUploadResult);
-      }
-    );
-
-    streamifier.createReadStream(file.buffer).pipe(uploadStream);
-  });
 }
 
 export const settingsLogoService = {
@@ -76,11 +37,12 @@ export const settingsLogoService = {
       throw new AppError('Employer profile not found', 404);
     }
 
-    let uploadedFile: CloudinaryUploadResult;
+    let uploadedFile: StoredFile;
 
     try {
-      uploadedFile = await uploadBufferToCloudinary(file);
-    } catch {
+      uploadedFile = await storeFile(file, 'company-logos');
+    } catch (error) {
+      if (error instanceof AppError) throw error;
       throw new AppError('Failed to upload company logo to cloud storage', 500);
     }
 

@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useState } from 'react'
 
 type Payload = {
@@ -14,7 +15,7 @@ export const useRecruiterOnboardingStepThree = () => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/onboarding/recruiter/step-3`, {
+      const response = await fetch(`${API_URL}/api/v1/onboarding/recruiter/step-3`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

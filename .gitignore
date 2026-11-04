@@ -26,3 +26,10 @@ Thumbs.db
 
 uploads/
 apps/api/uploads/
+# Local database backups (contain personal data)
+backups/
+
+# Playwright
+e2e/node_modules/
+e2e/test-results/
+e2e/playwright-report/
