@@ -43,3 +43,13 @@ docker compose logs -f api   # look for "📧 [email:console]"
 | Role checks on every private route (see `docs/security-review.md`) | `apps/api/src/modules/*/*.routes.ts` |
 | Upload content validation (magic bytes) | `apps/api/src/lib/storage.ts` |
 | Web security headers (CSP, HSTS, frame, referrer) | `apps/web/next.config.ts` |
+
+## Automated tests
+
+| Suite | Command | What it covers |
+|---|---|---|
+| API unit/integration | `cd apps/api && npm test` | 33 Jest tests (in-memory MongoDB) |
+| Workflows | `node scripts/e2e-workflows.mjs` | 30 checks: candidate, employer, visitor, admin, access control |
+| Browser smoke | `cd e2e && npm ci && npx playwright test` | 32 Playwright tests on desktop and mobile (titles, headers, robots, login error, admin redirect, help assistant, focus) |
+
+All three run in GitHub Actions (`.github/workflows/ci.yml`, job `e2e` starts the Docker stack).
