@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Local email driver (`MAIL_DRIVER=console`): emails and OTP codes are printed in the API logs, so no Mailgun account is needed locally.
 - Storage abstraction (`apps/api/src/lib/storage.ts`) with a local disk driver (`STORAGE_DRIVER=local`) next to Cloudinary; files get random names.
-- API tests for the local storage driver, error handling and CORS (26 tests in total).
+- API tests for the local storage driver, error handling and CORS (27 tests in total).
 - `docs/local-development.md`.
 - Equal Employment Opportunity Statement page at `/eeo-statement`, linked from the footer (#10).
 - `robots.txt` and a sitemap generated with Next.js metadata routes, listing public pages only (#12).
@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Security headers on the web app: CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, COOP; `X-Powered-By` removed (#18).
 - Admin dashboard at `/admin`: search and filter users, suspend/reactivate/delete accounts, search jobs and change their status; admins are redirected there after login (#9).
 - `create-admin` script to create or promote an administrator (`apps/api/src/scripts/create-admin.ts`) (#9).
-- `scripts/e2e-workflows.mjs`: 31 end-to-end checks of the candidate, employer, visitor, admin and access-control workflows against the Docker stack (#6).
+- `scripts/e2e-workflows.mjs`: 30 end-to-end checks of the candidate, employer, visitor, admin and access-control workflows against the Docker stack (#6).
 - `scripts/backup-db.sh` / `scripts/restore-db.sh` and `docs/backup-and-recovery.md`; restore verified (#25).
 - `docs/security-review.md` (route authorization matrix) and `docs/issues.md` (defect log) (#8, #19).
 - Rate limiting: 10 attempts / 15 min per IP + email on login, registration, OTP and password reset; 600 requests / min per IP on the whole API (#20).
