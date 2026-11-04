@@ -1,4 +1,5 @@
-export const handler = async (event: any) => {
+import type { NetlifyEvent } from './types';
+export const handler = async (event: NetlifyEvent) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,

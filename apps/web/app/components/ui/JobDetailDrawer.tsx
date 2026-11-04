@@ -1,6 +1,7 @@
 "use client"
 
 import { X, MapPin, Briefcase, Calendar, DollarSign, Building2 } from 'lucide-react';
+import { departmentLabel } from '@/app/util/departments';
 
 interface Job {
   // support both server _id and client id
@@ -88,7 +89,7 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
 
   if (!shouldRender || !job) return null;
 
-  const department = job.department ?? 'General';
+  const department = departmentLabel(job.department) || 'General';
   const posted = job.createdAt ?? job.updatedAt;
 
   // Build formatted compensation display based on salaryType

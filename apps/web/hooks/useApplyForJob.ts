@@ -1,4 +1,5 @@
 import { API_URL } from "@/app/util/apiUrl";
+import { authFetch } from '@/app/util/session';
 import { useState } from 'react';
 
 type ApplyParams = {
@@ -19,10 +20,8 @@ export default function useApplyForJob() {
     setResult(null);
     setLoading(true);
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('tm_token') : null;
       const url = `${API_URL}/api/v1/applications`;
 
-      let res: Response;
       const fd = new FormData();
       fd.append('jobId', params.jobId);
       if (params.resumeFile) fd.append('resumeFile', params.resumeFile, params.resumeFile.name);
@@ -30,9 +29,9 @@ export default function useApplyForJob() {
       if (params.coverLetter) fd.append('coverLetter', params.coverLetter);
       if (params.answers) fd.append('answers', JSON.stringify(params.answers));
 
-      res = await fetch(url, {
+      // authFetch renews an expired session instead of failing the application (#55)
+      const res = await authFetch(url, {
         method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         body: fd,
       });
 

@@ -326,8 +326,8 @@ export default function TermsOfUsePage() {
             </div>
 
             <p className="text-gray-600 leading-8">
-              The platform is provided on an <strong>"as is"</strong> and{" "}
-              <strong>"as available"</strong> basis. TriMerge
+              The platform is provided on an <strong>&quot;as is&quot;</strong> and{" "}
+              <strong>&quot;as available&quot;</strong> basis. TriMerge
               makes no express or implied warranties regarding
               the availability, reliability, accuracy, or
               uninterrupted operation of the platform.

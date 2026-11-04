@@ -176,6 +176,7 @@ test('employer: job location uses local data and a free-text city (#43)', async 
 // ---------------- Phase 2 (M7 / M8) ----------------
 
 test('candidate: account menu reaches every candidate page (#49)', async ({ page }) => {
+  test.setTimeout(180_000); // five pages, each with an axe scan
   await signIn(page, 'candidate');
   await page.goto('/applications');
   const menuButton = page.getByRole('button', { name: /My account/ });
@@ -284,4 +285,26 @@ test('employer: upload a company logo (#53)', async ({ page }) => {
   await page.getByLabel(/Upload a logo|Replace logo/).setInputFiles({ name: 'logo.png', mimeType: 'image/png', buffer: png });
   await expect(page.getByText('Logo updated.', { exact: false })).toBeVisible();
   await expectAccessible(page);
+});
+
+test('employer: departments match TriMerge sectors (#62)', async ({ page }) => {
+  await signIn(page, 'employer');
+  await page.goto('/employer-dashboard');
+  await page.getByRole('button', { name: 'Post a Job' }).click();
+  const department = page.locator('select').filter({ hasText: 'Government & Public Sector' }).first();
+  await expect(department).toBeVisible();
+  await department.selectOption('EMERGENCY_MANAGEMENT');
+  await expect(department.locator('option', { hasText: 'Marketing' })).toHaveCount(0);
+});
+
+test('candidate: resume picker in the application form is keyboard accessible (#24, #63)', async ({ page }) => {
+  await signIn(page, 'candidate');
+  await page.goto('/browse-jobs');
+  await page.getByText(jobTitle).first().click();
+  await page.getByRole('button', { name: 'Apply Now' }).click();
+  await expect(page.getByRole('button', { name: /Resume: choose a file/ })).toBeVisible({ timeout: 15_000 });
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: /Resume: choose a file/ }).focus();
+  await page.keyboard.press('Enter');
+  await chooser;
 });

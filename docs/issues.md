@@ -27,11 +27,20 @@ broken), **Medium** (degraded feature or hardening gap), **Low** (cosmetic / con
 | D17 | Low | Web · content | Brand written both "TriMergePro" and "TriMergePRO" | Fixed | #15 |
 | D18 | Low | Web · footer | Legal links were relative (`privacy-policy`) and broke on nested pages | Fixed | #10 |
 | D19 | Low | Web · login | Admin accounts had no destination after login | Fixed | #9 |
-| D20 | Medium | API · jobs | Job departments limited to ENGINEERING / MARKETING / HR / SALES / DESIGN / OPERATIONS, which does not match the sectors on the homepage (government, healthcare, finance…) | Open — needs a business decision on the list | – |
-| D21 | Medium | Web · auth | Access and refresh tokens stored in `localStorage` (exposed to XSS) | Open — architectural change, needs approval | – |
-| D22 | Low | Web · lint | ESLint reports pre-existing errors (CI step is non-blocking) | Open | – |
-| D23 | Medium | API · uploads | Local upload URLs are unguessable but not authenticated | Open — use signed URLs before launch | #21 |
+| D20 | Medium | API · jobs | Job departments limited to ENGINEERING / MARKETING / HR / SALES / DESIGN / OPERATIONS, which does not match the sectors on the homepage (government, healthcare, finance…) | Fixed — 12 sectors from the homepage; old values still accepted | #62 |
+| D21 | Medium | Web · auth | Access and refresh tokens stored in `localStorage` (exposed to XSS) | Open — architectural change, needs approval | #69 |
+| D22 | Low | Web · lint | ESLint reports pre-existing errors (CI step is non-blocking) | Fixed — 0 errors, lint blocking in CI | #63 |
+| D23 | Medium | API · uploads | Local upload URLs are unguessable but not authenticated | Fixed — authenticated download route | #59 |
 | D24 | High | Web · candidate | "My applications" page showed hard-coded sample applications and never called the API | Fixed (real data, real statuses) | #36 |
 | D25 | High | Web · employer | On phones the "Post a Job" wizard was cut off and its Next button was off-screen (dashboard wider than the screen; flex scroll area without `min-height: 0`) | Fixed | #31 |
 | D26 | Medium | Web · a11y | 57 text elements in light grey `#94a3b8` (2.56:1 contrast) on logged-in pages | Fixed (`#64748b`, 4.76:1) | #24 |
 | D27 | Low | Web · jobs | Job location called an external API (countriesnow.space) from the browser | Fixed (local list, free-text city) | #43 |
+| D28 | Critical | Web · employer | Employers could not change an application status (no UI for `PATCH /applications/:id/status`) | Fixed | #47 |
+| D29 | High | Web · candidate | No candidate menu; "My applications" only reachable by URL; no profile page after onboarding | Fixed | #49, #50 |
+| D30 | High | Web · sessions | 15-minute access token never refreshed: users signed out mid-task | Fixed (SessionKeeper + authFetch) | #55 |
+| D31 | Medium | API · auth | Logout did not revoke the refresh token | Fixed | #56 |
+| D32 | Medium | Web · settings | Change-password page was a mockup; changing the password also signed the current device out | Fixed | #57 |
+| D33 | Medium | API · privacy | Deleting an account left uploaded files on disk | Fixed | #58 |
+| D34 | Medium | Web · a11y | Resume picker in the application form was a clickable div (not keyboard accessible); editor toolbar ignored Enter/Space | Fixed | #63 |
+| D35 | Low | Web · UX | Visitors could fill the whole application form before being told to log in | Fixed | #47 |
+

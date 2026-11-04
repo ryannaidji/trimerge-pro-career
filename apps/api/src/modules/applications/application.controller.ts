@@ -29,19 +29,6 @@ export const createApplication = async (
   }
 };
 
-export const createApplicationOld = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await applicationService.create(
-      req.user?.userId ?? null,
-      req.body,
-      req.file as Express.Multer.File | undefined
-    );
-
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-};
 
 export const getMyApplications = async (req: Request, res: Response, next: NextFunction) => {
   try {

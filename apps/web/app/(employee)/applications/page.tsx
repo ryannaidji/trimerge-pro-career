@@ -3,6 +3,7 @@
 // My applications: real data from GET /api/v1/applications/my-applications.
 // Previously this page displayed hard-coded sample applications and never called the API.
 import { useEffect, useState } from 'react';
+import { departmentLabel } from '@/app/util/departments';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Briefcase, MapPin, Clock, CheckCircle2, XCircle, Star, Eye } from 'lucide-react';
@@ -50,7 +51,7 @@ function ApplicationCard({ app, past = false }: { app: Application; past?: boole
           <Heading style={{ margin: '0 0 8px' }}>{app.job?.title || 'Job no longer available'}</Heading>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 15, color: '#475569', flexWrap: 'wrap' }}>
             {app.job?.department && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Briefcase className="w-4 h-4" aria-hidden="true" />{titleCase(app.job.department)}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Briefcase className="w-4 h-4" aria-hidden="true" />{departmentLabel(app.job.department)}</span>
             )}
             {app.job?.location && (
               <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><MapPin className="w-4 h-4" aria-hidden="true" />{app.job.location}</span>

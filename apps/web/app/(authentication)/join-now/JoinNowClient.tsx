@@ -14,7 +14,7 @@ export default function JoinNowClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const initialRole: 'Candidate' = 'Candidate';
+    const initialRole = 'Candidate' as const;
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
