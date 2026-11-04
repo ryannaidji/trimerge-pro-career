@@ -88,6 +88,12 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     return;
   }
 
+  // Invalid MongoDB ObjectId in a URL parameter (e.g. /jobs/not-an-id)
+  if (err?.name === 'CastError') {
+    res.status(400).json({ message: 'Invalid identifier' });
+    return;
+  }
+
   // Upload errors from multer (file too large, unexpected field...)
   if (err?.name === 'MulterError') {
     res.status(400).json({ message: err.message });

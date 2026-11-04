@@ -230,7 +230,7 @@ export const applicationService = {
 
   const application = await ApplicationModel.create({
     jobId: input.jobId,
-    //candidateId,
+    candidateId,
     coverLetter: finalCoverLetter,
     status: 'PENDING',
 

@@ -313,6 +313,12 @@ export const authService = {
       throw new AppError('Invalid refresh token', 401);
     }
 
+    // Suspended or deleted accounts cannot get new access tokens
+    const tokenOwner = await UserModel.findById(decoded.userId).select('status');
+    if (!tokenOwner || tokenOwner.status !== 'ACTIVE') {
+      throw new AppError('Account is not active', 403);
+    }
+
     const accessOptions: SignOptions = {
       expiresIn: env.JWT_ACCESS_EXPIRES_IN as SignOptions['expiresIn'],
     };

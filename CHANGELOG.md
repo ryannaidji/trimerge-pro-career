@@ -16,6 +16,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `robots.txt` and a sitemap generated with Next.js metadata routes, listing public pages only (#12).
 - Page titles and meta descriptions for every route, with a `%s | TriMergePRO Careers` template and Open Graph defaults; private pages are `noindex` (#13).
 - Security headers on the web app: CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, COOP; `X-Powered-By` removed (#18).
+- Admin dashboard at `/admin`: search and filter users, suspend/reactivate/delete accounts, search jobs and change their status; admins are redirected there after login (#9).
+- `create-admin` script to create or promote an administrator (`apps/api/src/scripts/create-admin.ts`) (#9).
+- `scripts/e2e-workflows.mjs`: 31 end-to-end checks of the candidate, employer, visitor, admin and access-control workflows against the Docker stack (#6).
+- `scripts/backup-db.sh` / `scripts/restore-db.sh` and `docs/backup-and-recovery.md`; restore verified (#25).
+- `docs/security-review.md` (route authorization matrix) and `docs/issues.md` (defect log) (#8, #19).
 - Rate limiting: 10 attempts / 15 min per IP + email on login, registration, OTP and password reset; 600 requests / min per IP on the whole API (#20).
 - Docker: `Dockerfile` for `apps/api` and `apps/web`, `docker-compose.yml` with MongoDB (#26).
 - Adapter route running the Netlify Functions outside Netlify (#27).
@@ -34,6 +39,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - User-controlled values (job title, status) are HTML-escaped in notification emails.
 - JSON request bodies are limited to 1 MB.
 - `POST /api/v1/applications` required no authentication (auth was commented out); it now requires a signed-in candidate (#19).
+- Applications were saved without `candidateId` (commented out), so candidates never saw their applications.
+- Suspended users could keep refreshing tokens for 7 days; refresh now requires an active account and suspension revokes all refresh tokens.
+- Search filters escape user input before using `$regex` (ReDoS); invalid ObjectIds return 400 instead of 500.
 - `GET /api/v1/candidates/:id` (personal data) is restricted to employers and admins (#19).
 - Uploads are validated by content (magic bytes), not only by extension and browser MIME type; uploaded files are served with `nosniff`, a sandbox CSP and `Content-Disposition: attachment` for documents (#21).
 - The web app falls back to the local API instead of the production API when `NEXT_PUBLIC_API_URL` is missing.

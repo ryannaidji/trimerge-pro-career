@@ -8,6 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       // Private areas and API adapters should not be crawled (#12)
       disallow: [
+        "/admin",
         "/api/",
         "/.netlify/",
         "/employer-dashboard",
