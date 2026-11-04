@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Storage abstraction (`apps/api/src/lib/storage.ts`) with a local disk driver (`STORAGE_DRIVER=local`) next to Cloudinary; files get random names.
 - API tests for the local storage driver, error handling and CORS (26 tests in total).
 - `docs/local-development.md`.
+- Equal Employment Opportunity Statement page at `/eeo-statement`, linked from the footer (#10).
+- `robots.txt` and a sitemap generated with Next.js metadata routes, listing public pages only (#12).
+- Page titles and meta descriptions for every route, with a `%s | TriMergePRO Careers` template and Open Graph defaults; private pages are `noindex` (#13).
+- Security headers on the web app: CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, COOP; `X-Powered-By` removed (#18).
+- Rate limiting: 10 attempts / 15 min per IP + email on login, registration, OTP and password reset; 600 requests / min per IP on the whole API (#20).
 - Docker: `Dockerfile` for `apps/api` and `apps/web`, `docker-compose.yml` with MongoDB (#26).
 - Adapter route running the Netlify Functions outside Netlify (#27).
 - GitHub Actions CI (API tests and build, web typecheck and build, Docker builds) (#28) and CD publishing images to GHCR (#29).
@@ -28,8 +33,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - CORS: `*` is rejected and production origins must be HTTPS; default allowlist reduced to the web origin (#23).
 - User-controlled values (job title, status) are HTML-escaped in notification emails.
 - JSON request bodies are limited to 1 MB.
+- `POST /api/v1/applications` required no authentication (auth was commented out); it now requires a signed-in candidate (#19).
+- `GET /api/v1/candidates/:id` (personal data) is restricted to employers and admins (#19).
+- Uploads are validated by content (magic bytes), not only by extension and browser MIME type; uploaded files are served with `nosniff`, a sandbox CSP and `Content-Disposition: attachment` for documents (#21).
+- The web app falls back to the local API instead of the production API when `NEXT_PUBLIC_API_URL` is missing.
 
 ### Changed
+- Brand name unified to "TriMergePRO" across the web app (#15).
+- About page: removed placeholder and unverified copy (fake benefits, developer jargon); homepage no longer calls the platform a firm (#14).
+- Footer legal links are now absolute, so they work from nested pages.
+- Docker Compose: MongoDB published on `127.0.0.1:27018` only, uploads volume, local email/storage drivers.
 - Mailgun and Cloudinary variables are now optional; they are only required when their driver is selected.
 
 ### Fixed

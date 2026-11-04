@@ -59,7 +59,7 @@ describe('Resume service', () => {
     });
 
     const result = await resumeService.upload('user-id', {
-      buffer: Buffer.from('resume content'),
+      buffer: Buffer.from('%PDF-1.4 resume content'),
       originalname: 'my resume.pdf',
       mimetype: 'application/pdf',
       size: 123,

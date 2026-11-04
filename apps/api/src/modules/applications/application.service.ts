@@ -105,19 +105,19 @@ export const applicationService = {
   resumeFile?: Express.Multer.File,
   coverLetterFile?: Express.Multer.File
 ) {
-  // if (!candidateId) {
-  //   throw new AppError('Authentication required', 401);
-  // }
+  if (!candidateId) {
+    throw new AppError('Authentication required', 401);
+  }
 
-  // const user = await UserModel.findById(candidateId);
+  const user = await UserModel.findById(candidateId);
 
-  // if (!user) {
-  //   throw new AppError('User not found', 404);
-  // }
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
 
-  // if (user.accountType !== 'TALENT') {
-  //   throw new AppError('Forbidden', 403);
-  // }
+  if (user.accountType !== 'TALENT') {
+    throw new AppError('Forbidden', 403);
+  }
 
   const job = await JobModel.findById(input.jobId);
 
@@ -159,7 +159,8 @@ export const applicationService = {
 
       resumeFileUrl = uploadedResume.secure_url;
       resumePublicId = uploadedResume.public_id;
-    } catch {
+    } catch (error) {
+      if (error instanceof AppError) throw error;
       throw new AppError('Failed to upload resume', 500);
     }
   }
@@ -196,7 +197,8 @@ export const applicationService = {
 
       coverLetterFileUrl = uploadedCoverLetter.secure_url;
       coverLetterPublicId = uploadedCoverLetter.public_id;
-    } catch {
+    } catch (error) {
+      if (error instanceof AppError) throw error;
       throw new AppError(
         'Failed to upload cover letter to cloud storage',
         500
@@ -349,7 +351,8 @@ export const applicationService = {
 
         coverLetterFileUrl = uploadedCoverLetter.secure_url;
         coverLetterPublicId = uploadedCoverLetter.public_id;
-      } catch (_error) {
+      } catch (error) {
+        if (error instanceof AppError) throw error;
         throw new AppError('Failed to upload cover letter to cloud storage', 500);
       }
 

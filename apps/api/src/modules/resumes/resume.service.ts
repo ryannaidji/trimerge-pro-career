@@ -39,7 +39,8 @@ export const resumeService = {
 
     try {
       uploadedFile = await storeFile(file, 'resumes');
-    } catch (_error) {
+    } catch (error) {
+      if (error instanceof AppError) throw error;
       throw new AppError('Failed to upload resume to cloud storage', 500);
     }
 

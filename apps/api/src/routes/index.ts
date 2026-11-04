@@ -11,12 +11,29 @@ import adminRouter from '../modules/admin/admin.routes';
 import dashboardRouter from '../modules/dashboard/dashboard.routes';
 import settingsRouter from '../modules/settings/settings.routes';
 import publicJobsRouter from '../modules/jobs/public-jobs.routes';
+import { authLimiter } from '../middleware/rate-limit';
 
 const router = Router();
 
 router.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'api' });
 });
+
+// Brute-force protection on login, registration, OTP and password reset (#20)
+const sensitiveAuthPaths = [
+  '/api/v1/auth/login',
+  '/api/v1/auth/register',
+  '/api/v1/auth/verify-otp',
+  '/api/v1/auth/verify-email',
+  '/api/v1/auth/resend-otp',
+  '/api/v1/auth/resend-email',
+  '/api/v1/auth/forgot-password',
+  '/api/v1/auth/reset-password',
+  '/api/v1/onboarding/register',
+  '/api/v1/onboarding/verify-email',
+  '/api/v1/onboarding/resend-verification',
+];
+router.post(sensitiveAuthPaths, authLimiter);
 
 router.use('/api/v1/auth', authRouter);
 router.use('/api/v1/onboarding', onboardingRouter);

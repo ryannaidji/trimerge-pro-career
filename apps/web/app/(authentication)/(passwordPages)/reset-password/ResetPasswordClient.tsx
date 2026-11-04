@@ -57,7 +57,7 @@ export default function ResetPasswordClient() {
         <AuthShell
             eyebrow="Secure password reset"
             title="Create a new password in a secure step."
-            subtitle="Use the reset code from your email to prove ownership and set a new password for your TriMergePro Careers account."
+            subtitle="Use the reset code from your email to prove ownership and set a new password for your TriMergePRO Careers account."
             bullets={[
                 'The reset flow is aligned with the backend OTP endpoint.',
                 'Use the email address tied to the account you want to recover.',

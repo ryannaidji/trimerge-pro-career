@@ -51,9 +51,11 @@ const _env = envSchema
         if (!val[key]) ctx.addIssue({ code: 'custom', path: [key], message: `${key} is required when MAIL_DRIVER=mailgun` });
       }
     }
-    // CORS must be an explicit allowlist; in production only HTTPS origins (#23)
+    // CORS must be an explicit allowlist; in production only HTTPS origins,
+    // except localhost so the Docker stack can run in production mode locally (#23)
+    const isLocalhost = (origin: string) => /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
     for (const origin of val.CORS_ORIGIN) {
-      if (origin === '*' || (val.NODE_ENV === 'production' && !origin.startsWith('https://'))) {
+      if (origin === '*' || (val.NODE_ENV === 'production' && !origin.startsWith('https://') && !isLocalhost(origin))) {
         ctx.addIssue({ code: 'custom', path: ['CORS_ORIGIN'], message: `Invalid CORS origin "${origin}"` });
       }
     }

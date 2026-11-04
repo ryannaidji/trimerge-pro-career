@@ -41,7 +41,8 @@ export const settingsLogoService = {
 
     try {
       uploadedFile = await storeFile(file, 'company-logos');
-    } catch {
+    } catch (error) {
+      if (error instanceof AppError) throw error;
       throw new AppError('Failed to upload company logo to cloud storage', 500);
     }
 

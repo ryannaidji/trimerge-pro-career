@@ -6,9 +6,10 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import { allowedOrigins } from './config/env';
+import { env, allowedOrigins } from './config/env';
 import { swaggerSpec } from './config/swagger';
 import rootRouter from './routes';
+import { apiLimiter } from './middleware/rate-limit';
 
 class CorsError extends Error {
   constructor() {
@@ -17,6 +18,9 @@ class CorsError extends Error {
 }
 
 const app = express();
+
+// Behind one reverse proxy (Docker/Render/Netlify): use X-Forwarded-For for req.ip
+app.set('trust proxy', 1);
 
 app.use(helmet());
 app.use(cors({
@@ -29,8 +33,24 @@ app.use(cors({
   },
   credentials: true
 }));
+app.use(apiLimiter);
 app.use(express.json({ limit: '1mb' }));
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+// Locally stored uploads (#21): never executed or sniffed; documents are downloaded, not rendered
+app.use(
+  '/uploads',
+  express.static(path.resolve(process.cwd(), env.UPLOADS_DIR), {
+    dotfiles: 'deny',
+    index: false,
+    setHeaders: (res, filePath) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      if (!/\.(png|jpe?g|webp)$/i.test(filePath)) {
+        res.setHeader('Content-Disposition', 'attachment');
+      }
+    },
+  })
+);
 app.use(cookieParser());
 app.use(morgan('dev'));
 

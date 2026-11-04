@@ -34,3 +34,12 @@ docker compose logs -f api   # look for "📧 [email:console]"
 - Error responses never contain stack traces; they are logged server side only.
 - CORS is an explicit allowlist (`CORS_ORIGIN`); `*` is rejected and production
   origins must use HTTPS.
+
+## Security controls (summary)
+
+| Control | Where |
+|---|---|
+| Rate limiting (auth: 10 / 15 min per IP + email; API: 600 / min per IP) | `apps/api/src/middleware/rate-limit.ts` |
+| Role checks on every private route (see `docs/security-review.md`) | `apps/api/src/modules/*/*.routes.ts` |
+| Upload content validation (magic bytes) | `apps/api/src/lib/storage.ts` |
+| Web security headers (CSP, HSTS, frame, referrer) | `apps/web/next.config.ts` |

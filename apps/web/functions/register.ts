@@ -12,7 +12,6 @@ export const handler = async (event: any) => {
 
     try{
         const response = await fetch(`${process.env.BASEURL}/api/v1/onboarding/register`, {
-        //const response = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/onboarding/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
