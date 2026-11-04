@@ -14,10 +14,18 @@ export default defineConfig({
   use: {
     baseURL: process.env.WEB_URL || 'http://localhost:3000',
     trace: 'retain-on-failure',
-    ...(channel ? { channel } : {}),
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], ...(channel ? { channel } : {}) } },
     { name: 'mobile', use: { ...devices['Pixel 7'], ...(channel ? { channel } : {}) } },
+    // Cross-browser run for regression testing (#36): ALL_BROWSERS=1 npx playwright test
+    // (first: npx playwright install firefox webkit). WebKit is the engine behind Safari.
+    ...(process.env.ALL_BROWSERS
+      ? [
+          { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+          { name: 'safari-desktop', use: { ...devices['Desktop Safari'] } },
+          { name: 'safari-iphone', use: { ...devices['iPhone 14'] } },
+        ]
+      : []),
   ],
 });

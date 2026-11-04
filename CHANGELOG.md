@@ -27,6 +27,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Resume pre-fill without AI: `POST /api/v1/resumes/parse` extracts email, phone, LinkedIn, headline, years of experience, skills and summary with rules (nothing stored); onboarding steps 1 and 2 pre-fill empty fields (#34).
 - AI matching safeguards: skipped instead of failing when no OpenAI key, monthly cap `AI_MATCHING_MONTHLY_LIMIT`, clear 400 on retry when disabled, "advisory only" notice; `docs/ai.md` (#33).
 - Playwright browser smoke tests in `e2e/` (32 tests, desktop and mobile) and a CI `e2e` job that starts the Docker stack and runs the workflow checks and the browser tests (#44).
+- Cross-browser regression run (Chrome, Edge, Firefox, WebKit desktop and iPhone): `docs/testing-results.md` (#36); `ALL_BROWSERS=1` Playwright projects.
+- `docs/final-report.md`: completion report, remaining issues and launch recommendation (#38).
 - Login inputs have `name` and `autocomplete` attributes (password managers, accessibility).
 - Rate limiting: 10 attempts / 15 min per IP + email on login, registration, OTP and password reset; 600 requests / min per IP on the whole API (#20).
 - Docker: `Dockerfile` for `apps/api` and `apps/web`, `docker-compose.yml` with MongoDB (#26).
@@ -57,6 +59,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - "Ask TriMerge AI" widget renamed "Ask TriMerge": typed questions are now answered from a built-in FAQ (14 topics, keyword matching in the browser, no AI provider, no cost, no data sent) instead of a canned "I can't answer yet" reply (#35).
 - Privacy policy: added Service Providers, Resume Processing and Automated Tools, and Data Retention sections; removed claims about analytics cookies the platform does not use; account deletion is by request (#11). Draft, needs legal review.
 - Error messages are announced to screen readers (`role="alert"`) and no longer disappear after 3.5 s on sign-up; blocking `alert()` removed (#32).
+- The decorative auth card animation plays once (4.5 s) instead of forever (WCAG 2.2.2; it also blocked automated clicks in WebKit).
 - Accessibility: sequential headings, contrast fix, 40 px password toggles, labels on search/password/OTP fields, always-visible keyboard focus, reduced-motion support (#24).
 - Responsive: browse jobs stacks on phones with a full-screen job panel; stacked search bar; navbar buttons no longer wrap (#31).
 - Brand name unified to "TriMergePRO" across the web app (#15).

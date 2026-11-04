@@ -54,7 +54,8 @@ test('login shows an accessible error for wrong credentials', async ({ page }) =
 
 test('admin page sends anonymous visitors to login (#9)', async ({ page }) => {
   await page.goto('/admin');
-  await expect(page).toHaveURL(/\/login$/);
+  // Client-side redirect; the Windows WebKit build is slow, so allow more time
+  await expect(page).toHaveURL(/\/login$/, { timeout: 15_000 });
 });
 
 test('help assistant answers from the FAQ (#35)', async ({ page }) => {

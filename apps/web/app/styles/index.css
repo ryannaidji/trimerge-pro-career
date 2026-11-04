@@ -351,7 +351,9 @@ select:focus-visible,
 }
 
 .tp-float {
-  animation: floatSlow 7s ease-in-out infinite;
+  /* Plays once and stays under 5 s: endless motion next to a form breaks WCAG 2.2.2
+     (Pause, Stop, Hide) and kept the form moving (#24, #36). Was: 7s infinite. */
+  animation: floatSlow 4.5s ease-in-out 1;
 }
 
 .tp-sector-tile {
