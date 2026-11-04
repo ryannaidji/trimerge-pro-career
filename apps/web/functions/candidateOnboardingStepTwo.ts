@@ -11,7 +11,6 @@ export const handler = async (event: any) => {
     // Detect content-type. If multipart, proxy raw body to backend keeping headers.
     const contentType = event.headers?.['content-type'] || event.headers?.['Content-Type'] || '';
     const token = event.headers?.authorization?.replace('Bearer ', '') || '';
-    console.log(token)
 
 
     try {
@@ -28,8 +27,6 @@ export const handler = async (event: any) => {
             });
 
             const data = await response.json();
-            console.log("Response from API:", response);
-            console.log("Data from API: ", data)
             if (!response.ok) {
                 throw new Error(data.message || data.error || 'Could not complete onboarding step 2');
             }
@@ -43,7 +40,6 @@ export const handler = async (event: any) => {
         // Fallback: expect JSON body
         const parsed = JSON.parse(event.body || '{}');
         const { phoneNumber, location, jobTitleOrDesiredRole, yearsOfExperience, linkedinUrl, resumeUrl } = parsed;
-        console.log("Parsed body:", parsed);
 
         const response = await fetch(`${process.env.BASEURL}/api/v1/onboarding/candidate/step-2`, {
             method: 'POST',
@@ -71,7 +67,7 @@ export const handler = async (event: any) => {
             body: JSON.stringify(data),
         };
         } catch (err: unknown) {
-            console.log(err);
+            console.error(err);
             const message = err instanceof Error ? err.message : String(err);
             return {
                 statusCode: 500,

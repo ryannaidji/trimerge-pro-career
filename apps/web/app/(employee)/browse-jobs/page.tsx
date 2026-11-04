@@ -455,7 +455,6 @@ function BrowseJobs() {
       status: statusInput,
     }
 
-    console.log(payload)
 
     const res = await createJob(payload)
     if (res) {

@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import path from 'path';
-import streamifier from 'streamifier';
 import { AppError } from '../../utils/app-error';
 import { UserModel } from '../users/user.model';
 import { JobModel } from '../jobs/job.model';
@@ -10,21 +9,12 @@ import {
   sendApplicationStatusUpdatedEmail,
   sendNewApplicationNotificationEmail,
 } from '../../lib/mailgun';
-import { cloudinary } from '../../lib/cloudinary';
+import { storeFile, StoredFile } from '../../lib/storage';
 import { aiMatchService } from '../ai-matching/ai-match.service';
 import { CandidateProfileModel } from '../candidates/candidate.model';
 import { AiMatchEvaluationModel } from '../ai-matching/ai-match.model';
 import { extractResumeText } from '../resumes/resume-parser.service';
 import { formatApplication, formatJob } from '../../utils/response-formatters';
-
-type CloudinaryUploadResult = {
-  secure_url: string;
-  public_id: string;
-  resource_type: string;
-  bytes: number;
-  format: string;
-  original_filename?: string;
-};
 
 type GetApplicationsForJobOptions = {
   page?: number;
@@ -89,64 +79,6 @@ function sanitizeOriginalName(filename: string) {
     .trim()
     .replace(/\s+/g, '-')
     .replace(/[^a-zA-Z0-9.\-_]/g, '');
-}
-
-function uploadCoverLetterToCloudinary(file: Express.Multer.File): Promise<CloudinaryUploadResult> {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'trimerge/cover-letters',
-        resource_type: 'raw',
-        use_filename: true,
-        unique_filename: true,
-        overwrite: false,
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        if (!result) {
-          reject(new Error('Cloudinary upload failed'));
-          return;
-        }
-
-        resolve(result as CloudinaryUploadResult);
-      }
-    );
-
-    streamifier.createReadStream(file.buffer).pipe(uploadStream);
-  });
-}
-
-function uploadResumeToCloudinary(file: Express.Multer.File): Promise<CloudinaryUploadResult> {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'trimerge/resumes',
-        resource_type: 'raw',
-        use_filename: true,
-        unique_filename: true,
-        overwrite: false,
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        if (!result) {
-          reject(new Error('Cloudinary upload failed'));
-          return;
-        }
-
-        resolve(result as CloudinaryUploadResult);
-      }
-    );
-
-    streamifier.createReadStream(file.buffer).pipe(uploadStream);
-  });
 }
 
 function buildFinalCoverLetterText(input: {
@@ -223,7 +155,7 @@ export const applicationService = {
     resumeExtension = path.extname(resumeFile.originalname).toLowerCase();
 
     try {
-      const uploadedResume = await uploadResumeToCloudinary(resumeFile);
+      const uploadedResume = await storeFile(resumeFile, 'resumes');
 
       resumeFileUrl = uploadedResume.secure_url;
       resumePublicId = uploadedResume.public_id;
@@ -260,7 +192,7 @@ export const applicationService = {
 
     try {
       const uploadedCoverLetter =
-        await uploadCoverLetterToCloudinary(coverLetterFile);
+        await storeFile(coverLetterFile, 'cover-letters');
 
       coverLetterFileUrl = uploadedCoverLetter.secure_url;
       coverLetterPublicId = uploadedCoverLetter.public_id;
@@ -413,7 +345,7 @@ export const applicationService = {
       coverLetterExtension = path.extname(coverLetterFile.originalname).toLowerCase();
 
       try {
-        const uploadedCoverLetter = await uploadCoverLetterToCloudinary(coverLetterFile);
+        const uploadedCoverLetter = await storeFile(coverLetterFile, 'cover-letters');
 
         coverLetterFileUrl = uploadedCoverLetter.secure_url;
         coverLetterPublicId = uploadedCoverLetter.public_id;

@@ -67,7 +67,6 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
       // Wait for animation to finish before unmounting
       setTimeout(() => setShouldRender(false), 300);
     }
-    console.log(job)
   }, [job]);
 
   // Close on Escape

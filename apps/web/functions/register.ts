@@ -29,7 +29,6 @@ export const handler = async (event: any) => {
         });
   
         const data = await response.json();
-        console.log("Response from API:", data.message);
         if (!response.ok) {
             throw new Error(data.message);
         }
@@ -39,7 +38,7 @@ export const handler = async (event: any) => {
             body: JSON.stringify(data),
         };
     } catch (error: unknown) {
-        console.log(error)
+        console.error(error)
         const message = error instanceof Error ? error.message : String(error)
         return {
             statusCode: 500,

@@ -91,9 +91,6 @@ export const authService = {
     await invalidateUnusedOtps(user._id, 'VERIFY_EMAIL');
 
     const otp = generateOtp();
-    if (env.NODE_ENV === 'development') {
-      console.log('DEV OTP:', otp);
-    }
 
     const codeHash = hashOtp(otp);
     const expiresAt = getOtpExpiryDate();
@@ -175,9 +172,6 @@ export const authService = {
     await invalidateUnusedOtps(user._id, input.type);
 
     const otp = generateOtp();
-    if (env.NODE_ENV === 'development') {
-      console.log('DEV OTP:', otp);
-    }
 
     const codeHash = hashOtp(otp);
     const expiresAt = getOtpExpiryDate();
@@ -251,9 +245,6 @@ export const authService = {
     await invalidateUnusedOtps(user._id, 'RESET_PASSWORD');
 
     const otp = generateOtp();
-    if (env.NODE_ENV === 'development') {
-      console.log('DEV OTP:', otp);
-    }
 
     const codeHash = hashOtp(otp);
     const expiresAt = getOtpExpiryDate();

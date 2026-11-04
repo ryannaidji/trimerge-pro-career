@@ -109,9 +109,6 @@ export const onboardingService = {
     await invalidateUnusedVerificationOtps(user._id);
 
     const otp = generateOtp();
-    if (env.NODE_ENV === 'development') {
-      console.log('DEV OTP:', otp);
-    }
 
     await OtpCodeModel.create({
       userId: user._id,
@@ -209,9 +206,6 @@ export const onboardingService = {
     await invalidateUnusedVerificationOtps(user._id);
 
     const otp = generateOtp();
-    if (env.NODE_ENV === 'development') {
-      console.log('DEV OTP:', otp);
-    }
 
     await OtpCodeModel.create({
       userId: user._id,
