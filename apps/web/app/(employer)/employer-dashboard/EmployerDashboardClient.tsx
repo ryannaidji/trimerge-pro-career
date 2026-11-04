@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "@/app/util/apiUrl";
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -384,7 +385,7 @@ export function EmployerDashboard() {
         if (!id) return [id, 0] as const;
         try {
           const res = await fetch(
-            `https://trimerge-pro-career.onrender.com/api/v1/applications/job/${encodeURIComponent(id)}?page=1&limit=100`,
+            `${API_URL}/api/v1/applications/job/${encodeURIComponent(id)}?page=1&limit=100`,
             { headers: { Authorization: token ? `Bearer ${token}` : '' } }
           );
           if (!res.ok) return [id, 0] as const;

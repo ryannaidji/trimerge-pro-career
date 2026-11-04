@@ -17,9 +17,12 @@ import {
 const AI_MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
 const AI_MATCHING_ENABLED = process.env.AI_MATCHING_ENABLED !== 'false';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Created on first use so the API can start without OPENAI_API_KEY (AI matching is optional)
+let openaiClient: OpenAI | null = null;
+function getOpenAI() {
+  openaiClient ??= new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return openaiClient;
+}
 
 function createHash(value: unknown) {
   return crypto
@@ -256,7 +259,7 @@ export const aiMatchService = {
     const jobContentHash = createHash(jobSnapshot);
 
     try {
-      const response = await openai.responses.create({
+      const response = await getOpenAI().responses.create({
         model: AI_MODEL,
         input: prompt,
         text: {

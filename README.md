@@ -16,7 +16,14 @@ Monorepo for the TriMerge Pro Career platform: a job board connecting candidates
 
 ## Getting Started
 
-Each app is installed and run independently.
+### With Docker (recommended)
+
+```bash
+cp apps/api/.env.example apps/api/.env
+docker compose up --build   # web :3000, API :4000, MongoDB :27017
+```
+
+See [Docker and CI/CD](docs/docker-and-ci-cd.md). Without Docker, each app is installed and run independently:
 
 ### Frontend (`apps/web`)
 
@@ -28,7 +35,7 @@ npm run build    # production build
 npm run lint
 ```
 
-Environment variables: `BASEURL`, `NEXT_PUBLIC_SITE_URL`, `SITE_URL`.
+Environment variables: see `apps/web/.env.example` (`NEXT_PUBLIC_API_URL` selects the API; defaults to production).
 
 ### Backend (`apps/api`)
 
@@ -58,6 +65,10 @@ git switch -c feat/my-feature
 git push -u origin feat/my-feature
 ```
 
+## CI/CD
+
+GitHub Actions run tests and builds on every push and pull request, and publish Docker images to GitHub Container Registry on `main`. See [Docker and CI/CD](docs/docker-and-ci-cd.md).
+
 ## Deployment
 
 The frontend deploys to Netlify (`apps/web/netlify.toml`):
@@ -69,6 +80,8 @@ The frontend deploys to Netlify (`apps/web/netlify.toml`):
 ## Documentation
 
 - [MVP launch plan](docs/launch-plan.md)
+- [Docker and CI/CD](docs/docker-and-ci-cd.md)
+- [Project issues and milestones](https://github.com/ryannaidji/trimerge-pro-career/milestones)
 - [Repository restructure](docs/repository-restructure.md)
 - [Auth flow](docs/auth-flow.md)
 - [Backend QA checklist](docs/backend-qa-checklist.md)

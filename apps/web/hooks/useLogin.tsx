@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useState, useCallback } from "react";
 import { useUser } from '@/contexts/userContext/userContext';
 
@@ -13,7 +14,7 @@ export const useLogin = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://trimerge-pro-career.onrender.com/api/v1/auth/login", {
+      const res = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -1,0 +1,49 @@
+# Local stack: MongoDB + API + web. Usage: docker compose up --build
+# Set WEB_PORT if port 3000 is taken, e.g. WEB_PORT=3100 docker compose up --build
+# Never point this stack at the production database.
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./apps/api
+    restart: unless-stopped
+    env_file: ./apps/api/.env
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/trimerge-pro-careers
+      CORS_ORIGIN: http://localhost:${WEB_PORT:-3000}
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        # Called from the browser, so it must be reachable from the host
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+        NEXT_PUBLIC_SITE_URL: http://localhost:${WEB_PORT:-3000}
+    restart: unless-stopped
+    environment:
+      # Called server side by the Netlify Functions adapter, inside the Docker network
+      BASEURL: http://api:4000
+      SITE_URL: http://localhost:${WEB_PORT:-3000}
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      - api
+
+volumes:
+  mongo-data:

@@ -1,3 +1,4 @@
+import { API_URL } from "@/app/util/apiUrl";
 import { useCallback, useState } from 'react'
 import { useRefreshToken } from './useAuth'
 
@@ -28,7 +29,7 @@ export const useGetJobs = () => {
       if (params.location) qs.append('location', params.location)
       if (params.search) qs.append('search', params.search)
 
-      const url = `https://trimerge-pro-career.onrender.com/api/v1/jobs${qs.toString() ? `?${qs.toString()}` : ''}`
+      const url = `${API_URL}/api/v1/jobs${qs.toString() ? `?${qs.toString()}` : ''}`
       const token = typeof window !== 'undefined' ? localStorage.getItem('tm_token') : null
       const headers: Record<string, string> = {}
 

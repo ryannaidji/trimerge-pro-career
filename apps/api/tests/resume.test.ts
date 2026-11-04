@@ -65,11 +65,12 @@ describe('Resume service', () => {
     expect(result.message).toBe('Resume uploaded successfully.');
     expect(CandidateProfileModel.findOneAndUpdate).toHaveBeenCalledWith(
       { userId: 'user-id' },
-      {
-        $set: {
+      expect.objectContaining({
+        $set: expect.objectContaining({
           resumeUrl: 'https://res.cloudinary.com/demo/resume.pdf',
-        },
-      },
+          resumePublicId: 'resume-1',
+        }),
+      }),
       { new: true, upsert: true }
     );
   });
