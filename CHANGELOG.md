@@ -74,6 +74,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The web app falls back to the local API instead of the production API when `NEXT_PUBLIC_API_URL` is missing.
 
 ### Changed
+- Privacy policy explains talent-search visibility, the opt-out and that documents are only shared with employers the candidate applies to (#60).
 - "Ask TriMerge AI" widget renamed "Ask TriMerge": typed questions are now answered from a built-in FAQ (14 topics, keyword matching in the browser, no AI provider, no cost, no data sent) instead of a canned "I can't answer yet" reply (#35).
 - Privacy policy: added Service Providers, Resume Processing and Automated Tools, and Data Retention sections; removed claims about analytics cookies the platform does not use; account deletion is by request (#11). Draft, needs legal review.
 - Error messages are announced to screen readers (`role="alert"`) and no longer disappear after 3.5 s on sign-up; blocking `alert()` removed (#32).

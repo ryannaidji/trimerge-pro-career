@@ -33,13 +33,16 @@ docker compose logs -f api             # keep open: verification codes appear as
 1. **Join now → Candidate** in the private window; verify the email.
 2. Step 1: choose the PDF resume, and the phone, job title, experience and LinkedIn **pre-fill** from it (no AI). Step 2: skills and summary are pre-filled too.
 3. Browse jobs, then **Apply** to the employer's job. Applying twice is refused.
-4. **My applications**: the application appears with its status.
+4. **My account** menu → **My applications**: the application appears with its status.
+5. **Recommended jobs** (matched from skills, no AI), **Save job** → **Saved jobs**.
+6. **My profile**: edit skills, replace the resume, turn talent-search visibility on/off. **Settings**: change password.
 
 ## 4. Existing employer (3 min)
 
-1. Back in the employer window: **Candidates**, where the new applicant appears; **shortlist** them.
+1. Back in the employer window: overview numbers on top; **Candidates** → pick the job → see the applicant's profile, cover letter and **resume** (private download); set the status to **Shortlisted**.
 2. Candidate window: the status changes to *Shortlisted* (the email is in the logs).
-3. **Find talent**: search the skill "Cybersecurity" or "NIST" to find candidates who did not apply; no email or resume text is exposed.
+3. **Company** tab: upload a logo, which then shows on the job posting.
+4. **Find talent**: search the skill "Cybersecurity" or "NIST" to find candidates who did not apply; no email or resume text is exposed.
 
 ## 5. Administrator (3 min)
 

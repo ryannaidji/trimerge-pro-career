@@ -49,3 +49,9 @@ Phase 1 milestones M0–M6 are closed; their remaining open issues moved to M10 
 Every issue is done on a `feat/*` or `fix/*` branch with tests (workflow checks plus Playwright and
 axe), merged into `dev`, and closed with a what/how/why/result comment, and the CHANGELOG is
 updated. Everything stays free and local; no production deploy without approval.
+
+## Status (2026-11-04)
+
+M7, M8 and M9 are **complete** (issues #47–#64 closed with comments; CI green).
+Remaining: M10 items that need TriMerge (#1, #3, #30, #37, #39, #65–#68) and the backlog
+(#42, #69, #70), which needs approval because they change the architecture.

@@ -16,7 +16,7 @@ workflows work end to end, and are verified automatically on every push.
 | Admin | API only, no interface; suspension had no real effect | `/admin` dashboard; suspension signs the user out |
 | Security | Secrets in logs, stack traces in responses, no rate limiting, no headers, regex injection | Fixed; see `security-review.md` |
 | Accessibility / SEO | 94–100 accessibility; no titles; wrong sitemap | 100 / 100 / 100 on all public pages |
-| Tests / CI | 20 API tests | 33 API tests + 52 workflow checks + 56 browser tests (with axe), all in CI |
+| Tests / CI | 20 API tests | 33 API tests + 72 workflow checks + 76 browser tests (with axe), all in CI |
 
 ## 2. Completed work (GitHub issues closed on the fork)
 
@@ -29,10 +29,16 @@ workflows work end to end, and are verified automatically on every push.
 
 Every closed issue has a comment explaining what was done, how, why, and the result.
 
+### Phase 2 (feature completion, issues #47–#64)
+- **Employers:** applicant manager with status changes, applicant details, company logo, overview numbers.
+- **Candidates:** account menu, My profile, saved jobs, recommended jobs, search visibility setting.
+- **Accounts:** automatic session renewal, server-side logout, Settings (change password, delete account), private resume downloads, MFA mockups removed.
+- **Quality:** sector-based departments, 0 lint errors with lint blocking in CI, dead code removed.
+
 ## 3. Testing results
 
-See `testing-results.md`. In short: API 33/33, workflows 52/52 (all five user profiles), browser
-tests 56/56 including logged-in pages with axe; also passing on Edge, Firefox and WebKit (Safari engine).
+See `testing-results.md`. In short: API 33/33, workflows 72/72 (all five user profiles), browser
+tests 76/76 including logged-in pages with axe; also passing on Edge, Firefox and WebKit (Safari engine).
 
 ## 4. Remaining issues (need TriMerge input)
 
