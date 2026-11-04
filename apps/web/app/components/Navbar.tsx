@@ -30,31 +30,70 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handler)
   }, [profileOpen])
 
-  // Candidate profile + logout controls (reused in both navbars)
+  // Candidate account menu (#49), reused in both navbars. Accessible menu button:
+  // aria-expanded/aria-controls, Escape closes and returns focus, links close the menu.
+  const candidateLinks = [
+    { href: '/applications', label: 'My applications' },
+    { href: '/recommended-jobs', label: 'Recommended jobs' },
+    { href: '/saved-jobs', label: 'Saved jobs' },
+    { href: '/profile', label: 'My profile' },
+    { href: '/settings', label: 'Settings' },
+  ]
+  const menuButtonRef = React.useRef<HTMLButtonElement>(null)
+  React.useEffect(() => {
+    if (!profileOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setProfileOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [profileOpen])
+
   const CandidateControls = isCandidate ? (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div ref={profileRef} style={{ position: 'relative' }}>
       <button
-        onClick={() => logout()}
-        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid rgba(148,163,184,0.25)', background: 'transparent', color: '#475569', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}
+        ref={menuButtonRef}
+        type="button"
+        onClick={() => setProfileOpen(o => !o)}
+        aria-expanded={profileOpen}
+        aria-controls="candidate-menu"
+        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.3rem 0.75rem 0.3rem 0.3rem', borderRadius: '999px', border: '1px solid rgba(148,163,184,0.3)', background: 'white', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem', color: '#0f172a' }}
       >
-        <LogOut size={14} />
-        Log out
-      </button>
-      <div ref={profileRef} style={{ position: 'relative' }}>
-        <button
-          onClick={() => setProfileOpen(o => !o)}
-          aria-label="Account"
-          style={{ width: '34px', height: '34px', borderRadius: '999px', background: 'linear-gradient(135deg, #07172e, #1d4ed8)', color: 'white', border: 'none', cursor: 'pointer', display: 'grid', placeItems: 'center', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0 }}
-        >
+        <span aria-hidden="true" style={{ width: '30px', height: '30px', borderRadius: '999px', background: 'linear-gradient(135deg, #07172e, #1d4ed8)', color: 'white', display: 'grid', placeItems: 'center', fontWeight: 800, fontSize: '0.75rem' }}>
           {(displayName ?? 'C').charAt(0).toUpperCase()}
-        </button>
-        {profileOpen && (
-          <div style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'white', borderRadius: '12px', boxShadow: '0 8px 24px rgba(15,23,42,0.12)', border: '1px solid rgba(148,163,184,0.18)', padding: '0.75rem 1rem', minWidth: '210px', zIndex: 200 }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>Signed in as</div>
+        </span>
+        My account
+      </button>
+      {profileOpen && (
+        <div id="candidate-menu" style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'white', borderRadius: '12px', boxShadow: '0 8px 24px rgba(15,23,42,0.12)', border: '1px solid rgba(148,163,184,0.18)', padding: '0.5rem', minWidth: '230px', zIndex: 200 }}>
+          <div style={{ padding: '0.4rem 0.6rem 0.6rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.35rem' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Signed in as</div>
             <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all' }}>{user!.email}</div>
           </div>
-        )}
-      </div>
+          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid' }}>
+            {candidateLinks.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  onClick={() => setProfileOpen(false)}
+                  aria-current={pathname === l.href ? 'page' : undefined}
+                  style={{ display: 'block', padding: '0.55rem 0.6rem', borderRadius: '8px', color: '#0f172a', textDecoration: 'none', fontWeight: pathname === l.href ? 800 : 500, background: pathname === l.href ? '#eff6ff' : 'transparent' }}
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <button type="button" onClick={() => { setProfileOpen(false); logout() }} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.55rem 0.6rem', borderRadius: '8px', border: 'none', background: 'transparent', color: '#b91c1c', fontWeight: 600, cursor: 'pointer', fontSize: '1rem' }}>
+                <LogOut size={14} aria-hidden="true" /> Log out
+              </button>
+            </li>
+          </ul>
+        </div>
+      )}
     </div>
   ) : null
 
@@ -92,6 +131,7 @@ function Navbar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               <Link href="/employer-dashboard" className="tp-nav-link nav-emp-dash" style={{ fontSize: '0.875rem' }}>Dashboard</Link>
               <Link href="/talent-search" className="tp-nav-link" style={{ fontSize: '0.875rem' }}>Find talent</Link>
+              <Link href="/settings" className="tp-nav-link nav-emp-dash" style={{ fontSize: '0.875rem' }}>Settings</Link>
               {/* <Link href="/help" className="tp-nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.875rem', color: '#475569' }}>
                 <HelpCircle size={15} />
                 Help
@@ -197,6 +237,11 @@ function Navbar() {
               {navLinks.map((link) => (
                 <Link key={link.href} href={link.href} className="tp-nav-link" onClick={() => setOpen(false)}>
                   {link.label}
+                </Link>
+              ))}
+              {isCandidate && candidateLinks.map((l) => (
+                <Link key={l.href} href={l.href} className="tp-nav-link" onClick={() => setOpen(false)}>
+                  {l.label}
                 </Link>
               ))}
               {!isCandidate && (

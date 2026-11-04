@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { deleteUserFiles } from '../account/account.routes';
 import { adminService } from './admin.service';
 
 export const listAdminUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -27,6 +28,8 @@ export const updateAdminUserStatus = async (req: Request, res: Response, next: N
 
 export const deleteAdminUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Remove the user's uploaded files too (resumes, cover letters, logo), as the privacy policy states
+    await deleteUserFiles(req.params.id);
     const result = await adminService.deleteUser(req.params.id);
     res.status(200).json(result);
   } catch (error) {

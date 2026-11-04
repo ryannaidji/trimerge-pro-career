@@ -5,6 +5,8 @@ import { checkInclusiveLanguage, draftJobDescription } from '@/app/util/jobDescr
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import CompanyLogoUploader from '@/app/components/ui/CompanyLogoUploader';
+import EmployerOverview from '@/app/components/ui/EmployerOverview';
 import { useSearchParams } from 'next/navigation';
 import { BriefcaseBusiness, Building2, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, Users, X } from 'lucide-react';
 import { useUser } from '@/contexts/userContext/userContext';
@@ -922,6 +924,7 @@ export function EmployerDashboard() {
           {/* Jobs tab */}
           {activeTab === 'jobs' && (
             <div>
+              <EmployerOverview />
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.1rem', gap: '0.75rem' }}>
                 <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Your job postings</h2>
                 <button
@@ -1020,7 +1023,7 @@ export function EmployerDashboard() {
 
           {/* Applications tab */}
           {activeTab === 'applications' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(15rem, 18rem) 1fr', gap: '1.25rem', alignItems: 'start' }}>
+            <div className="am-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(15rem, 18rem) 1fr', gap: '1.25rem', alignItems: 'start' }}>
               <div style={{ position: 'sticky', top: '1rem' }}>
                 <p style={{ margin: '0 0 0.65rem', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Select a job</p>
                 <div style={{ display: 'grid', gap: '0.45rem' }}>
@@ -1034,6 +1037,7 @@ export function EmployerDashboard() {
                         key={jobId}
                         type="button"
                         onClick={() => setSelectedJobId(jobId)}
+                        aria-pressed={isActive}
                         style={{
                           textAlign: 'left',
                           padding: '0.75rem 0.9rem',
@@ -1044,7 +1048,7 @@ export function EmployerDashboard() {
                         }}
                       >
                         <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>{job.title ?? 'Untitled job'}</div>
-                        <div style={{ marginTop: '0.2rem', color: '#64748b', fontSize: '0.78rem' }}>{job.department ?? 'General'} · {job.location ?? 'Remote'}</div>
+                        <div style={{ marginTop: '0.2rem', color: '#475569', fontSize: '0.78rem' }}>{job.department ?? 'General'} · {job.location ?? 'Remote'}</div>
                       </button>
                     );
                   })}
@@ -1087,6 +1091,8 @@ export function EmployerDashboard() {
                   )}
                 </div>
               </div>
+
+              <CompanyLogoUploader initialUrl={String(profileRecord['logoUrl'] ?? '')} companyName={companyName} />
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(20rem, 1fr))', gap: '1.25rem', alignItems: 'start' }}>
                 {/* Left: identity + details */}

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/app/util/apiUrl";
 
 // Types
 type Profile = {
@@ -125,6 +126,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
 
   function logout() {
+    // Revoke the refresh token on the server so it cannot be reused (#56); never blocks logout
+    const refreshToken = localStorage.getItem("tm_refresh");
+    if (refreshToken) {
+      fetch(`${API_URL}/api/v1/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+        keepalive: true,
+      }).catch(() => {});
+    }
     localStorage.removeItem("tm_token");
     localStorage.removeItem("tm_user");
     localStorage.removeItem("tm_refresh");

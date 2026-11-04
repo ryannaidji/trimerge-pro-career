@@ -28,11 +28,13 @@ interface Job {
   applicationQuestions?: string[];
   createdAt?: string;
   updatedAt?: string;
+  company?: { name?: string; logoUrl?: string } | null;
 }
 
 import React, { useEffect, useRef, useState } from 'react';
 
 import { useUser } from '@/contexts/userContext/userContext';
+import SaveJobButton from './SaveJobButton';
 
 const isHtml = (text: string) => /<[a-z][\s\S]*>/i.test(text);
 
@@ -154,7 +156,16 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
           <span style={{ display: 'inline-flex', alignItems: 'center', width: 'fit-content', background: 'rgba(37,99,235,0.10)', color: '#2563EB', padding: '6px 12px', borderRadius: 9999, fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
             Job details
           </span>
-          <span style={{fontSize: 'clamp(1.75rem, 3vw, 2.15rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: '#0F172A'}}>{job.title}</span>
+          <h2 style={{margin: 0, fontSize: 'clamp(1.75rem, 3vw, 2.15rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: '#0F172A'}}>{job.title}</h2>
+          {job.company?.name && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10 }}>
+              {job.company.logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element -- logo is served by the API
+                <img src={job.company.logoUrl} alt="" width={36} height={36} style={{ objectFit: 'contain', borderRadius: 8, border: '1px solid #e2e8f0', background: 'white' }} />
+              )}
+              <span style={{ fontWeight: 700, color: '#334155' }}>{job.company.name}</span>
+            </div>
+          )}
         </div>
         <button
           onClick={handleClose}
@@ -204,18 +215,17 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
           </div>
 
           {state.user?.accountType !== 'EMPLOYER' && (
-            <button
-              // onClick={() =>
-              //   state.user?.accountType === 'TALENT'
-              //     ? onApply?.()
-              //     : (window.location.href = '/login')
-              // }
-               onClick={() => onApply?.()
-              }
-              style={{ marginTop: 6, padding: '0.55rem 1.4rem', borderRadius: 10, background: 'linear-gradient(135deg, #1d4ed8, #2563EB)', color: 'white', fontWeight: 600, fontSize: '0.88rem', border: 'none', cursor: 'pointer', alignSelf: 'flex-start' }}
-            >
-              Apply Now
-            </button>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+              <button
+                // Applying requires a candidate account (#19): visitors sign in first instead of
+                // filling the whole form and getting an error at the end
+                onClick={() => (state.user ? onApply?.() : window.location.assign('/login'))}
+                style={{ padding: '0.55rem 1.4rem', borderRadius: 10, background: 'linear-gradient(135deg, #1d4ed8, #2563EB)', color: 'white', fontWeight: 600, fontSize: '0.88rem', border: 'none', cursor: 'pointer' }}
+              >
+                {state.user ? 'Apply Now' : 'Log in to apply'}
+              </button>
+              <SaveJobButton jobId={job._id ?? (job as { id?: string }).id} />
+            </div>
           )}
         </div>
 
