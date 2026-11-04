@@ -45,7 +45,7 @@ export default function EmailExpiredClient() {
           <p className="tp-lead" style={{ marginTop: '0.6rem' }}>If you have access to your inbox, we can send another onboarding message right away.</p>
         </div>
 
-        {error && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
+        {error && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}
 
         <button
           onClick={async () => {

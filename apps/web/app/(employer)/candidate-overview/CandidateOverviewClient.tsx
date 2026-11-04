@@ -188,9 +188,8 @@ export default function CandidateOverviewClient({ jobId: jobIdOverride }: { jobI
       }
     });
 
-  const handleRetry = () => {
-    alert("Re-running AI evaluation...");
-  };
+  // AI matching is disabled until an AI provider is approved (#33); no blocking alert() (#32)
+  const handleRetry = () => {};
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#f8fafc", fontFamily: "sans-serif" }}>

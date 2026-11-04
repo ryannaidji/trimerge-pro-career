@@ -4,7 +4,8 @@ import { useRegister } from '@/hooks/useRegister';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice'
 import { AuthShell } from '../../components/ui/AuthShell';
 import { ChevronRight, Eye, EyeOff, Mail } from 'lucide-react';
 
@@ -70,14 +71,8 @@ export default function JoinNowClient() {
         }
     };
 
-    useEffect(() => {
-        if (!error && !localError) return;
-        const t = setTimeout(() => {
-            setError(null);
-            setLocalError(null);
-        }, 3500);
-        return () => clearTimeout(t);
-    }, [error, localError, setError]);
+    // Errors stay visible until the user changes the form or submits again (WCAG 2.2.1: no
+    // time limit on reading). They used to disappear after 3.5 seconds (#32).
 
     return (
         <AuthShell
@@ -175,12 +170,13 @@ export default function JoinNowClient() {
                     </label>
                 </div>
 
-                {(localError || error) && <div style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{localError || error}</div>}
+                {(localError || error) && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{localError || error}</div>}
 
                 <div style={{ fontSize: '0.92rem', color: 'var(--tp-muted)', lineHeight: 1.6 }}>
                     Password must be at least 8 characters. We will send you to email verification after registration.
                 </div>
 
+                <SlowRequestNotice active={loading} />
                 <button type='submit' disabled={loading} className="tp-btn-primary" style={{ width: '100%', cursor: loading ? 'not-allowed' : 'pointer' }}>
                     {loading ? 'Creating account…' : 'Create account'}
                     {!loading && <ChevronRight size={16} />}
