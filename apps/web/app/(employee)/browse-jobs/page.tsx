@@ -8,6 +8,7 @@ const FALLBACK_COUNTRIES: { country: string; cities?: string[] }[] = [
 
 
 import React, { useState, useEffect, useRef } from 'react';
+import { fetchLocations } from '@/app/util/locations';
 // avoid useSearchParams (requires Suspense boundary) — read from window.location in effects instead
 import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice';
 import { JobCard } from '@/app/components/ui/JobCard';
@@ -270,7 +271,7 @@ function BrowseJobs() {
     if (countriesData || countriesLoading) return
     // defer loading state update to avoid synchronous setState in effect
     setTimeout(() => setCountriesLoading(true), 0)
-    fetch('https://countriesnow.space/api/v0.1/countries')
+    fetchLocations('countries')
       .then(res => res.json())
       .then((json) => {
         const list = Array.isArray(json?.data) ? json.data : null
@@ -303,7 +304,7 @@ function BrowseJobs() {
   setCitiesForState(null)
   setStateProvince('')
 
-    fetch('https://countriesnow.space/api/v0.1/countries/states', {
+    fetchLocations('countries/states', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country }),
@@ -348,7 +349,7 @@ function BrowseJobs() {
   setTimeout(() => setCitiesLoading(true), 0)
   setCitiesForState(null)
 
-    fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+    fetchLocations('countries/state/cities', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country, state: stateProvince }),
@@ -600,7 +601,7 @@ function BrowseJobs() {
           {/* Indeed-style dual search bar */}
           <div className="bj-search" style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: 14, border: '1px solid rgba(148,163,184,0.22)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.12)', marginBottom: 24, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', flex: 1, padding: '0.7rem 1rem', borderRight: '1px solid rgba(148,163,184,0.2)' }}>
-              <svg style={{ width: 18, height: 18, color: '#94a3b8', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+              <svg style={{ width: 18, height: 18, color: '#64748b', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
               <input
                 type="text"
                 placeholder="Job title, keywords, or company"
@@ -611,7 +612,7 @@ function BrowseJobs() {
               />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', flex: 1, padding: '0.7rem 1rem' }}>
-              <svg style={{ width: 18, height: 18, color: '#94a3b8', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              <svg style={{ width: 18, height: 18, color: '#64748b', marginRight: 8, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
               <input
                 type="text"
                 placeholder="City, state, or remote"
@@ -711,7 +712,7 @@ function BrowseJobs() {
                 <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.5rem', letterSpacing: '-0.04em', fontWeight: 800 }}>Create job posting</h2>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Fill in the job details below to publish a new listing.</p>
               </div>
-              <button onClick={closeCreateModal} aria-label="Close create job" style={{ border: 'none', background: 'transparent', padding: '0.25rem', borderRadius: 8, cursor: 'pointer', color: '#94a3b8', fontSize: '1.1rem' }}>✕</button>
+              <button onClick={closeCreateModal} aria-label="Close create job" style={{ border: 'none', background: 'transparent', padding: '0.25rem', borderRadius: 8, cursor: 'pointer', color: '#64748b', fontSize: '1.1rem' }}>✕</button>
             </div>
             <form onSubmit={handleCreateSubmit}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -756,16 +757,7 @@ function BrowseJobs() {
                         ))}
                       </select>
                     ) : (
-                      <select
-                        value={city}
-                        onChange={e => setCity(e.target.value)}
-                        aria-label="Select city or location"
-                        style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff', cursor: 'pointer', appearance: 'none' }}
-                      >
-                        {((countriesData ?? FALLBACK_COUNTRIES).find(c => c.country === country)?.cities ?? []).map(ct => (
-                          <option key={ct} value={ct}>{ct}</option>
-                        ))}
-                      </select>
+                      <input type="text" value={city} onChange={e => setCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff' }} />
                     )}
                   </div>
 
@@ -773,16 +765,7 @@ function BrowseJobs() {
                   {statesForCountry && (
                     <div style={{ gridColumn: '1 / span 2' }}>
                       <label style={{ display: 'block', fontSize: '0.875rem', color: '#4A5568', marginBottom: '0.25rem' }}>City / Location</label>
-                      <select
-                        value={city}
-                        onChange={e => setCity(e.target.value)}
-                        aria-label="Select city or location"
-                        style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff', cursor: 'pointer', appearance: 'none' }}
-                      >
-                        {(citiesForState ?? []).map(ct => (
-                          <option key={ct} value={ct}>{ct}</option>
-                        ))}
-                      </select>
+                      <input type="text" value={city} onChange={e => setCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', border: '1px solid #E2E8F0', padding: 10, borderRadius: 8, background: '#fff' }} />
                     </div>
                   )}
                 </div>

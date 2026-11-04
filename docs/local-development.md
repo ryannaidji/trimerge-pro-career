@@ -49,7 +49,7 @@ docker compose logs -f api   # look for "📧 [email:console]"
 | Suite | Command | What it covers |
 |---|---|---|
 | API unit/integration | `cd apps/api && npm test` | 33 Jest tests (in-memory MongoDB) |
-| Workflows | `node scripts/e2e-workflows.mjs` | 30 checks: candidate, employer, visitor, admin, access control |
-| Browser smoke | `cd e2e && npm ci && npx playwright test` | 32 Playwright tests on desktop and mobile (titles, headers, robots, login error, admin redirect, help assistant, focus) |
+| Workflows | `node scripts/e2e-workflows.mjs` (or `npm run test:workflows`) | 52 checks: all five user profiles and access control |
+| Browser | `cd e2e && npm ci && npx playwright test` | 56 Playwright tests on desktop and mobile: public and logged-in pages, axe accessibility, no horizontal overflow |
 
 All three run in GitHub Actions (`.github/workflows/ci.yml`, job `e2e` starts the Docker stack).

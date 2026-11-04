@@ -295,7 +295,7 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
               <div style={{ display: 'grid', gap: 16 }}>
                 {Object.entries(grouped).map(([group, items]) => (
                   <div key={group}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{group}</div>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{group}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       {items.map((item) => (
                         <span key={item} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 999, padding: '5px 12px', fontSize: 12, fontWeight: 600, color: '#15803d' }}>

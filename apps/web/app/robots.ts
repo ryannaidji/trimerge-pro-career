@@ -13,6 +13,7 @@ export default function robots(): MetadataRoute.Robots {
         "/.netlify/",
         "/employer-dashboard",
         "/candidate-overview",
+        "/talent-search",
         "/applications",
         "/personal-information",
         "/recruiter-information",

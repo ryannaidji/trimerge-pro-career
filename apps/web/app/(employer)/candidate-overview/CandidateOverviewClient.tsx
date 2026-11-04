@@ -214,7 +214,7 @@ export default function CandidateOverviewClient({ jobId: jobIdOverride }: { jobI
           <div style={{ padding: "16px", borderBottom: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: "12px" }}>
             {/* Search */}
             <div style={{ position: "relative" }}>
-              <Search style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: "16px", height: "16px", color: "#94a3b8" }} />
+              <Search style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: "16px", height: "16px", color: "#64748b" }} />
               <input
                 type="text"
                 placeholder="Search candidates..."
@@ -253,7 +253,7 @@ export default function CandidateOverviewClient({ jobId: jobIdOverride }: { jobI
                   <option value="partial">Partial</option>
                   <option value="low">Low Match</option>
                 </select>
-                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#94a3b8", pointerEvents: "none" }} />
+                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#64748b", pointerEvents: "none" }} />
               </div>
 
               <div style={{ position: "relative" }}>
@@ -275,7 +275,7 @@ export default function CandidateOverviewClient({ jobId: jobIdOverride }: { jobI
                   <option value="medium">Medium</option>
                   <option value="low">Low</option>
                 </select>
-                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#94a3b8", pointerEvents: "none" }} />
+                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#64748b", pointerEvents: "none" }} />
               </div>
 
               <div style={{ position: "relative" }}>
@@ -298,7 +298,7 @@ export default function CandidateOverviewClient({ jobId: jobIdOverride }: { jobI
                   <option value="failed">Failed</option>
                   <option value="skipped">Skipped</option>
                 </select>
-                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#94a3b8", pointerEvents: "none" }} />
+                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#64748b", pointerEvents: "none" }} />
               </div>
 
               <div style={{ position: "relative" }}>
@@ -320,7 +320,7 @@ export default function CandidateOverviewClient({ jobId: jobIdOverride }: { jobI
                   <option value="score-high">Score: High to Low</option>
                   <option value="score-low">Score: Low to High</option>
                 </select>
-                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#94a3b8", pointerEvents: "none" }} />
+                <ChevronDown style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", width: "12px", height: "12px", color: "#64748b", pointerEvents: "none" }} />
               </div>
             </div>
 

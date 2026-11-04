@@ -136,7 +136,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
               <Upload size={36} color="#1d4ed8" />
               <span style={{ fontWeight: 700, color: '#1d4ed8', fontSize: '1rem' }}>Click to upload</span>
-              <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>{hint}</span>
+              <span style={{ fontSize: '0.82rem', color: '#64748b' }}>{hint}</span>
             </div>
           )}
         </div>
@@ -244,7 +244,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2.5rem', height: '64px', background: 'white', borderBottom: '1px solid rgba(148,163,184,0.15)', flexShrink: 0 }}>
         {/* Job info */}
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0 }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Applying for</span>
+          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Applying for</span>
           <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '260px' }}>{job.title}</span>
         </div>
 
@@ -276,7 +276,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
           {/* Step 0: Resume */}
           {step === 0 && (
             <div style={{ background: 'white', borderRadius: '20px', padding: '2rem 2.5rem', border: '1px solid rgba(148,163,184,0.15)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.07)' }}>
-              <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 1 of 4</p>
+              <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 1 of 4</p>
               <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.55rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>Upload your resume</h2>
               <p style={{ margin: '0 0 1.5rem', color: '#64748b', lineHeight: 1.65 }}>PDF, DOC, or DOCX format. This document will be shared with the employer.</p>
               <Dropzone file={resumeFile} onFile={setResumeFile} accept=".pdf,.doc,.docx" hint="PDF, DOC, DOCX" />
@@ -286,7 +286,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
           {/* Step 1: Cover Letter */}
           {step === 1 && (
             <div style={{ background: 'white', borderRadius: '20px', padding: '2rem 2.5rem', border: '1px solid rgba(148,163,184,0.15)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.07)' }}>
-              <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 2 of 4</p>
+              <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 2 of 4</p>
               <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.55rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>Cover letter</h2>
               <p style={{ margin: '0 0 1.25rem', color: '#64748b', lineHeight: 1.65 }}>Upload a PDF cover letter or write one directly below.</p>
 
@@ -309,7 +309,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
           {/* Step 2: Application Questions */}
           {step === 2 && (
             <div style={{ background: 'white', borderRadius: '20px', padding: '2rem 2.5rem', border: '1px solid rgba(148,163,184,0.15)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.07)' }}>
-              <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 3 of 4</p>
+              <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 3 of 4</p>
               <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.55rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>Application questions</h2>
               <p style={{ margin: '0 0 1.5rem', color: '#64748b', lineHeight: 1.65 }}>Please answer all questions as accurately as possible. Voluntary questions will not affect your application.</p>
 
@@ -330,13 +330,13 @@ export function ApplicationWizard({ job, onClose }: Props) {
           {step === 3 && (
             <div style={{ display: 'grid', gap: '1rem' }}>
               <div style={{ background: 'white', borderRadius: '20px', padding: '2rem 2.5rem', border: '1px solid rgba(148,163,184,0.15)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.07)' }}>
-                <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 4 of 4</p>
+                <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 4 of 4</p>
                 <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.55rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>Review your application</h2>
                 <p style={{ margin: 0, color: '#64748b', lineHeight: 1.65 }}>Review everything below before submitting. Use the Back button to make changes.</p>
               </div>
 
               <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid rgba(148,163,184,0.15)', display: 'grid', gap: '0.6rem' }}>
-                <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Resume</p>
+                <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Resume</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                   <FileText size={18} color="#1d4ed8" />
                   <span style={{ fontWeight: 700, color: '#0f172a' }}>{resumeFile?.name}</span>
@@ -344,7 +344,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
               </div>
 
               <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid rgba(148,163,184,0.15)', display: 'grid', gap: '0.6rem' }}>
-                <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cover Letter</p>
+                <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cover Letter</p>
                 {coverType === 'file'
                   ? <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}><FileText size={18} color="#1d4ed8" /><span style={{ fontWeight: 700, color: '#0f172a' }}>{coverFile?.name}</span></div>
                   : <p style={{ margin: 0, color: '#374151', lineHeight: 1.65, whiteSpace: 'pre-line', fontSize: '0.92rem' }}>{coverText.slice(0, 300)}{coverText.length > 300 ? '…' : ''}</p>
@@ -353,7 +353,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
 
               {questions.length > 0 && (
                 <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem 2rem', border: '1px solid rgba(148,163,184,0.15)', display: 'grid', gap: '0.85rem' }}>
-                  <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Your Answers</p>
+                  <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Your Answers</p>
                   {questions.map(qId => {
                     const cfg = QUESTION_CONFIG[qId];
                     const ans = answers[qId];
