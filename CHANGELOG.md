@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `scripts/e2e-workflows.mjs`: 30 end-to-end checks of the candidate, employer, visitor, admin and access-control workflows against the Docker stack (#6).
 - `scripts/backup-db.sh` / `scripts/restore-db.sh` and `docs/backup-and-recovery.md`; restore verified (#25).
 - `docs/security-review.md` (route authorization matrix) and `docs/issues.md` (defect log) (#8, #19).
+- `docs/audits.md`: Lighthouse/axe results; all public pages now score 100 for accessibility, best practices and SEO (#7).
 - Rate limiting: 10 attempts / 15 min per IP + email on login, registration, OTP and password reset; 600 requests / min per IP on the whole API (#20).
 - Docker: `Dockerfile` for `apps/api` and `apps/web`, `docker-compose.yml` with MongoDB (#26).
 - Adapter route running the Netlify Functions outside Netlify (#27).
@@ -47,6 +48,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The web app falls back to the local API instead of the production API when `NEXT_PUBLIC_API_URL` is missing.
 
 ### Changed
+- Accessibility: sequential headings, contrast fix, 40 px password toggles, labels on search/password/OTP fields, always-visible keyboard focus, reduced-motion support (#24).
+- Responsive: browse jobs stacks on phones with a full-screen job panel; stacked search bar; navbar buttons no longer wrap (#31).
 - Brand name unified to "TriMergePRO" across the web app (#15).
 - About page: removed placeholder and unverified copy (fake benefits, developer jargon); homepage no longer calls the platform a firm (#14).
 - Footer legal links are now absolute, so they work from nested pages.

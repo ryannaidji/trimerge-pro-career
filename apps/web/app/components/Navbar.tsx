@@ -173,11 +173,11 @@ function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/login" className="tp-btn-secondary hidden sm:inline-flex" style={{ padding: '0.8rem 1rem' }}>
+                <Link href="/login" className="tp-btn-secondary nav-login-btn" style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>
                   Log In
                 </Link>
-                <Link href="/join-now" className="tp-btn-primary" style={{ padding: '0.8rem 1rem' }}>
-                  Sign-up
+                <Link href="/join-now" className="tp-btn-primary" style={{ padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>
+                  Sign up
                   <ChevronRight size={16} />
                 </Link>
               </>

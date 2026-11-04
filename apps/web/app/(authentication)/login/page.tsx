@@ -135,7 +135,7 @@ function LoginPage() {
               className="tp-card"
               style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 3rem 0.95rem 2.5rem', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.2)', outline: 'none', boxShadow: 'none' }}
             />
-            <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>
+            <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility" style={{ position: 'absolute', right: '0.35rem', top: '50%', transform: 'translateY(-50%)', minWidth: '2.5rem', minHeight: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--tp-muted)' }}>
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>

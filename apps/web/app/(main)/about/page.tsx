@@ -34,7 +34,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div style={{ backgroundColor: 'rgba(255,255,255,0.96)', borderRadius: '1.25rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.22)', padding: '2rem', border: '1px solid rgba(255,255,255,0.35)' }}>
-              <h3 style={{ fontSize: '1.5rem', color: '#111827', marginBottom: '1.25rem' }}>What the platform offers</h3>
+              <h2 style={{ fontSize: '1.5rem', color: '#111827', marginBottom: '1.25rem' }}>What the platform offers</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {[
                   { label: 'Candidates', val: 'Profiles & applications', tone: '#2563eb' },

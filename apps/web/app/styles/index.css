@@ -301,15 +301,29 @@ a {
   box-shadow: 0 6px 18px rgba(13, 60, 150, 0.18);
 }
 
-/* Focus-visible for interactive elements */
+/* Focus-visible for interactive elements (WCAG 2.4.7 / 1.4.11, #24).
+   !important: several components set `outline: none` inline, which would otherwise
+   hide the keyboard focus. Solid #1d4ed8 has > 3:1 contrast on white and light grey. */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible {
-  outline: 3px solid rgba(29,78,216,0.35);
-  outline-offset: 3px;
+select:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #1d4ed8 !important;
+  outline-offset: 2px;
   border-radius: 8px;
+}
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .tp-nav-link {
@@ -523,4 +537,30 @@ select:focus-visible {
   font-size: 1.05em !important;
   font-weight: 700 !important;
   margin: 0.5em 0 0.25em !important;
+}
+
+/* ---- Responsive fixes (#31) ---- */
+/* Navbar: the Log In button is in the mobile menu below 640px */
+.nav-login-btn { display: none !important; }
+@media (min-width: 640px) {
+  .nav-login-btn { display: inline-flex !important; }
+}
+
+/* Browse jobs: stack list and details on phones and small tablets */
+@media (max-width: 899px) {
+  .bj-layout { flex-direction: column !important; height: auto !important; gap: 16px !important; }
+  .bj-list { flex: 1 1 auto !important; max-width: 100% !important; width: 100%; }
+  .bj-placeholder { display: none !important; }
+  .bj-search { flex-direction: column !important; align-items: stretch !important; }
+  .bj-search > * { width: 100% !important; border-right: none !important; }
+  .bj-search > * + * { border-top: 1px solid rgba(148,163,184,0.2); }
+  .bj-detail {
+    position: fixed !important;
+    inset: 0;
+    z-index: 2147483000;
+    max-width: 100% !important;
+    height: 100% !important;
+    background: #f8fafc;
+    padding: 0.75rem;
+  }
 }
