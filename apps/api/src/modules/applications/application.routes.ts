@@ -140,9 +140,9 @@ function handleCoverLetterUploadold(req: any, res: any, next: any) {
  */
 router.post(
   '/',
-  // requireAuth,
-  //requireRole('TALENT'),
-  //handleCoverLetterUpload,
+  // Only signed-in candidates can apply (#19)
+  requireAuth,
+  requireRole('TALENT'),
   handleApplicationUpload,
   validateRequest(createApplicationSchema),
   createApplication

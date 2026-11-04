@@ -28,7 +28,6 @@ export default async function Page({ searchParams }: Props) {
   const email = params.email || 'your email address'
   const role = (params.role || 'Candidate').toLowerCase()
 
-  console.log(params)
   const nextPath = role === 'recruiter' ? '/recruiter-information/step-one' : '/personal-information/step-one'
 
   return (

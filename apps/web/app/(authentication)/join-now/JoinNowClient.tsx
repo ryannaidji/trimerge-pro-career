@@ -81,7 +81,7 @@ export default function JoinNowClient() {
 
     return (
         <AuthShell
-            eyebrow="Join TriMergePro Careers"
+            eyebrow="Join TriMergePRO Careers"
             title="Create your account and get started."
             subtitle="Choose whether you're looking for opportunities or hiring talent, then create your account to get started."
             bullets={[
@@ -171,7 +171,7 @@ export default function JoinNowClient() {
 
                     <label style={{ display: 'flex', gap: '0.7rem', alignItems: 'flex-start', color: 'var(--tp-muted)', fontSize: '0.95rem', lineHeight: 1.55 }}>
                         <input type='checkbox' id='updates' name='updates' checked={updates} onChange={(e) => setUpdates(e.target.checked)} style={{ marginTop: '0.2rem' }} />
-                        I&apos;d like to receive updates, job opportunities, and news from TriMergePro.
+                        I&apos;d like to receive updates, job opportunities, and news from TriMergePRO.
                     </label>
                 </div>
 

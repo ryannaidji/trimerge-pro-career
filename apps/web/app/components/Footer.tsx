@@ -20,7 +20,7 @@ function Footer() {
     return (
       <footer style={{ borderTop: '1px solid rgba(148, 163, 184, 0.18)', background: 'rgba(255,255,255,0.72)' }}>
         <div className="tp-container" style={{ padding: '0.85rem 0', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--tp-muted)' }}>
-          <span>© {year} TriMergePro Careers. All rights reserved.</span>
+          <span>© {year} TriMergePRO Careers. All rights reserved.</span>
           <span>TriMergePRO Careers is a workforce and recruiting platform designed to connect talent, employers, and opportunities through technology-driven solutions.</span>
         </div>
       </footer>
@@ -64,7 +64,7 @@ function Footer() {
                 // { title: 'Employers', links: [{ href: '/employers', label: 'Post a Job' }, { href: '/login', label: 'Employer Log In' }] },
                 { title: 'Job Seekers', links: [{ href: '/browse-jobs', label: 'Browse Jobs' }, { href: '/join-now', label: 'Create Profile' }, { href: '/login', label: 'Log In' }] },
                 { title: 'Company', links: [{ href: '/about', label: 'About Us' }, { href: 'mailto:careers@trimergeconsulting.com', label: 'Contact Us' }] },
-                { title: 'Support', links: [{ href: '/forgot-password', label: 'Forgot Password' }, { href: 'privacy-policy', label: 'Privacy Policy' }, { href: 'terms-of-use', label: 'Terms of Use' }, { href: 'accessibility-statement', label: 'Accessibility' }] },
+                { title: 'Support', links: [{ href: '/forgot-password', label: 'Forgot Password' }, { href: '/privacy-policy', label: 'Privacy Policy' }, { href: '/terms-of-use', label: 'Terms of Use' }, { href: '/accessibility-statement', label: 'Accessibility' }, { href: '/eeo-statement', label: 'EEO Statement' }] },
               ].map((column) => (
                 <div key={column.title}>
                   <div className="tp-kicker" style={{ marginBottom: '0.8rem' }}>{column.title}</div>
@@ -88,7 +88,7 @@ function Footer() {
         </div>
 
         <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(148, 163, 184, 0.16)', color: 'var(--tp-muted)', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '0.75rem', fontSize: '0.92rem' }}>
-          <span>© {year} TriMergePro Careers. All rights reserved.</span>
+          <span>© {year} TriMergePRO Careers. All rights reserved.</span>
           <span>TriMergePRO Careers is a workforce and recruiting platform designed to connect talent, employers, and opportunities through technology-driven solutions.</span>
         </div>
       </div>

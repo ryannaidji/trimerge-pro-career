@@ -64,7 +64,7 @@ function Navbar() {
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(148,163,184,0.18)', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(18px)', boxShadow: '0 1px 3px rgba(15,23,42,0.06)' }}>
         <div className="tp-container" style={{ padding: '0.75rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
-            <Image src="/Logo.png" alt="TriMergePro Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.4rem', width: 'auto' }} />
+            <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.4rem', width: 'auto' }} />
           </Link>
           {CandidateControls}
         </div>
@@ -86,7 +86,7 @@ function Navbar() {
         <div className="tp-container" style={{ padding: '0.65rem 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
             <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
-              <Image src="/Logo.png" alt="TriMergePro Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.2rem', width: 'auto' }} />
+              <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.2rem', width: 'auto' }} />
             </Link>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -139,7 +139,7 @@ function Navbar() {
       <div className="tp-container" style={{ padding: '1rem 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
           <Link href={isCandidate ? '/browse-jobs' : '/'} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-            <Image src="/Logo.png" alt="TriMergePro Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.8rem', width: 'auto' }} />
+            <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.8rem', width: 'auto' }} />
           </Link>
 
           {!isCandidate && (

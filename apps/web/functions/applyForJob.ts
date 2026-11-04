@@ -13,7 +13,6 @@ export const handler = async (event) => {
     // Detect content-type. If multipart, proxy raw body to backend keeping headers.
     const contentType = event.headers?.['content-type'] || event.headers?.['Content-Type'] || '';
     const token = event.headers?.authorization?.replace('Bearer ', '') || '';
-    console.log(token)
 
 
     try {
@@ -30,8 +29,6 @@ export const handler = async (event) => {
             });
 
             const data = await response.json();
-            console.log("Response from API:", response);
-            console.log("Data from API: ", data)
             if (!response.ok) {
                 throw new Error(data.message || data.error || 'Could not complete onboarding step 2');
             }
@@ -45,7 +42,6 @@ export const handler = async (event) => {
         // Fallback: expect JSON body with { jobId, coverLetter }
         const parsed = JSON.parse(event.body || '{}');
         const { jobId, coverLetter } = parsed;
-        console.log('Parsed application body:', parsed);
 
         if (!jobId) {
             return { statusCode: 400, body: JSON.stringify({ error: 'jobId is required' }) };
@@ -61,7 +57,6 @@ export const handler = async (event) => {
         });
 
         const data = await response.json().catch(() => ({}));
-        console.log('Response from API:', response.status, data);
         if (!response.ok) {
             throw new Error(data.message || data.error || 'Could not submit application');
         }
@@ -71,7 +66,7 @@ export const handler = async (event) => {
             body: JSON.stringify(data),
         };
         } catch (err: unknown) {
-            console.log(err);
+            console.error(err);
             const message = err instanceof Error ? err.message : String(err);
             return {
                 statusCode: 500,

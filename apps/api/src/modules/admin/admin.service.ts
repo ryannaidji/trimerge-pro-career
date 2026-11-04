@@ -1,3 +1,4 @@
+import { escapeRegex } from '../../utils/escape-regex';
 import { AppError } from '../../utils/app-error';
 import { UserModel } from '../users/user.model';
 import { JobModel } from '../jobs/job.model';
@@ -24,10 +25,10 @@ export const adminService = {
     if (status) filter.status = status;
     if (search) {
       filter.$or = [
-        { email: { $regex: search, $options: 'i' } },
-        { 'profile.firstName': { $regex: search, $options: 'i' } },
-        { 'profile.lastName': { $regex: search, $options: 'i' } },
-        { 'profile.companyName': { $regex: search, $options: 'i' } },
+        { email: { $regex: escapeRegex(search), $options: 'i' } },
+        { 'profile.firstName': { $regex: escapeRegex(search), $options: 'i' } },
+        { 'profile.lastName': { $regex: escapeRegex(search), $options: 'i' } },
+        { 'profile.companyName': { $regex: escapeRegex(search), $options: 'i' } },
       ];
     }
 
@@ -60,6 +61,14 @@ export const adminService = {
 
     user.status = input.status;
     await user.save();
+
+    // Suspending a user signs them out everywhere: revoke all refresh tokens
+    if (input.status === 'SUSPENDED') {
+      await RefreshTokenModel.updateMany(
+        { userId: user._id, revokedAt: null },
+        { $set: { revokedAt: new Date() } }
+      );
+    }
 
     return {
       message: 'User status updated successfully.',
@@ -129,9 +138,9 @@ export const adminService = {
     if (status) filter.status = status;
     if (search) {
       filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } },
+        { title: { $regex: escapeRegex(search), $options: 'i' } },
+        { description: { $regex: escapeRegex(search), $options: 'i' } },
+        { location: { $regex: escapeRegex(search), $options: 'i' } },
       ];
     }
 

@@ -41,7 +41,12 @@ function LoginPage() {
 
     const hasProfile = Boolean(resolvedUser?.profile && Object.keys(resolvedUser.profile).length > 0);
 
-    if (accountType === 'candidate') {
+    if (accountType === 'admin') {
+      router.replace('/admin');
+      return;
+    }
+
+    if (accountType === 'candidate' || accountType === 'talent') {
       router.replace(hasProfile ? '/browse-jobs' : '/personal-information/step-one');
       return;
     }

@@ -5,10 +5,32 @@ import AskTriMergeAI from './components/ui/AskTriMergeAI'
 import './styles/index.css'
 
 import React, { ReactNode } from 'react'
+import type { Metadata } from 'next'
+import { SITE_URL } from './util/siteUrl'
 import { Manrope } from 'next/font/google'
 import { UserProvider } from '@/contexts/userContext/userContext'
 
 const manrope = Manrope({ subsets: ['latin'], display: 'swap' })
+
+// Default metadata; each route sets its own title through the template (#13)
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'TriMergePRO Careers | Government & Commercial Contracting Jobs',
+    template: '%s | TriMergePRO Careers',
+  },
+  description:
+    'TriMergePRO Careers connects qualified professionals with government and commercial contracting opportunities. Create a profile, browse jobs and apply online.',
+  applicationName: 'TriMergePRO Careers',
+  openGraph: {
+    type: 'website',
+    siteName: 'TriMergePRO Careers',
+    title: 'TriMergePRO Careers',
+    description: 'Recruiting platform for government and commercial contracting professionals.',
+    images: ['/Logo.png'],
+  },
+  icons: { icon: '/Logo.png' },
+}
 
 function Layout({ children }: { children: ReactNode }) {
   return (

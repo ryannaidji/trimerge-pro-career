@@ -20,7 +20,6 @@ export const useLogin = () => {
         body: JSON.stringify(payload),
       });
       const data = await res.json()
-      console.log("Login response:", data);
       
       if (!res.ok) {
         const msg = data?.message || data?.error || "Login failed";

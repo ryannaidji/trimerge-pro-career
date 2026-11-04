@@ -6,7 +6,8 @@ services:
     image: mongo:7
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      # Host port 27018 avoids clashing with a locally installed MongoDB; bound to localhost only
+      - "127.0.0.1:27018:27017"
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -22,8 +23,14 @@ services:
     environment:
       MONGODB_URI: mongodb://mongo:27017/trimerge-pro-careers
       CORS_ORIGIN: http://localhost:${WEB_PORT:-3000}
+      PUBLIC_API_URL: http://localhost:4000
+      # Local replacements for Mailgun and Cloudinary (see docs/local-development.md)
+      MAIL_DRIVER: console
+      STORAGE_DRIVER: local
     ports:
       - "4000:4000"
+    volumes:
+      - api-uploads:/app/uploads
     depends_on:
       mongo:
         condition: service_healthy
@@ -47,3 +54,4 @@ services:
 
 volumes:
   mongo-data:
+  api-uploads:

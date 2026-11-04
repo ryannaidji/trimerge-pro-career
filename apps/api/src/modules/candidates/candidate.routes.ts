@@ -158,6 +158,8 @@ router.put(
 router.get(
   '/:id',
   requireAuth,
+  // Candidate profiles contain personal data: employers and admins only (#19)
+  requireRole('EMPLOYER', 'ADMIN'),
   getCandidateProfileById
 );
 

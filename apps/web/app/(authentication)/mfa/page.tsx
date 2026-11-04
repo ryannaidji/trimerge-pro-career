@@ -35,7 +35,7 @@ function Page() {
                 }}>
                 <img 
                 src="/Logo.png" 
-                alt="TriMergePro Logo" 
+                alt="TriMergePRO Logo" 
                 style={{ 
                     objectFit: 'contain', 
                     height: '6rem', 

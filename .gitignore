@@ -26,3 +26,5 @@ Thumbs.db
 
 uploads/
 apps/api/uploads/
+# Local database backups (contain personal data)
+backups/

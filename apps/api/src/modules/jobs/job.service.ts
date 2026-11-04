@@ -1,3 +1,4 @@
+import { escapeRegex } from '../../utils/escape-regex';
 import { AppError } from '../../utils/app-error';
 import { formatJob } from '../../utils/response-formatters';
 import { UserModel } from '../users/user.model';
@@ -33,12 +34,12 @@ export const jobService = {
     if (status) filter.status = status;
     if (employmentType) filter.employmentType = employmentType;
     if (department) filter.department = department;
-    if (location) filter.location = { $regex: location, $options: 'i' };
+    if (location) filter.location = { $regex: escapeRegex(location), $options: 'i' };
     if (search) {
       filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { skills: { $regex: search, $options: 'i' } },
+        { title: { $regex: escapeRegex(search), $options: 'i' } },
+        { description: { $regex: escapeRegex(search), $options: 'i' } },
+        { skills: { $regex: escapeRegex(search), $options: 'i' } },
       ];
     }
 

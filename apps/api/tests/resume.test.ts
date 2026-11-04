@@ -3,6 +3,7 @@ import { UserModel } from '../src/modules/users/user.model';
 import { CandidateProfileModel } from '../src/modules/candidates/candidate.model';
 import { cloudinary } from '../src/lib/cloudinary';
 import streamifier from 'streamifier';
+import { env } from '../src/config/env';
 
 jest.mock('../src/modules/users/user.model', () => ({
   UserModel: {
@@ -34,6 +35,8 @@ jest.mock('streamifier', () => ({
 describe('Resume service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // This suite covers the Cloudinary driver; the local driver is tested in storage.test.ts
+    env.STORAGE_DRIVER = 'cloudinary';
   });
 
   it('uploads a resume and upserts the candidate profile resumeUrl', async () => {
@@ -56,7 +59,7 @@ describe('Resume service', () => {
     });
 
     const result = await resumeService.upload('user-id', {
-      buffer: Buffer.from('resume content'),
+      buffer: Buffer.from('%PDF-1.4 resume content'),
       originalname: 'my resume.pdf',
       mimetype: 'application/pdf',
       size: 123,

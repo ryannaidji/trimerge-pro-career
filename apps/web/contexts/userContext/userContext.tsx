@@ -108,7 +108,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (raw) {
       try {
         const user = JSON.parse(raw) as User;
-        console.log("Restoring user from storage:", user);
         // If a token is present, attach token info; otherwise restore whatever user info we have
         if (token) {
           dispatch({ type: "RESTORE", user: { ...user, accessToken: token, refreshToken: localStorage.getItem('tm_refresh') || undefined } });

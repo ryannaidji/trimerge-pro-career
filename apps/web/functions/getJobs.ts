@@ -57,7 +57,7 @@ export const handler = async (event: unknown) => {
       body: typeof data === 'string' ? JSON.stringify({ error: data }) : JSON.stringify(data),
     };
   } catch (err: unknown) {
-    console.log('getJobs error:', err);
+    console.error('getJobs error:', err);
     const message = err instanceof Error ? err.message : String(err);
     return { statusCode: 500, body: JSON.stringify({ error: message }) };
   }

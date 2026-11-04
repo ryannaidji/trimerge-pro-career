@@ -1,3 +1,4 @@
+import { escapeRegex } from '../../utils/escape-regex';
 import { AppError } from '../../utils/app-error';
 import { JobModel } from './job.model';
 import { ListJobsQuery } from './job.schemas';
@@ -12,12 +13,12 @@ export const publicJobService = {
 
     if (employmentType) filter.employmentType = employmentType;
     if (department) filter.department = department;
-    if (location) filter.location = { $regex: location, $options: 'i' };
+    if (location) filter.location = { $regex: escapeRegex(location), $options: 'i' };
     if (search) {
       filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { skills: { $regex: search, $options: 'i' } },
+        { title: { $regex: escapeRegex(search), $options: 'i' } },
+        { description: { $regex: escapeRegex(search), $options: 'i' } },
+        { skills: { $regex: escapeRegex(search), $options: 'i' } },
       ];
     }
 

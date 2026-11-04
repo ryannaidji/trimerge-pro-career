@@ -12,7 +12,6 @@ export const handler = async (event: any) => {
 
     try{
         const response = await fetch(`${process.env.BASEURL}/api/v1/onboarding/register`, {
-        //const response = await fetch(`https://trimerge-pro-career.onrender.com/api/v1/onboarding/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,7 +28,6 @@ export const handler = async (event: any) => {
         });
   
         const data = await response.json();
-        console.log("Response from API:", data.message);
         if (!response.ok) {
             throw new Error(data.message);
         }
@@ -39,7 +37,7 @@ export const handler = async (event: any) => {
             body: JSON.stringify(data),
         };
     } catch (error: unknown) {
-        console.log(error)
+        console.error(error)
         const message = error instanceof Error ? error.message : String(error)
         return {
             statusCode: 500,

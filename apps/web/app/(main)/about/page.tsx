@@ -3,15 +3,9 @@
 import Link from 'next/link';
 import {
   Search, Briefcase,
-  DollarSign, CheckCircle, Users, Award,
+  CheckCircle, Users, Award,
   Heart, Lightbulb, Trophy,
-  GraduationCap,
 } from 'lucide-react';
-
-const jobListings = [
-  { id: 1, title: 'Senior Cloud Architect', category: 'Cloud', location: 'Tallahassee, FL', type: 'Full-time', salary: '$120k - $160k', client: 'Florida Dept. of Technology', clearance: 'Secret', posted: '2 days ago' },
-  { id: 2, title: 'Cybersecurity Analyst', category: 'Security', location: 'Miami, FL', type: 'Contract', salary: '$95k - $125k', client: 'Enterprise Healthcare System', clearance: 'None', posted: '1 week ago' },
-];
 
 const coreValues = [
   { icon: Heart, title: 'People First', description: 'We prioritize the well-being and growth of our team members above all else.', color: '#fee2e2', textColor: '#dc2626' },
@@ -19,10 +13,11 @@ const coreValues = [
   { icon: Users, title: 'Collaborative Spirit', description: 'We believe the best work happens when we work together as one team.', color: '#dbeafe', textColor: '#2563eb' },
 ];
 
+// Describes what the platform actually does; no unverified claims (#14)
 const benefits = [
-  { icon: DollarSign, title: 'Competitive Compensation', items: ['Market-leading salaries', 'Annual performance bonuses', 'Equity packages'] },
-  { icon: GraduationCap, title: 'Learning & Development', items: ['$3,000 annual learning budget', 'Internal mentorship', 'Conference attendance'] },
-  { icon: Briefcase, title: 'Work-Life Balance', items: ['Flexible work arrangements', 'Unlimited PTO policy', 'Remote-first culture'] },
+  { icon: Search, title: 'For Candidates', items: ['Free professional profile', 'Search government and commercial roles', 'Track every application'] },
+  { icon: Briefcase, title: 'For Employers', items: ['Post opportunities in minutes', 'Review and shortlist applicants', 'Status updates sent to candidates'] },
+  { icon: CheckCircle, title: 'For TriMerge Clients', items: ['Pre-screened talent pool', 'Contracting-ready professionals', 'Support from the TriMerge staffing team'] },
 ];
 
 export default function AboutPage() {
@@ -32,19 +27,19 @@ export default function AboutPage() {
         <div style={{ maxWidth: '80rem', marginLeft: 'auto', marginRight: 'auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
             <div style={{ color: 'white' }}>
-              <div className="tp-chip" style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.12)', color: 'white', borderColor: 'rgba(255,255,255,0.15)' }}>About TriMergePro</div>
-              <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.6rem)', margin: '1rem 0 1rem', letterSpacing: '-0.05em', lineHeight: 1.02 }}>A careers platform with sharper flows and cleaner handoffs.</h1>
+              <div className="tp-chip" style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.12)', color: 'white', borderColor: 'rgba(255,255,255,0.15)' }}>About TriMergePRO</div>
+              <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.6rem)', margin: '1rem 0 1rem', letterSpacing: '-0.05em', lineHeight: 1.02 }}>Connecting qualified professionals with meaningful opportunities.</h1>
               <p style={{ fontSize: '1.08rem', color: 'rgba(255,255,255,0.86)', lineHeight: 1.75, maxWidth: '42rem' }}>
-                TriMergePro is the front door for candidates and employers who need structured onboarding, job discovery, and applicant review without the clutter that usually slows hiring down.
+                TriMergePRO Careers is the recruiting platform of TriMerge Consulting Group, P.A. Candidates build a profile and apply to government and commercial contracting roles; employers post jobs and review applicants in one place.
               </p>
             </div>
             <div style={{ backgroundColor: 'rgba(255,255,255,0.96)', borderRadius: '1.25rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.22)', padding: '2rem', border: '1px solid rgba(255,255,255,0.35)' }}>
-              <h3 style={{ fontSize: '1.5rem', color: '#111827', marginBottom: '1.25rem' }}>By the numbers</h3>
+              <h3 style={{ fontSize: '1.5rem', color: '#111827', marginBottom: '1.25rem' }}>What the platform offers</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {[
-                  { label: 'Candidate journeys', val: '3 core flows', tone: '#2563eb' },
-                  { label: 'Employer workflows', val: 'Unified dashboard', tone: '#16a34a' },
-                  { label: 'Email recovery paths', val: 'Verified and routed', tone: '#9333ea' },
+                  { label: 'Candidates', val: 'Profiles & applications', tone: '#2563eb' },
+                  { label: 'Employers', val: 'Job posting & review', tone: '#16a34a' },
+                  { label: 'Accounts', val: 'Verified by email', tone: '#9333ea' },
                 ].map((stat) => (
                   <div key={stat.label}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
@@ -107,7 +102,7 @@ export default function AboutPage() {
             <div style={{ padding: '0.5rem', backgroundColor: '#2563eb', borderRadius: '0.5rem' }}>
               <Trophy style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} />
             </div>
-            <h2 style={{ fontSize: '1.875rem', fontWeight: 700 }}>Benefits and perks</h2>
+            <h2 style={{ fontSize: '1.875rem', fontWeight: 700 }}>How TriMergePRO Careers helps</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6" style={{ margin: 0 }}>
             {benefits.map((benefit) => (
@@ -135,7 +130,7 @@ export default function AboutPage() {
       <section style={{ padding: '5rem 1.5rem' }}>
         <div style={{ maxWidth: '64rem', marginLeft: 'auto', marginRight: 'auto', background: 'linear-gradient(to right, #2563eb, #4338ca)', borderRadius: '1.5rem', padding: '3rem', textAlign: 'center', color: 'white', position: 'relative', overflow: 'hidden' }}>
           <h2 style={{ fontSize: '2.25rem', fontWeight: 700, marginBottom: '1rem', color: 'white' }}>Ready to explore the next step?</h2>
-          <p style={{ fontSize: '1.125rem', marginBottom: '2rem', opacity: 0.9 }}>Jump into jobs, onboarding, or employer review without losing the thread.</p>
+          <p style={{ fontSize: '1.125rem', marginBottom: '2rem', opacity: 0.9 }}>Browse open positions or create your free profile today.</p>
           <Link href="/browse-jobs" style={{ padding: '1rem 2.5rem', backgroundColor: 'white', color: '#2563eb', fontWeight: 700, borderRadius: '0.75rem', border: 'none', cursor: 'pointer' }}>
             View open positions
           </Link>

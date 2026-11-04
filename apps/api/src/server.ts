@@ -5,7 +5,6 @@ import app from './app';
 
 async function startServer() {
   try {
-    console.log("Mongo URI:", env.MONGODB_URI);
     await connectDB(env.MONGODB_URI);
     app.listen(env.PORT, () => {
       console.log(`🚀 API running on port ${env.PORT} [${env.NODE_ENV}]`);
