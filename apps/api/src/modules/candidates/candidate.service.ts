@@ -43,12 +43,9 @@ export const candidateService = {
     const profile = await CandidateProfileModel.findOneAndUpdate(
       { userId },
       { $set: input },
-      { new: true }
+      // Create the profile if the candidate skipped onboarding, so "My profile" always works (#50)
+      { new: true, upsert: true, setDefaultsOnInsert: true }
     );
-
-    if (!profile) {
-      throw new AppError('Candidate profile not found', 404);
-    }
 
     return { profile };
   },

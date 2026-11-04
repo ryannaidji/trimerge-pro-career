@@ -591,3 +591,8 @@ select:focus-visible,
 @media (max-width: 640px) {
   .nav-email, .nav-emp-dash { display: none !important; }
 }
+
+/* Applicant manager on small screens (#47) */
+@media (max-width: 899px) {
+  .am-layout { grid-template-columns: 1fr !important; }
+}

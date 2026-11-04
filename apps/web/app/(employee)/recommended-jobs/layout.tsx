@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Candidate Overview",
-  description: "Review candidate details and application history.",
+  title: "Recommended Jobs",
+  description: "Open jobs that match your profile.",
   robots: { index: false, follow: false },
 };
 

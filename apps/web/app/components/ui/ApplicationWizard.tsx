@@ -45,6 +45,44 @@ const STEPS = [
   { id: 'review',   label: 'Review' },
 ];
 
+// File picker used by the application wizard. Module-level component (a component created
+// inside another one is re-created on every render and loses its state), and a real <button>
+// so keyboard and screen-reader users can choose a file (#63, #24).
+function Dropzone({ file, onFile, accept, hint, label }: { file: File | null; onFile: (f: File) => void; accept: string; hint: string; label: string }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <input ref={ref} type="file" accept={accept} tabIndex={-1} aria-hidden="true" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f); }} />
+      <button
+        type="button"
+        onClick={() => ref.current?.click()}
+        aria-label={file ? `${label}: ${file.name}. Choose another file` : `${label}: choose a file (${hint})`}
+        style={{
+          width: '100%',
+          border: `2px dashed ${file ? 'rgba(22,163,74,0.4)' : 'rgba(29,78,216,0.3)'}`,
+          borderRadius: '16px', padding: '2.5rem 2rem', textAlign: 'center', cursor: 'pointer',
+          background: file ? 'rgba(22,163,74,0.04)' : 'rgba(29,78,216,0.03)',
+          transition: 'background 0.2s, border-color 0.2s',
+        }}
+      >
+        {file ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+            <FileText size={36} color="#16a34a" aria-hidden="true" />
+            <span style={{ fontWeight: 700, color: '#15803d', fontSize: '1rem' }}>{file.name}</span>
+            <span style={{ fontSize: '0.82rem', color: '#475569' }}>Click to replace</span>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+            <Upload size={36} color="#1d4ed8" aria-hidden="true" />
+            <span style={{ fontWeight: 700, color: '#1d4ed8', fontSize: '1rem' }}>Click to upload</span>
+            <span style={{ fontSize: '0.82rem', color: '#475569' }}>{hint}</span>
+          </div>
+        )}
+      </button>
+    </>
+  );
+}
+
 export function ApplicationWizard({ job, onClose }: Props) {
   const { apply, loading: applying, error: applyError } = useApplyForJob();
 
@@ -109,39 +147,6 @@ export function ApplicationWizard({ job, onClose }: Props) {
     width: '100%', boxSizing: 'border-box', padding: '0.85rem 1rem',
     borderRadius: '12px', border: '1px solid rgba(148,163,184,0.3)',
     fontSize: '0.95rem', fontFamily: 'inherit', background: 'white', outline: 'none',
-  };
-
-  // ── Dropzone ──────────────────────────────────────────
-  const Dropzone = ({ file, onFile, accept, hint }: { file: File | null; onFile: (f: File) => void; accept: string; hint: string }) => {
-    const ref = useRef<HTMLInputElement>(null);
-    return (
-      <>
-        <input ref={ref} type="file" accept={accept} style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f); }} />
-        <div
-          onClick={() => ref.current?.click()}
-          style={{
-            border: `2px dashed ${file ? 'rgba(22,163,74,0.4)' : 'rgba(29,78,216,0.3)'}`,
-            borderRadius: '16px', padding: '2.5rem 2rem', textAlign: 'center', cursor: 'pointer',
-            background: file ? 'rgba(22,163,74,0.04)' : 'rgba(29,78,216,0.03)',
-            transition: 'background 0.2s, border-color 0.2s',
-          }}
-        >
-          {file ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-              <FileText size={36} color="#16a34a" />
-              <span style={{ fontWeight: 700, color: '#16a34a', fontSize: '1rem' }}>{file.name}</span>
-              <span style={{ fontSize: '0.82rem', color: '#64748b' }}>Click to replace</span>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-              <Upload size={36} color="#1d4ed8" />
-              <span style={{ fontWeight: 700, color: '#1d4ed8', fontSize: '1rem' }}>Click to upload</span>
-              <span style={{ fontSize: '0.82rem', color: '#64748b' }}>{hint}</span>
-            </div>
-          )}
-        </div>
-      </>
-    );
   };
 
   // ── Question renderer ─────────────────────────────────
@@ -279,7 +284,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
               <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Step 1 of 4</p>
               <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.55rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>Upload your resume</h2>
               <p style={{ margin: '0 0 1.5rem', color: '#64748b', lineHeight: 1.65 }}>PDF, DOC, or DOCX format. This document will be shared with the employer.</p>
-              <Dropzone file={resumeFile} onFile={setResumeFile} accept=".pdf,.doc,.docx" hint="PDF, DOC, DOCX" />
+              <Dropzone label="Resume" file={resumeFile} onFile={setResumeFile} accept=".pdf,.doc,.docx" hint="PDF, DOC, DOCX" />
             </div>
           )}
 
@@ -300,7 +305,7 @@ export function ApplicationWizard({ job, onClose }: Props) {
               </div>
 
               {coverType === 'file'
-                ? <Dropzone file={coverFile} onFile={setCoverFile} accept="application/pdf" hint="PDF only" />
+                ? <Dropzone label="Cover letter" file={coverFile} onFile={setCoverFile} accept="application/pdf" hint="PDF only" />
                 : <textarea value={coverText} onChange={e => setCoverText(e.target.value)} placeholder={"Dear Hiring Manager,\n\nI am excited to apply for this position..."} rows={12} style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.7 }} />
               }
             </div>

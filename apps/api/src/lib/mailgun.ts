@@ -91,24 +91,6 @@ export async function sendNewApplicationNotificationEmail(params: {
   });
 }
 
-export async function sendNewApplicationNotificationEmailOld(params: {
-  to: string;
-  jobTitle: string;
-  candidateEmail: string;
-}): Promise<void> {
-  await sendEmail({
-    to: params.to,
-    subject: 'New application received for your job posting',
-    text:
-      `A new application has been submitted for your job posting.\n\n` +
-      `Job Title: ${params.jobTitle}\n` +
-      `Candidate Email: ${params.candidateEmail}\n`,
-    html:
-      `<p>A new application has been submitted for your job posting.</p>` +
-      `<p><b>Job Title:</b> ${escapeHtml(params.jobTitle)}</p>` +
-      `<p><b>Candidate Email:</b> ${escapeHtml(params.candidateEmail)}</p>`,
-  });
-}
 
 export async function sendApplicationStatusUpdatedEmail(params: {
   to: string;

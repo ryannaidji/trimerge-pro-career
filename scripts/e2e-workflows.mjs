@@ -146,8 +146,19 @@ r = await upload('/api/v1/resumes/upload', 'resume', PDF_BYTES, 'resume.pdf', 'a
 const resumeUrl = r.data?.resume?.resumeUrl;
 step('Candidate: upload resume (PDF)', r.status === 201 && !!resumeUrl, `status ${r.status}`);
 if (resumeUrl) {
-  const file = await fetch(resumeUrl);
-  step('Resume file served as download with nosniff', file.status === 200 && /attachment/.test(file.headers.get('content-disposition') || '') && file.headers.get('x-content-type-options') === 'nosniff', `status ${file.status}`);
+  // Resumes are private (#59): owner yes, anonymous and unrelated users no
+  const auth = (t) => ({ headers: { Authorization: `Bearer ${t}` } });
+  let file = await fetch(resumeUrl, auth(candidateToken));
+  step('Candidate: download own resume (attachment, nosniff)', file.status === 200 && /attachment/.test(file.headers.get('content-disposition') || '') && file.headers.get('x-content-type-options') === 'nosniff', `status ${file.status}`);
+  file = await fetch(resumeUrl);
+  step('Security: resume not public (anonymous 401)', file.status === 401, `status ${file.status}`);
+  const outsider = await signUp('Recruiter', `outsider.${run}@example.test`, password, 'Other Employer');
+  file = await fetch(resumeUrl, auth(outsider));
+  step('Security: employer without an application cannot download the resume', file.status === 403, `status ${file.status}`);
+  file = await fetch(resumeUrl, auth(employerToken));
+  step('Employer who received the application can download the resume', file.status === 200, `status ${file.status}`);
+  file = await fetch(resumeUrl.replace('/api/v1/files/', '/uploads/'));
+  step('Security: old public /uploads path no longer serves resumes', file.status === 404, `status ${file.status}`);
 }
 r = await upload('/api/v1/resumes/upload', 'resume', Buffer.from('<script>alert(1)</script>'), 'cv.pdf', 'application/pdf', candidateToken);
 step('Security: fake PDF upload rejected', r.status === 400, `status ${r.status}`);
@@ -193,6 +204,32 @@ const freshToken = r.data?.accessToken;
 step('Candidate: log in with new password', r.status === 200 && !!freshToken, `status ${r.status}`);
 r = await api('/api/v1/settings/change-password', { method: 'PATCH', token: freshToken, body: { currentPassword: newPassword, newPassword: password } });
 step('Candidate: change password from settings', r.status === 200, `status ${r.status}`);
+
+// 5e. Phase 2: recommendations, search opt-out, logout, self-service deletion
+r = await api('/api/v1/recommendations/jobs', { token: freshToken });
+step('Candidate: recommended jobs endpoint', r.status === 200 && Array.isArray(r.data?.recommendations), `status ${r.status}`);
+const recoEmail = `reco.${run}@example.test`;
+const recoToken = await signUp('Candidate', recoEmail, password, 'Reco Candidate');
+await api('/api/v1/candidates/me', { method: 'PUT', token: recoToken, body: { skills: ['AWS', 'Terraform'], jobTitleOrDesiredRole: 'Cloud Engineer' } });
+r = await api('/api/v1/recommendations/jobs', { token: recoToken });
+step('Candidate: job matching skills is recommended', JSON.stringify(r.data).includes(`Cloud Engineer ${run}`), `status ${r.status}`);
+r = await api('/api/v1/candidates/me', { method: 'PUT', token: recoToken, body: { searchable: false } });
+r = await api('/api/v1/candidates/search?skills=Terraform', { token: employerToken });
+step('Privacy: opted-out candidate hidden from talent search', r.status === 200 && !JSON.stringify(r.data).includes('Reco'), `status ${r.status}`);
+
+r = await call('login', { body: { email: recoEmail, password } });
+const refreshToRevoke = r.data?.refreshToken;
+r = await api('/api/v1/auth/logout', { method: 'POST', body: { refreshToken: refreshToRevoke } });
+step('Logout revokes the refresh token', r.status === 200, `status ${r.status}`);
+r = await api('/api/v1/auth/refresh-token', { method: 'POST', body: { refreshToken: refreshToRevoke } });
+step('Security: revoked refresh token is refused', r.status === 401, `status ${r.status}`);
+
+r = await api('/api/v1/account', { method: 'DELETE', token: recoToken, body: { password: 'wrong-password' } });
+step('Account deletion requires the correct password', r.status === 401, `status ${r.status}`);
+r = await api('/api/v1/account', { method: 'DELETE', token: recoToken, body: { password } });
+step('Candidate: delete own account', r.status === 200, `status ${r.status}`);
+r = await call('login', { body: { email: recoEmail, password } });
+step('Deleted account can no longer log in', r.status >= 400, `status ${r.status}`);
 
 // 6. Access control
 r = await api('/api/v1/applications', { method: 'POST', body: { jobId } });

@@ -8,6 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Job departments aligned with TriMerge's 12 sectors (Government & Public Sector, Technology, Accounting & Finance, Emergency Management…); legacy values still accepted and shown with readable labels (#62).
+- Employer applicant manager: real candidate details, cover letter, documents, search and status filter, and a status control (New, Reviewed, Shortlisted, Not selected, Hired) with email to the candidate (#47, #48).
+- Candidate account menu (My applications, Recommended jobs, Saved jobs, My profile, Settings, Log out), keyboard accessible, also in the mobile menu (#49).
+- "My profile" page: edit details and skills, replace the resume, "Visible to employers in talent search" setting (#50, #60).
+- Saved jobs: "Save job" button (aria-pressed) and `/saved-jobs` page (#51).
+- Recommended jobs (rule-based, no AI): `GET /api/v1/recommendations/jobs` and `/recommended-jobs` page (#52).
+- Company logo upload in the employer Company tab; company name and logo shown on public job postings (#53).
+- Employer dashboard overview numbers (#54).
+- Automatic session renewal: `SessionKeeper` refreshes the 15-minute access token before it expires and `authFetch` retries once after a 401 (#55).
+- `POST /api/v1/auth/logout` revokes the refresh token; the site calls it on logout (#56).
+- Settings page with a working change-password form (the device stays signed in) and self-service account deletion with password confirmation, `DELETE /api/v1/account` (#57, #58).
+- Private documents: resumes and cover letters served only through `GET /api/v1/files/:folder/:name` to the owner, employers who received the application, and admins (#59).
+- `docs/plan-phase-2.md`: audit of API features missing from the website and the phase 2 plan; GitHub milestones M7–M10 and issues #47–#70 on the fork.
 - Local email driver (`MAIL_DRIVER=console`): emails and OTP codes are printed in the API logs, so no Mailgun account is needed locally.
 - Storage abstraction (`apps/api/src/lib/storage.ts`) with a local disk driver (`STORAGE_DRIVER=local`) next to Cloudinary; files get random names.
 - API tests for the local storage driver, error handling and CORS (27 tests in total).
@@ -61,6 +74,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The web app falls back to the local API instead of the production API when `NEXT_PUBLIC_API_URL` is missing.
 
 ### Changed
+- Privacy policy explains talent-search visibility, the opt-out and that documents are only shared with employers the candidate applies to (#60).
 - "Ask TriMerge AI" widget renamed "Ask TriMerge": typed questions are now answered from a built-in FAQ (14 topics, keyword matching in the browser, no AI provider, no cost, no data sent) instead of a canned "I can't answer yet" reply (#35).
 - Privacy policy: added Service Providers, Resume Processing and Automated Tools, and Data Retention sections; removed claims about analytics cookies the platform does not use; account deletion is by request (#11). Draft, needs legal review.
 - Error messages are announced to screen readers (`role="alert"`) and no longer disappear after 3.5 s on sign-up; blocking `alert()` removed (#32).
@@ -73,7 +87,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Docker Compose: MongoDB published on `127.0.0.1:27018` only, uploads volume, local email/storage drivers.
 - Mailgun and Cloudinary variables are now optional; they are only required when their driver is selected.
 
+### Removed
+- Dead code: unused components (ActionMenu, ApplicantsList, chart, CreateListingModal, PostJobModal), hooks (useApplicationAIMatch, useAutoAuth, useGetApplicationsForJob, useGetUser), the orphan `/candidate-overview` route and two unused `*Old` API functions (#64).
+- MFA mockup pages (`/mfa`, `/mfa/set-up`) that looked functional but did nothing (#61).
+- Mockup change-password page (now redirects to Settings).
+
 ### Fixed
+- ESLint: 0 errors (was 51); lint is now blocking in CI; `set-state-in-effect` kept as a documented warning (#63).
+- Resume/cover-letter picker in the application form is a real button (keyboard and screen readers); editor toolbar works with Enter/Space (#63).
+- Applying for a job uses the session-renewing fetch, so an expired token no longer fails the application.
+- Visitors could open the application form and only get an error at the end; "Apply" now asks them to log in first.
+- Account deletion (admin or self-service) now also deletes the user's uploaded files.
+- `PUT /candidates/me` creates the profile if the candidate skipped onboarding.
+- The job title in the job details panel is now a heading (screen readers).
 - Candidate "My applications" page showed hard-coded sample data; it now loads the candidate's real applications and statuses.
 - Employer dashboard and "Post a Job" wizard were unusable on phones (page wider than the screen, Next button off-screen).
 - 57 low-contrast grey text elements on logged-in pages (WCAG 1.4.3).

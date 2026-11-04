@@ -11,6 +11,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { fetchLocations } from '@/app/util/locations';
 // avoid useSearchParams (requires Suspense boundary) — read from window.location in effects instead
 import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice';
+import { JOB_DEPARTMENTS, departmentLabel } from '@/app/util/departments';
 import { JobCard } from '@/app/components/ui/JobCard';
 import { JobDetailDrawer } from '@/app/components/ui/JobDetailDrawer';
 import { ApplicationWizard } from '@/app/components/ui/ApplicationWizard';
@@ -42,7 +43,7 @@ function BrowseJobs() {
     applicationQuestions?: string[];
     status?: 'OPEN' | 'CLOSED' | 'DRAFT' | string;
     // department will be shown with a default for now
-    department?: 'ENGINEERING' | 'MARKETING' | 'HR' | 'SALES' | 'DESIGN' | string;
+    department?: string;
     // Optional display fields used by the detail drawer
     isNew?: boolean;
     salary?: string;
@@ -276,7 +277,7 @@ function BrowseJobs() {
       .then((json) => {
         const list = Array.isArray(json?.data) ? json.data : null
         if (Array.isArray(list)) {
-          const normalized = list.map((c: any) => ({ country: c.country, cities: Array.isArray(c.cities) ? c.cities : [] }))
+          const normalized = list.map((c: { country: string; cities?: unknown }) => ({ country: c.country, cities: Array.isArray(c.cities) ? (c.cities as string[]) : [] }))
           setCountriesData(normalized)
           if (normalized.length > 0) {
             setCountry(normalized[0].country)
@@ -313,7 +314,7 @@ function BrowseJobs() {
       .then((json) => {
         const states = json?.data?.states ?? json?.data ?? null
         if (Array.isArray(states) && states.length > 0) {
-          const names = states.map((s: any) => (typeof s === 'string' ? s : s.name || s.state || ''))
+          const names = states.map((s: string | { name?: string; state?: string }) => (typeof s === 'string' ? s : s.name || s.state || ''))
           if (country === 'United States' && !names.includes('District of Columbia')) {
             names.push('District of Columbia')
             names.sort()
@@ -375,7 +376,7 @@ function BrowseJobs() {
       .finally(() => setTimeout(() => setCitiesLoading(false), 0))
   }, [stateProvince, country, showCreateModal, countriesData])
 
-  const DEPARTMENTS = ['Engineering', 'Marketing', 'HR', 'Sales', 'Design', 'Operations']
+  const DEPARTMENTS = JOB_DEPARTMENTS
   const [employmentType, setEmploymentType] = useState<'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP' | string>('FULL_TIME')
   const [salaryMin, setSalaryMin] = useState<string>('')
   const [salaryMax, setSalaryMax] = useState<string>('')
@@ -403,7 +404,7 @@ function BrowseJobs() {
     setLocationInput('')
     // reset country/city to first available (fallback if not loaded)
     const first = (countriesData && countriesData.length > 0) ? countriesData[0] : (FALLBACK_COUNTRIES[0] ?? null)
-    if (first) { setCountry(first.country); setCity((first as any).cities?.[0] ?? '') }
+    if (first) { setCountry(first.country); setCity((first as { cities?: string[] }).cities?.[0] ?? '') }
     setDepartmentInput('')
     setEmploymentType('FULL_TIME')
     setSalaryMin('')
@@ -446,7 +447,7 @@ function BrowseJobs() {
     const payload = {
       title,
       description,
-      department: departmentInput.toUpperCase(),
+      department: departmentInput,
       requirements,
       location: locationInput,
       employmentType,
@@ -781,7 +782,7 @@ function BrowseJobs() {
                     >
                       <option value="">Select department...</option>
                       {DEPARTMENTS.map(d => (
-                        <option key={d} value={d}>{d}</option>
+                        <option key={d.value} value={d.value}>{d.label}</option>
                       ))}
                     </select>
                   </div>
@@ -838,7 +839,7 @@ function BrowseJobs() {
                             type="button"
                             aria-label="Drag minimum salary"
                             onPointerDown={(e) => {
-                              if ((e as any).button !== 0) return
+                              if ((e as { button?: number }).button !== 0) return
                               startThumbDrag('min', e)
                             }}
                             style={{
@@ -863,7 +864,7 @@ function BrowseJobs() {
                             type="button"
                             aria-label="Drag maximum salary"
                             onPointerDown={(e) => {
-                              if ((e as any).button !== 0) return
+                              if ((e as { button?: number }).button !== 0) return
                               startThumbDrag('max', e)
                             }}
                             style={{

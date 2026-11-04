@@ -2,6 +2,7 @@
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import AskTriMergeAI from './components/ui/AskTriMergeAI'
+import SessionKeeper from './components/SessionKeeper'
 import './styles/index.css'
 
 import React, { ReactNode } from 'react'
@@ -43,6 +44,7 @@ function Layout({ children }: { children: ReactNode }) {
       </head>
       <body className="tp-shell overflow-x-hidden antialiased" suppressHydrationWarning style={{ backgroundColor: 'var(--tp-bg)', color: 'var(--tp-ink)' }}>
         <UserProvider>
+          <SessionKeeper />
           <a href="#content" className="skip-link">Skip to content</a>
           <Navbar />
           <main id="content" tabIndex={-1}>{children}</main>

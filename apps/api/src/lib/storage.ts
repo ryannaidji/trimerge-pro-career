@@ -61,7 +61,11 @@ async function uploadToLocalDisk(file: Express.Multer.File, folder: StorageFolde
   await fs.writeFile(path.join(dir, name), file.buffer);
 
   return {
-    secure_url: `${env.PUBLIC_API_URL.replace(/\/$/, '')}/uploads/${folder}/${name}`,
+    // Resumes and cover letters are private (authenticated route, #59); logos are public
+    secure_url:
+      folder === 'company-logos'
+        ? `${env.PUBLIC_API_URL.replace(/\/$/, '')}/uploads/${folder}/${name}`
+        : `${env.PUBLIC_API_URL.replace(/\/$/, '')}/api/v1/files/${folder}/${name}`,
     public_id: `${folder}/${name}`,
     resource_type: folder === 'company-logos' ? 'image' : 'raw',
     bytes: file.buffer.length,
@@ -104,4 +108,19 @@ export async function storeFile(file: Express.Multer.File, folder: StorageFolder
     return uploadToCloudinary(file, folder, folder === 'company-logos' ? 'image' : 'raw');
   }
   return uploadToLocalDisk(file, folder);
+}
+
+/**
+ * Delete a locally stored file from its URL (account deletion, #58). Unknown or remote URLs
+ * (e.g. Cloudinary) are ignored; failures never block the deletion of the account itself.
+ */
+export async function deleteStoredFile(url?: string | null): Promise<void> {
+  if (!url) return;
+  const match = /\/(resumes|cover-letters|company-logos)\/([a-f0-9]{32}\.[a-z0-9]{1,5})$/.exec(url);
+  if (!match) return;
+  try {
+    await fs.unlink(path.resolve(process.cwd(), env.UPLOADS_DIR, match[1], match[2]));
+  } catch {
+    /* already gone */
+  }
 }

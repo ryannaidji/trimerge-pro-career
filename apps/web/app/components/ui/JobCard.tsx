@@ -1,4 +1,5 @@
 import { MapPin, Briefcase } from 'lucide-react';
+import { departmentLabel } from '@/app/util/departments';
 
 interface JobCardProps {
   id: string | number;
@@ -83,7 +84,7 @@ export function JobCard({ title, department, location, isNew, description, onCli
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Briefcase className="w-4 h-4" />
-          <span>{department}</span>
+          <span>{departmentLabel(department)}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <MapPin className="w-4 h-4" />

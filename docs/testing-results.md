@@ -7,9 +7,9 @@
 | Suite | Tool | Result |
 |---|---|---|
 | API unit and integration | Jest + Supertest + in-memory MongoDB | **33 / 33** (13 suites) |
-| Workflows (all five user profiles + access control) | `scripts/e2e-workflows.mjs` | **52 / 52** |
-| Browser: public + logged-in pages, Chrome desktop | Playwright + axe | **28 / 28** |
-| Browser: public + logged-in pages, Chrome mobile (Pixel 7) | Playwright + axe | **28 / 28** |
+| Workflows (all five user profiles + access control) | `scripts/e2e-workflows.mjs` | **72 / 72** |
+| Browser: public + logged-in pages, Chrome desktop | Playwright + axe | **38 / 38** |
+| Browser: public + logged-in pages, Chrome mobile (Pixel 7) | Playwright + axe | **38 / 38** |
 | Browser smoke, Microsoft Edge desktop | Playwright | **16 / 16** |
 | Browser smoke, Firefox desktop | Playwright | **16 / 16** |
 | Browser smoke, Safari engine (WebKit) desktop | Playwright | **16 / 16** |
@@ -29,7 +29,8 @@ employer managing postings, platform administrator.**
 5. Admin: log in → search → suspend (login refused) → reactivate → close job.
 6. Returning candidate: update profile, upload resume (served as download with nosniff), fake PDF rejected, bookmark add/list/remove, password reset by emailed code (old password refused), change password.
 7. Existing employer: edit job, candidate cannot edit it (403), create and delete a job, upload company logo, find talent by skill (no email or resume text exposed), candidates cannot search (403).
-8. Access control: anonymous apply 401, candidate listing applicants 403, employer on admin API 403, regex search treated as text.
+8. Phase 2: private resume downloads (owner 200, anonymous 401, unrelated employer 403, receiving employer 200, old public path 404), recommendations, talent-search opt-out, logout revokes the refresh token, self-service deletion (wrong password refused, deleted account cannot log in).
+9. Access control: anonymous apply 401, candidate listing applicants 403, employer on admin API 403, regex search treated as text.
 
 ## Browser smoke tests (`e2e/tests/smoke.spec.ts`)
 

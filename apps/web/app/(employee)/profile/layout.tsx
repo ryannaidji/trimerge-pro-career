@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Two-Factor Authentication",
-  description: "Verify your identity to continue.",
+  title: "My Profile",
+  description: "View and update your candidate profile and resume.",
   robots: { index: false, follow: false },
 };
 

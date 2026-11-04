@@ -130,8 +130,8 @@ export default function PrivacyPolicyPage() {
                 maxWidth: "44rem",
               }}
             >
-              TriMerge Consulting Group, P.A. ("TriMerge,"
-              "TriMergePRO Careers," "we," "our," or "us")
+              TriMerge Consulting Group, P.A. (&quot;TriMerge,&quot;
+              &quot;TriMergePRO Careers,&quot; &quot;we,&quot; &quot;our,&quot; or &quot;us&quot;)
               respects your privacy and is committed to protecting
               the personal information you provide while using the
               TriMergePRO Careers platform.
@@ -389,6 +389,12 @@ export default function PrivacyPolicyPage() {
               can be searched and, if you choose, used to pre-fill your
               profile. Any automated match score shown to employers is
               advisory only: hiring decisions are always made by people.
+              Employers can find candidate profiles through talent search
+              (name, desired role, location, experience and skills, never
+              contact details or resume text). You can turn this off at any
+              time in My profile; employers still see your profile when you
+              apply to their jobs. Resumes and cover letters are only shared
+              with the employers you apply to.
               If we enable an external AI service to help with matching,
               we will update this policy before doing so.
             </p>

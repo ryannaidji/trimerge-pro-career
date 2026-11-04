@@ -36,9 +36,10 @@ app.use(cors({
 app.use(apiLimiter);
 app.use(express.json({ limit: '1mb' }));
 // Locally stored uploads (#21): never executed or sniffed; documents are downloaded, not rendered
+// Only company logos are public; resumes and cover letters go through /api/v1/files (#59)
 app.use(
-  '/uploads',
-  express.static(path.resolve(process.cwd(), env.UPLOADS_DIR), {
+  '/uploads/company-logos',
+  express.static(path.resolve(process.cwd(), env.UPLOADS_DIR, 'company-logos'), {
     dotfiles: 'deny',
     index: false,
     setHeaders: (res, filePath) => {

@@ -509,7 +509,7 @@ export const applicationService = {
 
     const [applicationsRaw, totalRaw] = await Promise.all([
       ApplicationModel.find(applicationFilter)
-        .populate('candidateId', 'email accountType')
+        .populate('candidateId', 'email accountType profile.firstName profile.lastName')
         .sort(sort)
         .lean(),
       ApplicationModel.countDocuments(applicationFilter),

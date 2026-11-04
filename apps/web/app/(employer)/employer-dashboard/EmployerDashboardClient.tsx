@@ -5,6 +5,9 @@ import { checkInclusiveLanguage, draftJobDescription } from '@/app/util/jobDescr
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import CompanyLogoUploader from '@/app/components/ui/CompanyLogoUploader';
+import EmployerOverview from '@/app/components/ui/EmployerOverview';
+import { JOB_DEPARTMENTS, departmentLabel } from '@/app/util/departments';
 import { useSearchParams } from 'next/navigation';
 import { BriefcaseBusiness, Building2, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, Users, X } from 'lucide-react';
 import { useUser } from '@/contexts/userContext/userContext';
@@ -139,6 +142,23 @@ const tabMeta: Array<{ id: Tab; label: string; icon: React.ComponentType<{ size?
   { id: 'company', label: 'Company', icon: Building2 },
 ];
 
+// Toolbar button for the rich-text editor (module-level component, #63)
+function ToolbarButton({ label, title, onAction }: { label: React.ReactNode; title: string; onAction: () => void }) {
+  return (
+    <button
+      type="button"
+      title={title}
+      aria-label={title}
+      onMouseDown={(e) => { e.preventDefault(); onAction(); }}
+      // Keyboard activation (Enter/Space) fires click with detail 0; mouse is handled above
+      onClick={(e) => { if (e.detail === 0) onAction(); }}
+      style={{ padding: '0.22rem 0.5rem', borderRadius: '6px', border: '1px solid rgba(148,163,184,0.22)', background: 'white', color: '#475569', fontSize: '0.77rem', fontWeight: 600, cursor: 'pointer', lineHeight: 1.35, display: 'inline-flex', alignItems: 'center' }}
+    >
+      {label}
+    </button>
+  );
+}
+
 function RichTextArea({
   value,
   onChange,
@@ -179,31 +199,20 @@ function RichTextArea({
     document.execCommand(cmd, false, arg ?? undefined);
   };
 
-  const tbBtn = (label: React.ReactNode, title: string, fn: () => void) => (
-    <button
-      key={title}
-      type="button"
-      title={title}
-      onMouseDown={(e) => { e.preventDefault(); fn(); }}
-      style={{ padding: '0.22rem 0.5rem', borderRadius: '6px', border: '1px solid rgba(148,163,184,0.22)', background: 'white', color: '#475569', fontSize: '0.77rem', fontWeight: 600, cursor: 'pointer', lineHeight: 1.35, display: 'inline-flex', alignItems: 'center' }}
-    >
-      {label}
-    </button>
-  );
 
   return (
     <div style={{ border: '1px solid rgba(148,163,184,0.25)', borderRadius: '10px', overflow: 'hidden', background: 'white' }}>
       {/* Toolbar */}
       <div style={{ display: 'flex', gap: '0.28rem', padding: '0.42rem 0.7rem', background: '#f1f5f9', borderBottom: '1px solid rgba(148,163,184,0.18)', flexWrap: 'wrap', alignItems: 'center' }}>
-        {tbBtn(<strong>B</strong>, 'Bold', () => exec('bold'))}
-        {tbBtn(<em style={{ fontStyle: 'italic' }}>I</em>, 'Italic', () => exec('italic'))}
-        {tbBtn(<u>U</u>, 'Underline', () => exec('underline'))}
+        <ToolbarButton label={<strong>B</strong>} title="Bold" onAction={() => exec('bold')} />
+        <ToolbarButton label={<em style={{ fontStyle: 'italic' }}>I</em>} title="Italic" onAction={() => exec('italic')} />
+        <ToolbarButton label={<u>U</u>} title="Underline" onAction={() => exec('underline')} />
         <div style={{ width: 1, height: 15, background: 'rgba(148,163,184,0.35)', margin: '0 0.1rem', flexShrink: 0 }} />
-        {tbBtn('• Bullet list', 'Bullet list', () => exec('insertUnorderedList'))}
-        {tbBtn('1. Numbered', 'Numbered list', () => exec('insertOrderedList'))}
+        <ToolbarButton label={'• Bullet list'} title="Bullet list" onAction={() => exec('insertUnorderedList')} />
+        <ToolbarButton label={'1. Numbered'} title="Numbered list" onAction={() => exec('insertOrderedList')} />
         <div style={{ width: 1, height: 15, background: 'rgba(148,163,184,0.35)', margin: '0 0.1rem', flexShrink: 0 }} />
-        {tbBtn('¶ Paragraph', 'Paragraph block', () => exec('formatBlock', 'p'))}
-        {tbBtn('✕ Clear', 'Clear formatting', () => exec('removeFormat'))}
+        <ToolbarButton label={'¶ Paragraph'} title="Paragraph block" onAction={() => exec('formatBlock', 'p')} />
+        <ToolbarButton label={'✕ Clear'} title="Clear formatting" onAction={() => exec('removeFormat')} />
       </div>
       {/* Editable area with placeholder */}
       <div style={{ position: 'relative' }}>
@@ -922,6 +931,7 @@ export function EmployerDashboard() {
           {/* Jobs tab */}
           {activeTab === 'jobs' && (
             <div>
+              <EmployerOverview />
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.1rem', gap: '0.75rem' }}>
                 <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Your job postings</h2>
                 <button
@@ -960,7 +970,7 @@ export function EmployerDashboard() {
                             </span>
                           </div>
                           <div style={{ color: '#64748b', marginTop: '0.2rem', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span>{job.department ?? 'General'} · {job.location ?? 'Remote'}</span>
+                            <span>{departmentLabel(job.department) || 'General'} · {job.location ?? 'Remote'}</span>
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                               <span style={{ width: '3px', height: '3px', borderRadius: '999px', background: '#cbd5e1', display: 'inline-block' }} />
                               <Users size={11} />
@@ -1020,7 +1030,7 @@ export function EmployerDashboard() {
 
           {/* Applications tab */}
           {activeTab === 'applications' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(15rem, 18rem) 1fr', gap: '1.25rem', alignItems: 'start' }}>
+            <div className="am-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(15rem, 18rem) 1fr', gap: '1.25rem', alignItems: 'start' }}>
               <div style={{ position: 'sticky', top: '1rem' }}>
                 <p style={{ margin: '0 0 0.65rem', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Select a job</p>
                 <div style={{ display: 'grid', gap: '0.45rem' }}>
@@ -1034,6 +1044,7 @@ export function EmployerDashboard() {
                         key={jobId}
                         type="button"
                         onClick={() => setSelectedJobId(jobId)}
+                        aria-pressed={isActive}
                         style={{
                           textAlign: 'left',
                           padding: '0.75rem 0.9rem',
@@ -1044,7 +1055,7 @@ export function EmployerDashboard() {
                         }}
                       >
                         <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>{job.title ?? 'Untitled job'}</div>
-                        <div style={{ marginTop: '0.2rem', color: '#64748b', fontSize: '0.78rem' }}>{job.department ?? 'General'} · {job.location ?? 'Remote'}</div>
+                        <div style={{ marginTop: '0.2rem', color: '#475569', fontSize: '0.78rem' }}>{departmentLabel(job.department) || 'General'} · {job.location ?? 'Remote'}</div>
                       </button>
                     );
                   })}
@@ -1087,6 +1098,8 @@ export function EmployerDashboard() {
                   )}
                 </div>
               </div>
+
+              <CompanyLogoUploader initialUrl={String(profileRecord['logoUrl'] ?? '')} companyName={companyName} />
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(20rem, 1fr))', gap: '1.25rem', alignItems: 'start' }}>
                 {/* Left: identity + details */}
@@ -1216,8 +1229,8 @@ export function EmployerDashboard() {
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: 'var(--tp-muted)', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Department</label>
                   <select value={editJobForm.department} onChange={(e) => setEditJobForm((p) => ({ ...p, department: e.target.value }))} style={{ width: '100%', padding: '0.85rem 0.95rem', borderRadius: '12px', border: '1px solid rgba(148,163,184,0.2)', background: '#f8fafc', cursor: 'pointer', fontSize: '1rem' }}>
-                    {['ENGINEERING', 'MARKETING', 'HR', 'SALES', 'DESIGN'].map((d) => (
-                      <option key={d} value={d}>{d.charAt(0) + d.slice(1).toLowerCase()}</option>
+                    {JOB_DEPARTMENTS.map((d) => (
+                      <option key={d.value} value={d.value}>{d.label}</option>
                     ))}
                   </select>
                 </div>
@@ -1373,8 +1386,8 @@ export function EmployerDashboard() {
                       <div>
                         <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#64748b', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Department</label>
                         <select value={createForm.department} onChange={(e) => setCreateForm((p) => ({ ...p, department: e.target.value }))} style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '1rem', cursor: 'pointer' }}>
-                          {['ENGINEERING','MARKETING','HR','SALES','DESIGN','OPERATIONS'].map((d) => (
-                            <option key={d} value={d}>{d.charAt(0) + d.slice(1).toLowerCase()}</option>
+                          {JOB_DEPARTMENTS.map((d) => (
+                            <option key={d.value} value={d.value}>{d.label}</option>
                           ))}
                         </select>
                       </div>
@@ -1665,7 +1678,7 @@ export function EmployerDashboard() {
                 <div style={{ display: 'grid', gap: '1rem' }}>
                   <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', border: '1px solid rgba(148,163,184,0.15)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.07)' }}>
                     <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>Application Screening Questions</h2>
-                    <p style={{ margin: '0', color: '#64748b', fontSize: '0.92rem' }}>Toggle the questions you want candidates to answer when applying. All are optional — only enable what's relevant to this role.</p>
+                    <p style={{ margin: '0', color: '#64748b', fontSize: '0.92rem' }}>Toggle the questions you want candidates to answer when applying. All are optional — only enable what&apos;s relevant to this role.</p>
                   </div>
 
                   {QUESTION_GROUPS.map((group) => (
