@@ -11,6 +11,8 @@ import adminRouter from '../modules/admin/admin.routes';
 import dashboardRouter from '../modules/dashboard/dashboard.routes';
 import settingsRouter from '../modules/settings/settings.routes';
 import publicJobsRouter from '../modules/jobs/public-jobs.routes';
+import filesRouter from '../modules/files/files.routes';
+import accountRouter from '../modules/account/account.routes';
 import { authLimiter } from '../middleware/rate-limit';
 
 const router = Router();
@@ -35,6 +37,7 @@ const sensitiveAuthPaths = [
 ];
 router.post(sensitiveAuthPaths, authLimiter);
 
+router.use(accountRouter);
 router.use('/api/v1/auth', authRouter);
 router.use('/api/v1/onboarding', onboardingRouter);
 router.use('/api/v1/employers', employerRouter);
@@ -47,5 +50,6 @@ router.use('/api/v1/admin', adminRouter);
 router.use('/api/v1/dashboard', dashboardRouter);
 router.use('/api/v1/settings', settingsRouter);
 router.use('/api/v1/public/jobs', publicJobsRouter);
+router.use('/api/v1/files', filesRouter);
 
 export default router;

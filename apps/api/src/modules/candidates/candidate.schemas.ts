@@ -30,6 +30,7 @@ export const updateCandidateProfileSchema = z.object({
   jobTitleOrDesiredRole: z.string().trim().optional(),
   yearsOfExperience: z.string().trim().optional(),
   professionalSummary: z.string().trim().optional(),
+  searchable: z.boolean().optional(),
 });
 
 export type CreateCandidateProfileInput = z.infer<typeof createCandidateProfileSchema>;

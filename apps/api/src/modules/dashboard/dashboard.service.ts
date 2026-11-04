@@ -18,11 +18,11 @@ function tokenize(value?: string): string[] {
     .filter(Boolean);
 }
 
-function uniqueNormalizedSkills(skills: string[] = []): string[] {
+export function uniqueNormalizedSkills(skills: string[] = []): string[] {
   return [...new Set(skills.map((skill) => normalizeText(skill)).filter(Boolean))];
 }
 
-function getTitleMatchScore(jobTitle?: string, candidateTitle?: string): number {
+export function getTitleMatchScore(jobTitle?: string, candidateTitle?: string): number {
   const jobTokens = tokenize(jobTitle);
   const candidateTokens = tokenize(candidateTitle);
 
@@ -34,7 +34,7 @@ function getTitleMatchScore(jobTitle?: string, candidateTitle?: string): number 
   return Math.min(20, overlap * 10);
 }
 
-function getTextMatchScore(jobText: string, candidateText: string): number {
+export function getTextMatchScore(jobText: string, candidateText: string): number {
   const jobTokens = tokenize(jobText);
   const candidateTokens = tokenize(candidateText);
 
@@ -46,7 +46,7 @@ function getTextMatchScore(jobText: string, candidateText: string): number {
   return Math.min(20, overlap * 2);
 }
 
-function calculateSkillScore(jobSkills: string[], candidateSkills: string[]) {
+export function calculateSkillScore(jobSkills: string[], candidateSkills: string[]) {
   const normalizedJobSkills = uniqueNormalizedSkills(jobSkills);
   const normalizedCandidateSkills = uniqueNormalizedSkills(candidateSkills);
 

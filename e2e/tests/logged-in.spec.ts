@@ -14,12 +14,17 @@ const candidate = { email: `pw.candidate.${run}@example.test`, name: `Robin Cand
 const admin = { email: process.env.ADMIN_EMAIL || 'admin@trimerge.local', password: process.env.ADMIN_PASSWORD || 'Admin-Local-2026!' };
 const jobTitle = `Grants Analyst ${run}`;
 
-async function api(path: string, init: { method?: string; body?: unknown; token?: string } = {}) {
+async function api(path: string, init: { method?: string; body?: unknown; token?: string } = {}, attempt = 1): Promise<{ status: number; data: any }> {
+  // Retry once on a network error (Docker on Windows occasionally drops a connection)
   const res = await fetch(`${API}${path}`, {
     method: init.method || 'GET',
     headers: { 'Content-Type': 'application/json', ...(init.token ? { Authorization: `Bearer ${init.token}` } : {}) },
     body: init.body ? JSON.stringify(init.body) : undefined,
+  }).catch((err) => {
+    if (attempt < 2) return null;
+    throw err;
   });
+  if (!res) return api(path, init, attempt + 1);
   return { status: res.status, data: await res.json().catch(() => ({})) };
 }
 
@@ -166,4 +171,117 @@ test('employer: job location uses local data and a free-text city (#43)', async 
   await page.getByRole('textbox', { name: 'City' }).fill('Tallahassee');
   await expect(page.getByRole('textbox', { name: 'City' })).toHaveValue('Tallahassee');
   expect(external).toEqual([]);
+});
+
+// ---------------- Phase 2 (M7 / M8) ----------------
+
+test('candidate: account menu reaches every candidate page (#49)', async ({ page }) => {
+  await signIn(page, 'candidate');
+  await page.goto('/applications');
+  const menuButton = page.getByRole('button', { name: /My account/ });
+  for (const [label, path] of [['My profile', '/profile'], ['Saved jobs', '/saved-jobs'], ['Recommended jobs', '/recommended-jobs'], ['Settings', '/settings'], ['My applications', '/applications']] as const) {
+    if (await menuButton.isVisible()) {
+      await menuButton.click();
+      await page.getByRole('link', { name: label, exact: true }).first().click();
+    } else {
+      await page.getByRole('button', { name: 'Toggle navigation' }).click();
+      await page.getByRole('link', { name: label, exact: true }).first().click();
+    }
+    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await expect(page.locator('h1').first()).toBeVisible();
+    await expectAccessible(page);
+  }
+});
+
+test('candidate: edit profile and hide from talent search (#50, #60)', async ({ page }) => {
+  await signIn(page, 'candidate');
+  await page.goto('/profile');
+  await page.getByLabel('Desired role').fill('Senior Grants Analyst');
+  await page.getByLabel('Skills (comma-separated)').fill('Grants Management, Excel, GASB');
+  await page.getByLabel(/Visible to employers/).uncheck();
+  await page.getByRole('button', { name: 'Save profile' }).click();
+  await expect(page.getByText('Your profile has been saved.')).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel('Desired role')).toHaveValue('Senior Grants Analyst');
+  await expect(page.getByLabel(/Visible to employers/)).not.toBeChecked();
+  await expectAccessible(page);
+  // restore visibility for the talent-search test
+  await page.getByLabel(/Visible to employers/).check();
+  await page.getByRole('button', { name: 'Save profile' }).click();
+  await expect(page.getByText('Your profile has been saved.')).toBeVisible();
+});
+
+test('candidate: save a job and find it in Saved jobs (#51)', async ({ page }) => {
+  await signIn(page, 'candidate');
+  await page.goto('/browse-jobs');
+  await page.getByText(jobTitle).first().click();
+  await page.getByRole('button', { name: 'Save job' }).click();
+  await expect(page.getByRole('button', { name: 'Saved' })).toHaveAttribute('aria-pressed', 'true');
+  await page.goto('/saved-jobs');
+  await expect(page.getByRole('heading', { name: jobTitle })).toBeVisible();
+  await expectAccessible(page);
+});
+
+test('candidate: recommended jobs page loads (#52)', async ({ page }) => {
+  await signIn(page, 'candidate');
+  await page.goto('/recommended-jobs');
+  await expect(page.getByRole('heading', { level: 1, name: 'Recommended jobs' })).toBeVisible();
+  await expect(page.getByText('Finding jobs for you…')).toBeHidden({ timeout: 20_000 });
+  await expectAccessible(page);
+});
+
+test('candidate: change password from Settings (#57)', async ({ page }) => {
+  await signIn(page, 'candidate');
+  await page.goto('/settings');
+  const fill = async (from: string, to: string) => {
+    await page.getByLabel('Current password').fill(from);
+    await page.getByLabel(/^New password/).fill(to);
+    await page.getByLabel('Confirm new password').fill(to);
+    await page.getByRole('button', { name: 'Change password' }).click();
+    await expect(page.getByText('Your password has been changed.')).toBeVisible();
+  };
+  await fill(password, 'Temp-Passw0rd-123!');
+  await fill('Temp-Passw0rd-123!', password);
+  // The page signed this device back in: the stored refresh token must still work
+  const refreshed = await page.evaluate(async (api) => {
+    const r = await fetch(`${api}/api/v1/auth/refresh-token`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: localStorage.getItem('tm_refresh') }) });
+    return r.status;
+  }, API);
+  expect(refreshed).toBe(200);
+  await expectAccessible(page);
+});
+
+test('session: an expired access token is refreshed automatically (#55)', async ({ page }) => {
+  // Fresh login: other tests change the password, which revokes older refresh tokens
+  sessions.candidate = (await api('/api/v1/auth/login', { method: 'POST', body: { email: candidate.email, password } })).data;
+  await signIn(page, 'candidate');
+  // Simulate an expired/invalid access token; the refresh token is still valid
+  await page.evaluate(() => localStorage.setItem('tm_token', 'expired.invalid.token'));
+  await page.goto('/profile');
+  await expect(page.getByLabel('Desired role')).toBeVisible({ timeout: 20_000 });
+  const token = await page.evaluate(() => localStorage.getItem('tm_token'));
+  expect(token).not.toBe('expired.invalid.token');
+});
+
+test('employer: review an applicant and shortlist them (#47, #48)', async ({ page }) => {
+  await signIn(page, 'employer');
+  await page.goto('/employer-dashboard');
+  await expect(page.getByText('Applications', { exact: true }).first()).toBeVisible(); // overview (#54)
+  await page.getByRole('button', { name: 'Candidates' }).first().click();
+  await page.getByRole('button', { name: new RegExp(jobTitle) }).first().click();
+  await expect(page.getByRole('heading', { level: 2, name: candidate.name })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText('Interested in this role.')).toBeVisible();
+  await page.getByLabel('Application status').selectOption('SHORTLISTED');
+  await expect(page.getByText(/is now "Shortlisted"/)).toBeVisible();
+  await expectAccessible(page);
+});
+
+test('employer: upload a company logo (#53)', async ({ page }) => {
+  await signIn(page, 'employer');
+  await page.goto('/employer-dashboard');
+  await page.getByRole('button', { name: 'Company' }).first().click();
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+  await page.getByLabel(/Upload a logo|Replace logo/).setInputFiles({ name: 'logo.png', mimeType: 'image/png', buffer: png });
+  await expect(page.getByText('Logo updated.', { exact: false })).toBeVisible();
+  await expectAccessible(page);
 });

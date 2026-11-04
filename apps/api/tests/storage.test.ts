@@ -24,7 +24,7 @@ describe('Local storage driver', () => {
       'resumes'
     );
 
-    expect(result.secure_url).toMatch(/^http:\/\/localhost:4000\/uploads\/resumes\/[a-f0-9]{32}\.pdf$/);
+    expect(result.secure_url).toMatch(/^http:\/\/localhost:4000\/api\/v1\/files\/resumes\/[a-f0-9]{32}\.pdf$/);
     expect(result.bytes).toBe(10);
     const stored = await fs.readFile(path.join(dir, result.public_id), 'utf8');
     expect(stored).toBe('%PDF-hello');

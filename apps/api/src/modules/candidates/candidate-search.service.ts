@@ -32,7 +32,8 @@ export async function searchCandidates(query: CandidateSearchQuery) {
   const words = tokens(query.q);
   const location = normalize(query.location);
 
-  const profiles = await CandidateProfileModel.find({})
+  // Candidates who opted out of talent search are never returned (#60)
+  const profiles = await CandidateProfileModel.find({ searchable: { $ne: false } })
     .select('userId skills headline jobTitleOrDesiredRole yearsOfExperience location professionalSummary bio resumeText resumeUrl updatedAt')
     .populate('userId', '_id profile accountType status')
     .lean();

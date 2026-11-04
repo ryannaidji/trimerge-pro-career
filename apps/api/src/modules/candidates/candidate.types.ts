@@ -30,6 +30,7 @@ export interface CandidateProfile {
   jobTitleOrDesiredRole?: string;
   yearsOfExperience?: string;
   professionalSummary?: string;
+  searchable?: boolean;
 }
 
 export interface CandidateProfileDocument extends CandidateProfile, Document {

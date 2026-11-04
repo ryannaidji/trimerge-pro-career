@@ -8,6 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Employer applicant manager: real candidate details, cover letter, documents, search and status filter, and a status control (New, Reviewed, Shortlisted, Not selected, Hired) with email to the candidate (#47, #48).
+- Candidate account menu (My applications, Recommended jobs, Saved jobs, My profile, Settings, Log out), keyboard accessible, also in the mobile menu (#49).
+- "My profile" page: edit details and skills, replace the resume, "Visible to employers in talent search" setting (#50, #60).
+- Saved jobs: "Save job" button (aria-pressed) and `/saved-jobs` page (#51).
+- Recommended jobs (rule-based, no AI): `GET /api/v1/recommendations/jobs` and `/recommended-jobs` page (#52).
+- Company logo upload in the employer Company tab; company name and logo shown on public job postings (#53).
+- Employer dashboard overview numbers (#54).
+- Automatic session renewal: `SessionKeeper` refreshes the 15-minute access token before it expires and `authFetch` retries once after a 401 (#55).
+- `POST /api/v1/auth/logout` revokes the refresh token; the site calls it on logout (#56).
+- Settings page with a working change-password form (the device stays signed in) and self-service account deletion with password confirmation, `DELETE /api/v1/account` (#57, #58).
+- Private documents: resumes and cover letters served only through `GET /api/v1/files/:folder/:name` to the owner, employers who received the application, and admins (#59).
 - `docs/plan-phase-2.md`: audit of API features missing from the website and the phase 2 plan; GitHub milestones M7–M10 and issues #47–#70 on the fork.
 - Local email driver (`MAIL_DRIVER=console`): emails and OTP codes are printed in the API logs, so no Mailgun account is needed locally.
 - Storage abstraction (`apps/api/src/lib/storage.ts`) with a local disk driver (`STORAGE_DRIVER=local`) next to Cloudinary; files get random names.
@@ -74,7 +85,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Docker Compose: MongoDB published on `127.0.0.1:27018` only, uploads volume, local email/storage drivers.
 - Mailgun and Cloudinary variables are now optional; they are only required when their driver is selected.
 
+### Removed
+- MFA mockup pages (`/mfa`, `/mfa/set-up`) that looked functional but did nothing (#61).
+- Mockup change-password page (now redirects to Settings).
+
 ### Fixed
+- Visitors could open the application form and only get an error at the end; "Apply" now asks them to log in first.
+- Account deletion (admin or self-service) now also deletes the user's uploaded files.
+- `PUT /candidates/me` creates the profile if the candidate skipped onboarding.
+- The job title in the job details panel is now a heading (screen readers).
 - Candidate "My applications" page showed hard-coded sample data; it now loads the candidate's real applications and statuses.
 - Employer dashboard and "Post a Job" wizard were unusable on phones (page wider than the screen, Next button off-screen).
 - 57 low-contrast grey text elements on logged-in pages (WCAG 1.4.3).

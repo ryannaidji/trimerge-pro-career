@@ -35,6 +35,8 @@ const candidateProfileSchema = new Schema<CandidateProfileDocument>(
     jobTitleOrDesiredRole: { type: String, trim: true },
     yearsOfExperience: { type: String, trim: true },
     professionalSummary: { type: String, trim: true },
+    // Visible to employers in talent search (#60); candidates can opt out
+    searchable: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
