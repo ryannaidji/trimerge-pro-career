@@ -1,7 +1,10 @@
 "use client";
 import { API_URL } from "@/app/util/apiUrl";
+import { fetchLocations } from '@/app/util/locations';
+import { checkInclusiveLanguage, draftJobDescription } from '@/app/util/jobDescriptionAssistant';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import { BriefcaseBusiness, Building2, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, Users, X } from 'lucide-react';
 import { useUser } from '@/contexts/userContext/userContext';
@@ -205,7 +208,7 @@ function RichTextArea({
       {/* Editable area with placeholder */}
       <div style={{ position: 'relative' }}>
         {isEmpty && placeholder && (
-          <div style={{ position: 'absolute', top: '0.85rem', left: '1rem', color: '#94a3b8', pointerEvents: 'none', fontSize: '1rem', lineHeight: 1.6, zIndex: 0 }}>
+          <div style={{ position: 'absolute', top: '0.85rem', left: '1rem', color: '#64748b', pointerEvents: 'none', fontSize: '1rem', lineHeight: 1.6, zIndex: 0 }}>
             {placeholder}
           </div>
         )}
@@ -446,7 +449,7 @@ export function EmployerDashboard() {
     if (!editingJob || !editLocCountry) return;
     setEditStatesForCountry(null);
     setEditCitiesForState(null);
-    fetch('https://countriesnow.space/api/v0.1/countries/states', {
+    fetchLocations('countries/states', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country: editLocCountry }),
@@ -483,7 +486,7 @@ export function EmployerDashboard() {
       return;
     }
     setEditCitiesForState(null);
-    fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+    fetchLocations('countries/state/cities', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country: editLocCountry, state: editLocState }),
@@ -643,7 +646,7 @@ export function EmployerDashboard() {
     if (!showCreateModal) return;
     if (countriesData || countriesLoading) return;
     setCountriesLoading(true);
-    fetch('https://countriesnow.space/api/v0.1/countries')
+    fetchLocations('countries')
       .then((r) => r.json())
       .then((json) => {
         const list = Array.isArray(json?.data) ? json.data as CountryInfo[] : null;
@@ -672,7 +675,7 @@ export function EmployerDashboard() {
     setStatesForCountry(null);
     setCitiesForState(null);
     setLocationState('');
-    fetch('https://countriesnow.space/api/v0.1/countries/states', {
+    fetchLocations('countries/states', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country: locationCountry }),
@@ -715,7 +718,7 @@ export function EmployerDashboard() {
       return;
     }
     setCitiesForState(null);
-    fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+    fetchLocations('countries/state/cities', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ country: locationCountry, state: locationState }),
@@ -858,24 +861,24 @@ export function EmployerDashboard() {
 
   return (
     <>
-      <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex' }}>
+      <div className="ed-layout" style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex' }}>
 
         {/* Sidebar */}
-        <aside style={{ width: sidebarCollapsed ? '60px' : '224px', flexShrink: 0, borderRight: '1px solid rgba(148,163,184,0.15)', background: 'white', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto', transition: 'width 0.2s ease', overflow: 'hidden' }}>
+        <aside className="ed-aside" style={{ width: sidebarCollapsed ? '60px' : '224px', flexShrink: 0, borderRight: '1px solid rgba(148,163,184,0.15)', background: 'white', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto', transition: 'width 0.2s ease', overflow: 'hidden' }}>
 
           {/* Header row: company name + collapse toggle */}
           <div style={{ padding: sidebarCollapsed ? '1rem 0' : '1.1rem 1.1rem 0.9rem', borderBottom: '1px solid rgba(148,163,184,0.1)', display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'space-between', gap: '0.5rem', minHeight: '60px' }}>
             {!sidebarCollapsed && (
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#0f172a', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{companyName}</div>
-                <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{recruiterRole}</div>
+                <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{recruiterRole}</div>
               </div>
             )}
             <button
               type="button"
               onClick={() => setSidebarCollapsed((c) => !c)}
               title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              style={{ padding: '0.35rem', borderRadius: '6px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8', display: 'grid', placeItems: 'center', flexShrink: 0 }}
+              style={{ padding: '0.35rem', borderRadius: '6px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b', display: 'grid', placeItems: 'center', flexShrink: 0 }}
             >
               {sidebarCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
             </button>
@@ -914,7 +917,7 @@ export function EmployerDashboard() {
         </aside>
 
         {/* Content */}
-        <main style={{ flex: 1, minWidth: 0, padding: '2rem 2.5rem', overflowY: 'auto' }}>
+        <main className="ed-main" style={{ flex: 1, minWidth: 0, padding: '2rem 2.5rem', overflowY: 'auto' }}>
 
           {/* Jobs tab */}
           {activeTab === 'jobs' && (
@@ -932,9 +935,9 @@ export function EmployerDashboard() {
               </div>
 
               {loadingJobs ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>Loading jobs...</div>
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>Loading jobs...</div>
               ) : employerJobs.length === 0 ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8', background: 'white', borderRadius: '14px', border: '1px solid rgba(148,163,184,0.15)' }}>No employer jobs found yet.</div>
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b', background: 'white', borderRadius: '14px', border: '1px solid rgba(148,163,184,0.15)' }}>No employer jobs found yet.</div>
               ) : (
                 <div style={{ display: 'grid', gap: '0.55rem' }}>
                   {employerJobs.map((job, index) => {
@@ -956,7 +959,7 @@ export function EmployerDashboard() {
                               {job.status ?? 'OPEN'}
                             </span>
                           </div>
-                          <div style={{ color: '#94a3b8', marginTop: '0.2rem', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <div style={{ color: '#64748b', marginTop: '0.2rem', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <span>{job.department ?? 'General'} · {job.location ?? 'Remote'}</span>
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                               <span style={{ width: '3px', height: '3px', borderRadius: '999px', background: '#cbd5e1', display: 'inline-block' }} />
@@ -1019,10 +1022,10 @@ export function EmployerDashboard() {
           {activeTab === 'applications' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(15rem, 18rem) 1fr', gap: '1.25rem', alignItems: 'start' }}>
               <div style={{ position: 'sticky', top: '1rem' }}>
-                <p style={{ margin: '0 0 0.65rem', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Select a job</p>
+                <p style={{ margin: '0 0 0.65rem', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Select a job</p>
                 <div style={{ display: 'grid', gap: '0.45rem' }}>
                   {employerJobs.length === 0 ? (
-                    <div style={{ color: '#94a3b8', fontSize: '0.88rem' }}>No jobs available yet.</div>
+                    <div style={{ color: '#64748b', fontSize: '0.88rem' }}>No jobs available yet.</div>
                   ) : employerJobs.map((job, index) => {
                     const jobId = String(job.id ?? job._id ?? `${index}`);
                     const isActive = selectedJobId ? selectedJobId === jobId : index === 0;
@@ -1041,7 +1044,7 @@ export function EmployerDashboard() {
                         }}
                       >
                         <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>{job.title ?? 'Untitled job'}</div>
-                        <div style={{ marginTop: '0.2rem', color: '#94a3b8', fontSize: '0.78rem' }}>{job.department ?? 'General'} · {job.location ?? 'Remote'}</div>
+                        <div style={{ marginTop: '0.2rem', color: '#64748b', fontSize: '0.78rem' }}>{job.department ?? 'General'} · {job.location ?? 'Remote'}</div>
                       </button>
                     );
                   })}
@@ -1052,7 +1055,7 @@ export function EmployerDashboard() {
                 {selectedJob ? (
                   <CandidateOverviewClient jobId={String(selectedJob.id ?? selectedJob._id ?? '')} />
                 ) : (
-                  <div style={{ padding: '2rem', background: 'white', borderRadius: '14px', border: '1px solid rgba(148,163,184,0.15)', color: '#94a3b8', fontSize: '0.9rem' }}>
+                  <div style={{ padding: '2rem', background: 'white', borderRadius: '14px', border: '1px solid rgba(148,163,184,0.15)', color: '#64748b', fontSize: '0.9rem' }}>
                     Select a job on the left to load applicants.
                   </div>
                 )}
@@ -1089,14 +1092,14 @@ export function EmployerDashboard() {
                 {/* Left: identity + details */}
                 <div style={{ display: 'grid', gap: '1rem' }}>
                   <div style={{ padding: '1.25rem', background: 'white', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.15)' }}>
-                    <p style={{ margin: '0 0 0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Identity</p>
+                    <p style={{ margin: '0 0 0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Identity</p>
                     <div style={{ display: 'grid', gap: '0.75rem' }}>
                       {[
                         { label: 'Company name', editKey: 'companyName' as const, viewVal: companyName, editable: true },
                         { label: 'Role / title', editKey: 'yourRole' as const, viewVal: recruiterRole, editable: true },
                       ].map(({ label, editKey, viewVal, editable }) => (
                         <div key={label} style={{ display: 'grid', gap: '0.25rem' }}>
-                          <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>{label}</label>
+                          <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>{label}</label>
                           {isEditing && editable ? (
                             <input value={editForm[editKey]} onChange={(e) => setEditForm((p) => ({ ...p, [editKey]: e.target.value }))} placeholder={label} style={{ width: '100%', boxSizing: 'border-box', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', fontSize: '0.92rem', fontFamily: 'inherit' }} />
                           ) : (
@@ -1105,21 +1108,21 @@ export function EmployerDashboard() {
                         </div>
                       ))}
                       <div style={{ display: 'grid', gap: '0.25rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Full name</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Full name</label>
                         <div style={{ fontSize: '0.92rem', color: '#475569' }}>{`${state.user?.profile?.firstName ?? ''} ${state.user?.profile?.lastName ?? ''}`.trim() || 'Unknown'}</div>
                       </div>
                       <div style={{ display: 'grid', gap: '0.25rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Email</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Email</label>
                         <div style={{ fontSize: '0.92rem', color: '#475569' }}>{state.user?.email ?? 'Unknown'}</div>
                       </div>
                     </div>
                   </div>
 
                   <div style={{ padding: '1.25rem', background: 'white', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.15)' }}>
-                    <p style={{ margin: '0 0 0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Details</p>
+                    <p style={{ margin: '0 0 0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Details</p>
                     <div style={{ display: 'grid', gap: '0.75rem' }}>
                       <div style={{ display: 'grid', gap: '0.25rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Website</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Website</label>
                         {isEditing ? (
                           <input value={editForm.companyWebsite} onChange={(e) => setEditForm((p) => ({ ...p, companyWebsite: e.target.value }))} placeholder="https://www.company.com" style={{ width: '100%', boxSizing: 'border-box', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', fontSize: '0.92rem', fontFamily: 'inherit' }} />
                         ) : (
@@ -1127,7 +1130,7 @@ export function EmployerDashboard() {
                         )}
                       </div>
                       <div style={{ display: 'grid', gap: '0.25rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Industry</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Industry</label>
                         {isEditing ? (
                           <Select value={editForm.industry} onValueChange={(v) => setEditForm((p) => ({ ...p, industry: v }))} ariaLabel="Industry" placeholder="Select industry" options={COMPANY_INDUSTRY_OPTIONS.map((v) => ({ value: v, label: v }))} triggerClassName="tp-card" triggerStyle={{ width: '100%', boxSizing: 'border-box', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)' }} />
                         ) : (
@@ -1135,7 +1138,7 @@ export function EmployerDashboard() {
                         )}
                       </div>
                       <div style={{ display: 'grid', gap: '0.25rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Company size</label>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Company size</label>
                         {isEditing ? (
                           <Select value={editForm.companySize} onValueChange={(v) => setEditForm((p) => ({ ...p, companySize: v }))} ariaLabel="Company size" placeholder="Select company size" options={COMPANY_SIZE_OPTIONS.map((v) => ({ value: v, label: `${v} employees` }))} triggerClassName="tp-card" triggerStyle={{ width: '100%', boxSizing: 'border-box', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)' }} />
                         ) : (
@@ -1148,10 +1151,10 @@ export function EmployerDashboard() {
 
                 {/* Right: narrative */}
                 <div style={{ padding: '1.25rem', background: 'white', borderRadius: '16px', border: '1px solid rgba(148,163,184,0.15)' }}>
-                  <p style={{ margin: '0 0 0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>About</p>
+                  <p style={{ margin: '0 0 0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>About</p>
                   <div style={{ display: 'grid', gap: '1rem' }}>
                     <div style={{ display: 'grid', gap: '0.25rem' }}>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Company overview</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Company overview</label>
                       {isEditing ? (
                         <textarea value={editForm.companyOverview} onChange={(e) => setEditForm((p) => ({ ...p, companyOverview: e.target.value }))} placeholder="Describe your company..." rows={4} style={{ width: '100%', boxSizing: 'border-box', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', resize: 'vertical', fontFamily: 'inherit', fontSize: '0.92rem' }} />
                       ) : (
@@ -1159,7 +1162,7 @@ export function EmployerDashboard() {
                       )}
                     </div>
                     <div style={{ display: 'grid', gap: '0.25rem' }}>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Primary hiring needs</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Primary hiring needs</label>
                       {isEditing ? (
                         <input value={editForm.primaryHiringNeeds} onChange={(e) => setEditForm((p) => ({ ...p, primaryHiringNeeds: e.target.value }))} placeholder="e.g. Engineering, Design, Sales (comma-separated)" style={{ width: '100%', boxSizing: 'border-box', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', fontSize: '0.92rem', fontFamily: 'inherit' }} />
                       ) : (
@@ -1167,13 +1170,13 @@ export function EmployerDashboard() {
                           {memoPrimaryHiringNeeds.length > 0 ? memoPrimaryHiringNeeds.map((need) => (
                             <span key={need} className="tp-chip" style={{ background: '#dbeafe', fontSize: '0.8rem' }}>{need}</span>
                           )) : (
-                            <span style={{ color: '#94a3b8', fontSize: '0.88rem' }}>No hiring needs added yet.</span>
+                            <span style={{ color: '#64748b', fontSize: '0.88rem' }}>No hiring needs added yet.</span>
                           )}
                         </div>
                       )}
                     </div>
                     <div style={{ display: 'grid', gap: '0.25rem' }}>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Benefits & opportunities</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Benefits & opportunities</label>
                       {isEditing ? (
                         <textarea value={editForm.benefitsAndOpportunities} onChange={(e) => setEditForm((p) => ({ ...p, benefitsAndOpportunities: e.target.value }))} placeholder="Describe benefits, perks, and what makes your company stand out..." rows={4} style={{ width: '100%', boxSizing: 'border-box', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', resize: 'vertical', fontFamily: 'inherit', fontSize: '0.92rem' }} />
                       ) : (
@@ -1262,20 +1265,14 @@ export function EmployerDashboard() {
                         {editStatesForCountry.map((s) => <option key={s} value={s}>{s}</option>)}
                       </select>
                     ) : (
-                      <select value={editLocCity} onChange={(e) => setEditLocCity(e.target.value)} style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '0.95rem', cursor: 'pointer' }}>
-                        {((countriesData ?? FALLBACK_COUNTRIES).find((c) => c.country === editLocCountry)?.cities ?? []).map((ct) => (
-                          <option key={ct} value={ct}>{ct}</option>
-                        ))}
-                      </select>
+                      <input type="text" value={editLocCity} onChange={(e) => setEditLocCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '0.95rem', cursor: 'pointer' }} />
                     )}
                   </div>
 
                   {editStatesForCountry && (
                     <div>
                       <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#64748b', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.07em' }}>City</label>
-                      <select value={editLocCity} onChange={(e) => setEditLocCity(e.target.value)} style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '0.95rem', cursor: 'pointer' }}>
-                        {(editCitiesForState ?? []).map((ct) => <option key={ct} value={ct}>{ct}</option>)}
-                      </select>
+                      <input type="text" value={editLocCity} onChange={(e) => setEditLocCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '0.95rem', cursor: 'pointer' }} />
                     </div>
                   )}
                 </div>
@@ -1322,13 +1319,14 @@ export function EmployerDashboard() {
       )}
 
       {/* Full-screen Post a Job — multi-step wizard */}
-      {showCreateModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'white', zIndex: 2000, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {showCreateModal && typeof document !== 'undefined' && createPortal(
+        // Rendered under <body> so no animated (transformed) parent can resize the fixed overlay
+        <div className="jc-modal" role="dialog" aria-modal="true" aria-label="Post a job" style={{ position: 'fixed', inset: 0, background: 'white', zIndex: 2000, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
           {/* Top bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2.5rem', borderBottom: '1px solid rgba(148,163,184,0.12)', background: 'white', flexShrink: 0 }}>
+          <div className="jc-top" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2.5rem', borderBottom: '1px solid rgba(148,163,184,0.12)', background: 'white', flexShrink: 0 }}>
             <div>
-              <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{companyName}</p>
+              <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{companyName}</p>
               <h1 style={{ margin: '0.1rem 0 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>
                 {editingDraftId ? (createForm.status === 'DRAFT' ? 'Edit Draft' : 'Edit Job') : 'Post a Job'}
               </h1>
@@ -1339,7 +1337,7 @@ export function EmployerDashboard() {
           </div>
 
           {/* Step progress bar */}
-          <div style={{ padding: '0 2.5rem', borderBottom: '1px solid rgba(148,163,184,0.1)', background: 'white', flexShrink: 0 }}>
+          <div className="jc-steps" style={{ padding: '0 2.5rem', borderBottom: '1px solid rgba(148,163,184,0.1)', background: 'white', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 0, maxWidth: 860, margin: '0 auto' }}>
               {CREATE_STEPS.map((step, i) => {
                 const done = i < createStep;
@@ -1349,8 +1347,8 @@ export function EmployerDashboard() {
                     <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, borderRadius: '999px', background: done ? '#dcfce7' : active ? '#1d4ed8' : '#f1f5f9', color: done ? '#166534' : active ? 'white' : '#94a3b8', fontSize: '0.65rem', fontWeight: 800, marginBottom: '0.3rem' }}>
                       {done ? '✓' : i + 1}
                     </div>
-                    <div style={{ fontSize: '0.72rem', fontWeight: active ? 700 : 500, color: active ? '#0f172a' : done ? '#166534' : '#94a3b8', whiteSpace: 'nowrap' }}>{step.label}</div>
-                    <div style={{ fontSize: '0.62rem', color: '#cbd5e1', marginBottom: '0.6rem' }}>{step.hint}</div>
+                    <div className="jc-step-label" style={{ fontSize: '0.72rem', fontWeight: active ? 700 : 500, color: active ? '#0f172a' : done ? '#166534' : '#94a3b8', whiteSpace: 'nowrap' }}>{step.label}</div>
+                    <div className="jc-step-hint" style={{ fontSize: '0.62rem', color: '#64748b', marginBottom: '0.6rem' }}>{step.hint}</div>
                   </div>
                 );
               })}
@@ -1358,7 +1356,7 @@ export function EmployerDashboard() {
           </div>
 
           {/* Step content */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '2.5rem 2.5rem', background: '#f8fafc', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+          <div className="jc-content" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '2.5rem 2.5rem', background: '#f8fafc', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
             <div style={{ width: '100%', maxWidth: (createStep === 3 || createStep === 5) ? '960px' : '620px', transition: 'max-width 0.25s ease' }}>
 
               {/* Step 0 — Basic Info */}
@@ -1461,17 +1459,13 @@ export function EmployerDashboard() {
                             {statesForCountry.map((s) => <option key={s} value={s}>{s}</option>)}
                           </select>
                         ) : (
-                          <select value={locationCity} onChange={(e) => setLocationCity(e.target.value)} style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '1rem', cursor: 'pointer' }}>
-                            {((countriesData ?? FALLBACK_COUNTRIES).find((c) => c.country === locationCountry)?.cities ?? []).map((ct) => <option key={ct} value={ct}>{ct}</option>)}
-                          </select>
+                          <input type="text" value={locationCity} onChange={(e) => setLocationCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '1rem', cursor: 'pointer' }} />
                         )}
                       </div>
                       {statesForCountry && (
                         <div>
                           <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#64748b', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.07em' }}>City</label>
-                          <select value={locationCity} onChange={(e) => setLocationCity(e.target.value)} style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '1rem', cursor: 'pointer' }}>
-                            {(citiesForState ?? []).map((ct) => <option key={ct} value={ct}>{ct}</option>)}
-                          </select>
+                          <input type="text" value={locationCity} onChange={(e) => setLocationCity(e.target.value)} placeholder="City (or Remote)" aria-label="City" style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', background: 'white', fontSize: '1rem', cursor: 'pointer' }} />
                         </div>
                       )}
                     </div>
@@ -1521,16 +1515,16 @@ export function EmployerDashboard() {
                         <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#64748b', marginBottom: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Annual salary range</label>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                           <div>
-                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', marginBottom: '0.35rem' }}>Minimum</label>
+                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', marginBottom: '0.35rem' }}>Minimum</label>
                             <div style={{ position: 'relative' }}>
-                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
+                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
                               <input type="number" value={createForm.salaryMin} onChange={(e) => setCreateForm((p) => ({ ...p, salaryMin: e.target.value }))} placeholder="e.g. 145000" style={{ width: '100%', boxSizing: 'border-box', padding: '0.85rem 1rem 0.85rem 1.75rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', fontSize: '1rem', fontFamily: 'inherit' }} />
                             </div>
                           </div>
                           <div>
-                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', marginBottom: '0.35rem' }}>Maximum</label>
+                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', marginBottom: '0.35rem' }}>Maximum</label>
                             <div style={{ position: 'relative' }}>
-                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
+                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
                               <input type="number" value={createForm.salaryMax} onChange={(e) => setCreateForm((p) => ({ ...p, salaryMax: e.target.value }))} placeholder="e.g. 175000" style={{ width: '100%', boxSizing: 'border-box', padding: '0.85rem 1rem 0.85rem 1.75rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', fontSize: '1rem', fontFamily: 'inherit' }} />
                             </div>
                           </div>
@@ -1548,16 +1542,16 @@ export function EmployerDashboard() {
                         <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#64748b', marginBottom: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Hourly rate range</label>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                           <div>
-                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', marginBottom: '0.35rem' }}>Minimum</label>
+                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', marginBottom: '0.35rem' }}>Minimum</label>
                             <div style={{ position: 'relative' }}>
-                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
+                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
                               <input type="number" value={createForm.hourlyMin} onChange={(e) => setCreateForm((p) => ({ ...p, hourlyMin: e.target.value }))} placeholder="e.g. 70" style={{ width: '100%', boxSizing: 'border-box', padding: '0.85rem 1rem 0.85rem 1.75rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', fontSize: '1rem', fontFamily: 'inherit' }} />
                             </div>
                           </div>
                           <div>
-                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', marginBottom: '0.35rem' }}>Maximum</label>
+                            <label style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', marginBottom: '0.35rem' }}>Maximum</label>
                             <div style={{ position: 'relative' }}>
-                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
+                              <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600, fontSize: '0.95rem' }}>$</span>
                               <input type="number" value={createForm.hourlyMax} onChange={(e) => setCreateForm((p) => ({ ...p, hourlyMax: e.target.value }))} placeholder="e.g. 85" style={{ width: '100%', boxSizing: 'border-box', padding: '0.85rem 1rem 0.85rem 1.75rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.25)', fontSize: '1rem', fontFamily: 'inherit' }} />
                             </div>
                           </div>
@@ -1578,6 +1572,41 @@ export function EmployerDashboard() {
                 <div style={{ background: 'white', borderRadius: '20px', padding: '2rem 2.5rem', border: '1px solid rgba(148,163,184,0.15)', boxShadow: '0 4px 24px -8px rgba(15,23,42,0.07)' }}>
                   <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>Describe the role</h2>
                   <p style={{ margin: '0 0 1.75rem', color: '#64748b', fontSize: '0.92rem' }}>Fill in each section to give candidates a clear picture of the opportunity. Use the toolbar to bold key points, add bullet lists, or structure with paragraphs.</p>
+
+                  {/* Job description assistant (#40): free template draft + inclusive-language check, no AI */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.75rem', margin: '-0.75rem 0 1.5rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const draft = draftJobDescription({ title: createForm.title, department: createForm.department, employmentType: createForm.employmentType, workArrangement: createForm.workArrangement });
+                        setCreateForm((p) => ({
+                          ...p,
+                          positionSummary: p.positionSummary || draft.positionSummary,
+                          keyResponsibilities: p.keyResponsibilities || draft.keyResponsibilities,
+                          minQualifications: p.minQualifications || draft.minQualifications,
+                          preferredQualifications: p.preferredQualifications || draft.preferredQualifications,
+                        }));
+                      }}
+                      className="tp-btn-secondary"
+                      style={{ padding: '0.6rem 1rem' }}
+                    >
+                      Draft from job title
+                    </button>
+                    <span style={{ color: '#64748b', fontSize: '0.85rem' }}>Fills only empty sections with a starting point. Review and edit before posting.</span>
+                  </div>
+                  {(() => {
+                    const issues = checkInclusiveLanguage([createForm.title, createForm.positionSummary, createForm.keyResponsibilities, createForm.minQualifications, createForm.preferredQualifications].join(' '));
+                    return issues.length > 0 ? (
+                      <div role="status" style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '0.85rem 1rem', marginBottom: '1.5rem', color: '#78350f', fontSize: '0.9rem' }}>
+                        <strong>Inclusive language check</strong>
+                        <ul style={{ margin: '0.4rem 0 0', paddingLeft: '1.1rem' }}>
+                          {issues.map((it) => (
+                            <li key={it.term}>&ldquo;{it.term}&rdquo;: {it.reason}. Consider: {it.suggestion}.</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null;
+                  })()}
 
                   {/* Top row: Position Summary full-width */}
                   <div style={{ marginBottom: '1.5rem' }}>
@@ -1674,7 +1703,7 @@ export function EmployerDashboard() {
                             </div>
                             <div style={{ minWidth: 0 }}>
                               <div style={{ fontSize: '0.9rem', fontWeight: enabledQuestions[q.id] ? 600 : 400, color: '#0f172a', lineHeight: 1.45 }}>{q.label}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>{q.hint}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>{q.hint}</div>
                             </div>
                           </label>
                         ))}
@@ -1704,7 +1733,7 @@ export function EmployerDashboard() {
                           />
                           <div>
                             <div style={{ fontSize: '0.9rem', fontWeight: enabledQuestions[q.id] ? 600 : 400, color: '#0f172a', lineHeight: 1.45 }}>{q.label} <span style={{ fontWeight: 400, color: '#d97706', fontSize: '0.78rem' }}>(Voluntary — not used in hiring decisions)</span></div>
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>{q.hint}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>{q.hint}</div>
                           </div>
                         </label>
                       ))}
@@ -1770,7 +1799,7 @@ export function EmployerDashboard() {
                       />
                       <div>
                         <div style={{ fontSize: '0.9rem', fontWeight: selectedBenefits.includes(BENEFIT_VARIES) ? 700 : 500, color: '#0f172a' }}>{BENEFIT_VARIES}</div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>Useful for government contractors where benefits may differ by contract, position type, or collective bargaining agreement.</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>Useful for government contractors where benefits may differ by contract, position type, or collective bargaining agreement.</div>
                       </div>
                     </label>
                   </div>
@@ -1848,11 +1877,11 @@ export function EmployerDashboard() {
                     ];
                   })().map((section) => (
                     <div key={section.title} style={{ background: 'white', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid rgba(148,163,184,0.15)' }}>
-                      <p style={{ margin: '0 0 0.85rem', fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{section.title}</p>
+                      <p style={{ margin: '0 0 0.85rem', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{section.title}</p>
                       <div style={{ display: 'grid', gap: '0.55rem' }}>
                         {section.rows.map((row) => (
                           <div key={row.label} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#94a3b8', minWidth: '120px', flexShrink: 0 }}>{row.label}</span>
+                            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748b', minWidth: '120px', flexShrink: 0 }}>{row.label}</span>
                             {(row as { label: string; value: string; html?: boolean }).html
                               ? <div className="rte-display" dangerouslySetInnerHTML={{ __html: row.value }} style={{ fontSize: '0.88rem', color: '#0f172a', lineHeight: 1.55, maxHeight: '14rem', overflowY: 'auto', minWidth: 0, flex: 1 }} />
                               : <span style={{ fontSize: '0.88rem', color: '#0f172a', lineHeight: 1.5 }}>{row.value}</span>
@@ -1869,7 +1898,7 @@ export function EmployerDashboard() {
           </div>
 
           {/* Bottom navigation */}
-          <div style={{ display: 'flex', alignItems: 'center', padding: '1rem 2.5rem', borderTop: '1px solid rgba(148,163,184,0.12)', background: 'white', flexShrink: 0, gap: '0.75rem' }}>
+          <div className="jc-footer" style={{ display: 'flex', alignItems: 'center', padding: '1rem 2.5rem', borderTop: '1px solid rgba(148,163,184,0.12)', background: 'white', flexShrink: 0, gap: '0.75rem' }}>
             {stepError && <span style={{ color: '#b91c1c', fontWeight: 600, fontSize: '0.85rem', flex: 1 }}>{stepError}</span>}
             {createError && <span style={{ color: '#b91c1c', fontWeight: 600, fontSize: '0.85rem', flex: 1 }}>{createError}</span>}
             {!stepError && !createError && <span style={{ flex: 1 }} />}
@@ -1939,6 +1968,8 @@ export function EmployerDashboard() {
           )}
 
         </div>
+      ,
+        document.body
       )}
     </>
   );

@@ -35,6 +35,17 @@ async function api(path, { method = 'GET', body, token } = {}) {
   return { status: res.status, data: await res.json().catch(() => ({})) };
 }
 
+async function upload(path, field, bytes, filename, type, token) {
+  const form = new FormData();
+  form.append(field, new Blob([bytes], { type }), filename);
+  const res = await fetch(`${API}${path}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+  return { status: res.status, data: await res.json().catch(() => ({})) };
+}
+
+// Minimal valid files for upload tests
+const PDF_BYTES = Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n');
+const PNG_BYTES = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+
 function step(name, ok, detail = '') {
   results.push({ name, ok, detail });
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? `  — ${detail}` : ''}`);
@@ -125,6 +136,63 @@ const apps = await api(`/api/v1/applications/job/${jobId}`, { token: employerTok
 const applicationId = apps.data?.applications?.[0]?.id || apps.data?.applications?.[0]?._id || apps.data?.data?.[0]?.id;
 r = await api(`/api/v1/applications/${applicationId}/status`, { method: 'PATCH', token: employerToken, body: { status: 'SHORTLISTED' } });
 step('Employer: shortlist applicant', r.status === 200, `status ${r.status}`);
+
+// 5b. Returning candidate: profile, resume, bookmarks
+r = await api('/api/v1/candidates/me', { method: 'PUT', token: candidateToken, body: { headline: 'Cloud Engineer (AWS)', skills: ['AWS', 'Kubernetes', 'Terraform'], location: 'Tampa, FL' } });
+step('Candidate: update profile', r.status === 200, `status ${r.status}`);
+r = await api('/api/v1/candidates/me', { token: candidateToken });
+step('Candidate: profile changes saved', r.status === 200 && JSON.stringify(r.data).includes('Cloud Engineer (AWS)'), `status ${r.status}`);
+r = await upload('/api/v1/resumes/upload', 'resume', PDF_BYTES, 'resume.pdf', 'application/pdf', candidateToken);
+const resumeUrl = r.data?.resume?.resumeUrl;
+step('Candidate: upload resume (PDF)', r.status === 201 && !!resumeUrl, `status ${r.status}`);
+if (resumeUrl) {
+  const file = await fetch(resumeUrl);
+  step('Resume file served as download with nosniff', file.status === 200 && /attachment/.test(file.headers.get('content-disposition') || '') && file.headers.get('x-content-type-options') === 'nosniff', `status ${file.status}`);
+}
+r = await upload('/api/v1/resumes/upload', 'resume', Buffer.from('<script>alert(1)</script>'), 'cv.pdf', 'application/pdf', candidateToken);
+step('Security: fake PDF upload rejected', r.status === 400, `status ${r.status}`);
+r = await api('/api/v1/bookmarks', { method: 'POST', token: candidateToken, body: { jobId } });
+step('Candidate: bookmark a job', r.status === 200 || r.status === 201, `status ${r.status}`);
+r = await api('/api/v1/bookmarks/my-bookmarks', { token: candidateToken });
+step('Candidate: bookmark listed', r.status === 200 && JSON.stringify(r.data).includes(jobId), `status ${r.status}`);
+r = await api(`/api/v1/bookmarks/${jobId}`, { method: 'DELETE', token: candidateToken });
+step('Candidate: remove bookmark', r.status === 200 || r.status === 204, `status ${r.status}`);
+
+// 5c. Existing employer: manage postings, company logo, find talent
+r = await api(`/api/v1/jobs/${jobId}`, { method: 'PUT', token: employerToken, body: { title: `Senior Cloud Engineer ${run}`, salaryMax: 130000 } });
+step('Employer: edit job', r.status === 200, `status ${r.status}`);
+r = await api(`/api/v1/jobs/${jobId}`, { token: employerToken });
+step('Employer: job changes saved', r.status === 200 && JSON.stringify(r.data).includes(`Senior Cloud Engineer ${run}`), `status ${r.status}`);
+r = await api(`/api/v1/jobs/${jobId}`, { method: 'PUT', token: candidateToken, body: { title: 'hijack' } });
+step("Security: candidate cannot edit an employer's job", r.status === 403, `status ${r.status}`);
+r = await call('createJob', { token: employerToken, body: { title: `Temp job ${run}`, description: 'Temporary posting to test deletion.', department: 'OPERATIONS', employmentType: 'CONTRACT', status: 'DRAFT', skills: [] } });
+const tempJobId = r.data?.job?.id || r.data?.job?._id || r.data?.id || r.data?._id;
+r = await api(`/api/v1/jobs/${tempJobId}`, { method: 'DELETE', token: employerToken });
+step('Employer: delete a job', r.status === 200 || r.status === 204, `status ${r.status}`);
+r = await api(`/api/v1/jobs/${tempJobId}`, { token: employerToken });
+step('Employer: deleted job is gone', r.status === 404, `status ${r.status}`);
+r = await upload('/api/v1/settings/company-logo', 'logo', PNG_BYTES, 'logo.png', 'image/png', employerToken);
+step('Employer: upload company logo (PNG)', r.status === 200 || r.status === 201, `status ${r.status}`);
+r = await api('/api/v1/candidates/search?skills=Terraform&q=cloud', { token: employerToken });
+step('Employer: find candidate by skill (talent search)', r.status === 200 && JSON.stringify(r.data).includes('Casey'), `status ${r.status}`);
+step('Privacy: talent search hides email and resume text', !JSON.stringify(r.data).includes('@example.test') && !JSON.stringify(r.data).includes('resumeText'));
+r = await api('/api/v1/candidates/search?q=cloud', { token: candidateToken });
+step('Security: candidates cannot search other candidates', r.status === 403, `status ${r.status}`);
+
+// 5d. Account management: password reset and change
+r = await call('forgotPassword', { body: { email: candidateEmail } });
+step('Candidate: request password reset', r.status === 200, `status ${r.status}`);
+const resetOtp = readOtp(candidateEmail);
+const newPassword = 'N3w-Str0ng-Passw0rd!';
+r = await call('resetPassword', { body: { email: candidateEmail, otp: resetOtp, newPassword } });
+step('Candidate: reset password with emailed code', r.status === 200, `status ${r.status}`);
+r = await call('login', { body: { email: candidateEmail, password } });
+step('Security: old password no longer works', r.status >= 400, `status ${r.status}`);
+r = await call('login', { body: { email: candidateEmail, password: newPassword } });
+const freshToken = r.data?.accessToken;
+step('Candidate: log in with new password', r.status === 200 && !!freshToken, `status ${r.status}`);
+r = await api('/api/v1/settings/change-password', { method: 'PATCH', token: freshToken, body: { currentPassword: newPassword, newPassword: password } });
+step('Candidate: change password from settings', r.status === 200, `status ${r.status}`);
 
 // 6. Access control
 r = await api('/api/v1/applications', { method: 'POST', body: { jobId } });

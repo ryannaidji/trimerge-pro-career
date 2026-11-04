@@ -10,6 +10,8 @@ stays off until it is approved.
 |---|---|---|---|
 | Resume → profile pre-fill (#34) | Rule-based extractor: email, phone, LinkedIn, headline, years of experience, ~120 sector skills, summary (`resumes/resume-profile-extractor.ts`) | Not needed for now | – |
 | Candidate ↔ job matching (#33) | Skill-overlap score on the employer dashboard (`/dashboard/employer/job/:jobId/candidate-matches`) | OpenAI evaluation of each application (`ai-matching/`) | `AI_MATCHING_ENABLED`, `OPENAI_API_KEY` |
+| Job description assistant (#40) | Template drafts by role family (cyber, cloud/infra, software, finance, project management, analysis, emergency management) + inclusive-language check (`web/app/util/jobDescriptionAssistant.ts`) | Could draft with an LLM later | – |
+| Candidate search for recruiters (#41) | Keyword / skill / location ranking over active profiles, minimal data returned (`GET /api/v1/candidates/search`, page `/talent-search`) | Semantic (AI) search later | – |
 | Help assistant (#35) | Offline FAQ with keyword matching (`web/app/components/ui/helpFaq.ts`) | Could call an LLM later behind the same `findAnswer` interface | – |
 
 ## Resume pre-fill (#34)

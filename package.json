@@ -1,10 +1,18 @@
 {
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "mammoth": "^1.12.0",
-    "pdf-parse": "^2.4.5"
-  },
-  "devDependencies": {
-    "@types/node": "^25.6.0"
+  "name": "trimerge-pro-career",
+  "private": true,
+  "description": "TriMergePRO Careers monorepo: apps/api (Express), apps/web (Next.js), e2e (Playwright). Each app keeps its own lockfile (see docs/repository-restructure.md).",
+  "scripts": {
+    "install:all": "npm ci --prefix apps/api && npm ci --prefix apps/web && npm ci --prefix e2e",
+    "dev:api": "npm run dev --prefix apps/api",
+    "dev:web": "npm run dev --prefix apps/web",
+    "test:api": "npm test --prefix apps/api",
+    "typecheck": "npx --prefix apps/api tsc -p apps/api --noEmit && npx --prefix apps/web tsc -p apps/web --noEmit",
+    "stack:up": "docker compose up -d --build",
+    "stack:down": "docker compose down",
+    "test:workflows": "node scripts/e2e-workflows.mjs",
+    "test:browser": "npm test --prefix e2e",
+    "db:backup": "sh scripts/backup-db.sh",
+    "db:restore": "sh scripts/restore-db.sh"
   }
 }

@@ -11,7 +11,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${apiUrl} https://res.cloudinary.com`,
   "font-src 'self' data:",
-  `connect-src 'self' ${apiUrl} https://countriesnow.space${isDev ? " ws: wss:" : ""}`,
+  `connect-src 'self' ${apiUrl}${isDev ? " ws: wss:" : ""}`,
   `frame-src 'self' ${apiUrl} https://res.cloudinary.com`,
   "object-src 'none'",
   "base-uri 'self'",

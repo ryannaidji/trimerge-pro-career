@@ -16,7 +16,7 @@ workflows work end to end, and are verified automatically on every push.
 | Admin | API only, no interface; suspension had no real effect | `/admin` dashboard; suspension signs the user out |
 | Security | Secrets in logs, stack traces in responses, no rate limiting, no headers, regex injection | Fixed; see `security-review.md` |
 | Accessibility / SEO | 94–100 accessibility; no titles; wrong sitemap | 100 / 100 / 100 on all public pages |
-| Tests / CI | 20 API tests | 33 API tests + 30 workflow checks + 32 browser tests, all in CI |
+| Tests / CI | 20 API tests | 33 API tests + 52 workflow checks + 56 browser tests (with axe), all in CI |
 
 ## 2. Completed work (GitHub issues closed on the fork)
 
@@ -25,14 +25,14 @@ workflows work end to end, and are verified automatically on every push.
 - **Features and content:** #9 admin dashboard, #10 EEO page, #11 privacy policy, #12 sitemap and robots, #13 titles and meta, #14 copy, #15 branding, #16 API URL.
 - **Security:** #17 logs, #18 headers, #19 authorization audit, #20 rate limiting, #21 uploads, #22 secrets, #23 CORS, #45 stack traces.
 - **DevOps:** #26 Docker, #27 functions in Docker, #28 CI, #29 CD to GHCR, #44 Playwright in CI.
-- **UX and AI:** #24 accessibility, #31 responsive, #32 errors and loading, #33 AI safeguards, #34 resume pre-fill, #35 help assistant.
+- **UX and AI:** #24 accessibility, #31 responsive, #32 errors and loading, #33 AI safeguards, #34 resume pre-fill, #35 help assistant, #40 job description assistant, #41 talent search, #43 local location data.
 
 Every closed issue has a comment explaining what was done, how, why, and the result.
 
 ## 3. Testing results
 
-See `testing-results.md`. In short: API 33/33, workflows 30/30, browser tests passing on
-Chrome (desktop and mobile), Edge, Firefox and WebKit (Safari engine).
+See `testing-results.md`. In short: API 33/33, workflows 52/52 (all five user profiles), browser
+tests 56/56 including logged-in pages with axe; also passing on Edge, Firefox and WebKit (Safari engine).
 
 ## 4. Remaining issues (need TriMerge input)
 
@@ -43,10 +43,7 @@ Chrome (desktop and mobile), Edge, Firefox and WebKit (Safari engine).
 | #30 Production hosting choice | Decision (see recommendation below) |
 | #37 Staging deployment | Needs #30 and approval |
 | #39 Propose structure upstream | Team decision; must not be done without approval |
-| #36 Final regression | Repeat on a real iPhone/Mac before launch |
-| #43 Replace countriesnow.space | The obvious npm dataset is GPL-3.0; needs a license-compatible source |
-| #40, #41 AI assistants | On hold: no AI budget for now |
-| #42 npm workspaces | Structural change, to approve |
+| #42 npm workspaces | Root scripts done; hoisted workspaces change the Docker builds, to approve |
 | D20–D23 in `issues.md` | Job department list, token storage, lint, signed upload URLs |
 
 ## 5. Security and accessibility
@@ -63,7 +60,7 @@ it costs about $1 per 500 applications.
 
 ## 7. Technical documentation
 
-`local-development.md`, `docker-and-ci-cd.md`, `backup-and-recovery.md`, `security-review.md`,
+`demo-script.md`, `local-development.md`, `docker-and-ci-cd.md`, `backup-and-recovery.md`, `security-review.md`,
 `secrets.md`, `audits.md`, `ai.md`, `issues.md`, `testing-results.md`, `CHANGELOG.md`.
 
 ## 8. Launch readiness

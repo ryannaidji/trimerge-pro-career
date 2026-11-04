@@ -50,7 +50,7 @@ function Navbar() {
         </button>
         {profileOpen && (
           <div style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'white', borderRadius: '12px', boxShadow: '0 8px 24px rgba(15,23,42,0.12)', border: '1px solid rgba(148,163,184,0.18)', padding: '0.75rem 1rem', minWidth: '210px', zIndex: 200 }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>Signed in as</div>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>Signed in as</div>
             <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all' }}>{user!.email}</div>
           </div>
         )}
@@ -90,6 +90,8 @@ function Navbar() {
             </Link>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <Link href="/employer-dashboard" className="tp-nav-link nav-emp-dash" style={{ fontSize: '0.875rem' }}>Dashboard</Link>
+              <Link href="/talent-search" className="tp-nav-link" style={{ fontSize: '0.875rem' }}>Find talent</Link>
               {/* <Link href="/help" className="tp-nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.875rem', color: '#475569' }}>
                 <HelpCircle size={15} />
                 Help
@@ -109,12 +111,12 @@ function Navbar() {
                 <div style={{ width: '24px', height: '24px', borderRadius: '999px', background: 'linear-gradient(135deg, #07172e, #1d4ed8)', color: 'white', display: 'grid', placeItems: 'center', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>
                   {(displayName ?? 'R').charAt(0).toUpperCase()}
                 </div>
-                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0f172a', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="nav-email" style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0f172a', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user.email}
                 </span>
               </div>
 
-              <button onClick={() => logout()} title="Logout" style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8', display: 'grid', placeItems: 'center' }}>
+              <button onClick={() => logout()} title="Logout" style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b', display: 'grid', placeItems: 'center' }}>
                 <LogOut size={16} />
               </button>
             </div>

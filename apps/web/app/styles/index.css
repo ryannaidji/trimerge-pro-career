@@ -566,3 +566,28 @@ select:focus-visible,
     padding: 0.75rem;
   }
 }
+
+
+/* Job creation wizard on phones (#31, found by the mobile browser tests) */
+@media (max-width: 640px) {
+  .jc-modal { width: 100vw; max-width: 100vw; }
+  .jc-top, .jc-footer { padding: 0.75rem 1rem !important; }
+  .jc-steps { padding: 0 0.5rem !important; overflow-x: auto; }
+  .jc-step-label, .jc-step-hint { display: none; }
+  .jc-content { padding: 1rem !important; }
+  .jc-content > div > div { padding: 1.25rem !important; }
+  .jc-content [style*="grid-template-columns: 1fr 1fr"], .jc-content [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  .jc-footer { flex-wrap: wrap; }
+  .jc-footer > span { flex-basis: 100% !important; }
+}
+
+/* Employer dashboard and navbar on phones (#31) */
+@media (max-width: 767px) {
+  .ed-layout { flex-direction: column !important; }
+  .ed-aside { width: 100% !important; height: auto !important; position: static !important; border-right: none !important; border-bottom: 1px solid rgba(148,163,184,0.15); }
+  .ed-main { padding: 1rem !important; }
+  .ed-main > div > div:first-child { flex-wrap: wrap; }
+}
+@media (max-width: 640px) {
+  .nav-email, .nav-emp-dash { display: none !important; }
+}

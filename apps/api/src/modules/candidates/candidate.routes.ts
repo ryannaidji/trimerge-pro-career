@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../../middleware/auth';
 import { requireRole } from '../../middleware/roles';
 import { validateRequest } from '../../middleware/validate-request';
+import { candidateSearchQuerySchema, searchCandidates } from './candidate-search.service';
 import {
   createCandidateProfileSchema,
   updateCandidateProfileSchema,
@@ -14,6 +15,27 @@ import {
 } from './candidate.controller';
 
 const router = Router();
+
+/**
+ * @swagger
+ * /api/v1/candidates/search:
+ *   get:
+ *     summary: Search active candidates by keywords, skills and location (employers and admins)
+ *     tags: [Candidates]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get('/search', requireAuth, requireRole('EMPLOYER', 'ADMIN'), async (req, res, next) => {
+  try {
+    const parsed = candidateSearchQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      return res.status(400).json({ message: 'Validation error', errors: parsed.error.flatten().fieldErrors });
+    }
+    res.json(await searchCandidates(parsed.data));
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * @swagger

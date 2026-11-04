@@ -27,6 +27,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Resume pre-fill without AI: `POST /api/v1/resumes/parse` extracts email, phone, LinkedIn, headline, years of experience, skills and summary with rules (nothing stored); onboarding steps 1 and 2 pre-fill empty fields (#34).
 - AI matching safeguards: skipped instead of failing when no OpenAI key, monthly cap `AI_MATCHING_MONTHLY_LIMIT`, clear 400 on retry when disabled, "advisory only" notice; `docs/ai.md` (#33).
 - Playwright browser smoke tests in `e2e/` (32 tests, desktop and mobile) and a CI `e2e` job that starts the Docker stack and runs the workflow checks and the browser tests (#44).
+- Job description assistant (no AI): "Draft from job title" fills empty sections from role templates; inclusive-language check flags biased wording with suggestions (#40).
+- Talent search for employers at `/talent-search` and `GET /api/v1/candidates/search`: keyword, skill and location ranking over active candidates, minimal data returned (#41).
+- Local location data replaces countriesnow.space: static country and US state lists, free-text city; the domain is removed from the CSP (#43).
+- Root `package.json` with shortcut scripts (`stack:up`, `test:workflows`, `test:browser`...); stray root dependencies and lockfile removed (#42, partial).
+- Workflow checks extended to 52 (returning candidate, existing employer, password reset/change, bookmarks, uploads, talent search); Playwright logged-in tests with axe (56 browser tests).
 - Cross-browser regression run (Chrome, Edge, Firefox, WebKit desktop and iPhone): `docs/testing-results.md` (#36); `ALL_BROWSERS=1` Playwright projects.
 - `docs/final-report.md`: completion report, remaining issues and launch recommendation (#38).
 - Login inputs have `name` and `autocomplete` attributes (password managers, accessibility).
@@ -69,6 +74,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Mailgun and Cloudinary variables are now optional; they are only required when their driver is selected.
 
 ### Fixed
+- Candidate "My applications" page showed hard-coded sample data; it now loads the candidate's real applications and statuses.
+- Employer dashboard and "Post a Job" wizard were unusable on phones (page wider than the screen, Next button off-screen).
+- 57 low-contrast grey text elements on logged-in pages (WCAG 1.4.3).
 - Frontend no longer hard-codes the production API URL; uses `NEXT_PUBLIC_API_URL` (#16).
 - API no longer crashes at startup when `OPENAI_API_KEY` is not set.
 - Outdated assertion in `tests/resume.test.ts`; all 19 API tests pass.

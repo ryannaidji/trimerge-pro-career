@@ -31,3 +31,7 @@ broken), **Medium** (degraded feature or hardening gap), **Low** (cosmetic / con
 | D21 | Medium | Web · auth | Access and refresh tokens stored in `localStorage` (exposed to XSS) | Open — architectural change, needs approval | – |
 | D22 | Low | Web · lint | ESLint reports pre-existing errors (CI step is non-blocking) | Open | – |
 | D23 | Medium | API · uploads | Local upload URLs are unguessable but not authenticated | Open — use signed URLs before launch | #21 |
+| D24 | High | Web · candidate | "My applications" page showed hard-coded sample applications and never called the API | Fixed (real data, real statuses) | #36 |
+| D25 | High | Web · employer | On phones the "Post a Job" wizard was cut off and its Next button was off-screen (dashboard wider than the screen; flex scroll area without `min-height: 0`) | Fixed | #31 |
+| D26 | Medium | Web · a11y | 57 text elements in light grey `#94a3b8` (2.56:1 contrast) on logged-in pages | Fixed (`#64748b`, 4.76:1) | #24 |
+| D27 | Low | Web · jobs | Job location called an external API (countriesnow.space) from the browser | Fixed (local list, free-text city) | #43 |
