@@ -10,7 +10,7 @@ import {
   sendNewApplicationNotificationEmail,
 } from '../../lib/mailgun';
 import { storeFile, StoredFile } from '../../lib/storage';
-import { aiMatchService } from '../ai-matching/ai-match.service';
+import { aiMatchService, isAiMatchingAvailable } from '../ai-matching/ai-match.service';
 import { CandidateProfileModel } from '../candidates/candidate.model';
 import { AiMatchEvaluationModel } from '../ai-matching/ai-match.model';
 import { extractResumeText } from '../resumes/resume-parser.service';
@@ -696,6 +696,10 @@ export const applicationService = {
         aiError: '',
       },
     });
+
+    if (!isAiMatchingAvailable()) {
+      throw new AppError('AI matching is disabled. Use the skill match on the employer dashboard instead.', 400);
+    }
 
     const aiEvaluation = await aiMatchService.evaluateApplication(applicationId);
 

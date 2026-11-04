@@ -7,6 +7,27 @@ import { AuthShell } from '../../../../components/ui/AuthShell';
 import { Select } from '../../../../components/ui/Select';
 import { ArrowRight, FileUp, Globe, MapPin, Phone, UserRound } from 'lucide-react';
 import { COUNTRY_DIAL_CODES, US_STATES, YEARS_OF_EXPERIENCE_OPTIONS } from './constants';
+import { API_URL } from '@/app/util/apiUrl';
+
+// Map a number of years to the experience ranges offered in the form
+function toExperienceOption(years?: string): string {
+    const n = Number(years);
+    if (!years || Number.isNaN(n)) return '';
+    if (n <= 2) return '0-2';
+    if (n <= 5) return '3-5';
+    if (n <= 8) return '6-8';
+    if (n <= 15) return '9-15';
+    return '16 and up';
+}
+
+type ResumeSuggestions = {
+    phoneNumber?: string;
+    linkedinUrl?: string;
+    jobTitleOrDesiredRole?: string;
+    yearsOfExperience?: string;
+    skills?: string[];
+    professionalSummary?: string;
+};
 
 function Page() {
     const router = useRouter();
@@ -22,6 +43,41 @@ function Page() {
     const [linkedinUrl, setLinkedinUrl] = React.useState('');
     const [resumeFile, setResumeFile] = React.useState<File | null>(null);
     const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+    const [prefillStatus, setPrefillStatus] = React.useState<string>('');
+
+    // Resume pre-fill (#34): the API extracts suggestions with simple rules (no AI, nothing stored).
+    // Only empty fields are filled, and the candidate can edit everything before continuing.
+    const handleResumeChange = async (file: File | null) => {
+        setResumeFile(file);
+        setPrefillStatus('');
+        if (!file) return;
+        let token: string | null = null;
+        try { token = localStorage.getItem('tm_token'); } catch { /* storage unavailable */ }
+        if (!token) return;
+        setPrefillStatus('Reading your resume…');
+        try {
+            const fd = new FormData();
+            fd.append('resume', file);
+            const res = await fetch(`${API_URL}/api/v1/resumes/parse`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+            if (!res.ok) { setPrefillStatus(''); return; }
+            const { suggestions } = (await res.json()) as { suggestions: ResumeSuggestions };
+            const filled: string[] = [];
+            if (suggestions.phoneNumber && !phoneNumber) { setPhoneNumber(suggestions.phoneNumber.replace(/^\+?1[\s.-]?/, '')); filled.push('phone'); }
+            if (suggestions.jobTitleOrDesiredRole && !jobTitleOrDesiredRole) { setJobTitleOrDesiredRole(suggestions.jobTitleOrDesiredRole); filled.push('job title'); }
+            const exp = toExperienceOption(suggestions.yearsOfExperience);
+            if (exp && !yearsOfExperience) { setYearsOfExperience(exp); filled.push('experience'); }
+            if (suggestions.linkedinUrl && !linkedinUrl) { setLinkedinUrl(suggestions.linkedinUrl); filled.push('LinkedIn'); }
+            // Skills and summary are offered on the next step
+            try {
+                sessionStorage.setItem('tm_resume_suggestions', JSON.stringify({ skills: suggestions.skills ?? [], professionalSummary: suggestions.professionalSummary ?? '' }));
+            } catch { /* storage unavailable */ }
+            setPrefillStatus(filled.length
+                ? `We filled in ${filled.join(', ')} from your resume. Please check them.`
+                : '');
+        } catch {
+            setPrefillStatus('');
+        }
+    };
 
     const sanitizedPhoneDigits = React.useMemo(() => phoneNumber.replace(/[^\d]/g, ''), [phoneNumber]);
     const countryDialCode = React.useMemo(
@@ -196,7 +252,7 @@ function Page() {
 
                         <div style={{ display: 'grid', gap: '0.65rem' }}>
                             <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Resume</span>
-                            <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)} style={{ display: 'none' }} id="resume-upload" />
+                            <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => { void handleResumeChange(e.target.files?.[0] ?? null); }} style={{ display: 'none' }} id="resume-upload" />
                             <label htmlFor="resume-upload" style={{ display: 'grid', gap: '0.75rem', padding: '1rem', borderRadius: '18px', border: '1px dashed rgba(29,78,216,0.35)', background: 'rgba(29,78,216,0.04)', cursor: 'pointer' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                     <div style={{ width: '2.6rem', height: '2.6rem', borderRadius: '16px', background: 'rgba(29,78,216,0.1)', color: 'var(--tp-primary)', display: 'grid', placeItems: 'center' }}>
@@ -204,11 +260,12 @@ function Page() {
                                     </div>
                                     <div>
                                         <div style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Upload your resume</div>
-                                        <div style={{ color: 'var(--tp-muted)', fontSize: '0.92rem' }}>PDF, DOC, or DOCX</div>
+                                        <div style={{ color: 'var(--tp-muted)', fontSize: '0.92rem' }}>PDF or DOCX, up to 5 MB. We can pre-fill your profile from it.</div>
                                     </div>
                                 </div>
                                 {resumeFile ? <div style={{ color: 'var(--tp-primary)', fontWeight: 800 }}>{resumeFile.name}</div> : <div style={{ color: 'var(--tp-muted)' }}>Click to choose a file</div>}
                             </label>
+                            {prefillStatus && <p role="status" style={{ margin: 0, color: '#1e3a8a', fontSize: '0.9rem' }}>{prefillStatus}</p>}
                         </div>
 
                         {error && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{error}</div>}

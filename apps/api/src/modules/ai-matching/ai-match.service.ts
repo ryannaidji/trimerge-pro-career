@@ -16,6 +16,14 @@ import {
 
 const AI_MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
 const AI_MATCHING_ENABLED = process.env.AI_MATCHING_ENABLED !== 'false';
+// Hard cap on paid AI evaluations per calendar month (#33). Set the same limit as a
+// spending limit in the OpenAI dashboard; this cap stops calls before the bill does.
+const AI_MATCHING_MONTHLY_LIMIT = Number(process.env.AI_MATCHING_MONTHLY_LIMIT || 500);
+
+/** AI matching runs only when enabled AND a key is configured; otherwise it is skipped, never a 500. */
+export function isAiMatchingAvailable() {
+  return AI_MATCHING_ENABLED && Boolean(process.env.OPENAI_API_KEY);
+}
 
 // Created on first use so the API can start without OPENAI_API_KEY (AI matching is optional)
 let openaiClient: OpenAI | null = null;
@@ -174,12 +182,8 @@ function normalizeAiResult(result: any) {
 
 export const aiMatchService = {
   async evaluateApplication(applicationId: string) {
-    if (!AI_MATCHING_ENABLED) {
+    if (!isAiMatchingAvailable()) {
       return null;
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      throw new AppError('OpenAI API key is not configured', 500);
     }
 
     const application = await ApplicationModel.findById(applicationId);
@@ -220,6 +224,15 @@ export const aiMatchService = {
         },
       });
 
+      return null;
+    }
+
+    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const usedThisMonth = await AiMatchEvaluationModel.countDocuments({ createdAt: { $gte: startOfMonth } });
+    if (usedThisMonth >= AI_MATCHING_MONTHLY_LIMIT) {
+      await ApplicationModel.findByIdAndUpdate(applicationId, {
+        $set: { aiMatchStatus: 'SKIPPED', aiError: 'Monthly AI evaluation limit reached' },
+      });
       return null;
     }
 
