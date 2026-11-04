@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `docs/audits.md`: Lighthouse/axe results; all public pages now score 100 for accessibility, best practices and SEO (#7).
 - Secret scanning with gitleaks in CI (`secrets` job) and `docs/secrets.md` (inventory, review results, rotation plan) (#22).
 - `SlowRequestNotice`: after 4 s of waiting (login, sign-up, job list) users are told the server may be starting up (#32).
+- Resume pre-fill without AI: `POST /api/v1/resumes/parse` extracts email, phone, LinkedIn, headline, years of experience, skills and summary with rules (nothing stored); onboarding steps 1 and 2 pre-fill empty fields (#34).
+- AI matching safeguards: skipped instead of failing when no OpenAI key, monthly cap `AI_MATCHING_MONTHLY_LIMIT`, clear 400 on retry when disabled, "advisory only" notice; `docs/ai.md` (#33).
 - Rate limiting: 10 attempts / 15 min per IP + email on login, registration, OTP and password reset; 600 requests / min per IP on the whole API (#20).
 - Docker: `Dockerfile` for `apps/api` and `apps/web`, `docker-compose.yml` with MongoDB (#26).
 - Adapter route running the Netlify Functions outside Netlify (#27).

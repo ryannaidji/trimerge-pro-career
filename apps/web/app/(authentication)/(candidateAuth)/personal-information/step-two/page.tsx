@@ -12,6 +12,18 @@ function Page() {
     const [skillsText, setSkillsText] = React.useState('')
     const [professionalSummary, setProfessionalSummary] = React.useState('')
 
+    // Pre-fill from the resume suggestions saved on the previous step (#34); editable by the candidate
+    React.useEffect(() => {
+        try {
+            const raw = sessionStorage.getItem('tm_resume_suggestions')
+            if (!raw) return
+            const saved = JSON.parse(raw) as { skills?: string[]; professionalSummary?: string }
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            if (saved.skills?.length) setSkillsText((current) => current || saved.skills!.join(', '))
+            if (saved.professionalSummary) setProfessionalSummary((current) => current || saved.professionalSummary!)
+        } catch { /* storage unavailable or invalid */ }
+    }, [])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // convert skills string to array by comma and always send an array

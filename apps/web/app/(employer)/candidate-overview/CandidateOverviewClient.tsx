@@ -198,6 +198,9 @@ export default function CandidateOverviewClient({ jobId: jobIdOverride }: { jobI
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <h1 style={{ fontSize: "20px", fontWeight: 600, color: "#0f172a", margin: 0 }}>Applicant Dashboard</h1>
+            <p style={{ fontSize: "13px", color: "#475569", margin: "4px 0 0" }}>
+              Match scores are advisory only. They help you prioritize review; hiring decisions are always made by your team.
+            </p>
             <p style={{ fontSize: "14px", color: "#475569", margin: "4px 0 0 0" }}>AI-powered talent matching and evaluation</p>
           </div>
         </div>
