@@ -115,6 +115,8 @@ function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               type="email"
               id="email"
+              name="email"
+              autoComplete="email"
               placeholder="you@email.com"
               required
               className="tp-card"
@@ -131,6 +133,8 @@ function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               type={showPassword ? 'text' : 'password'}
               id="password"
+              name="password"
+              autoComplete="current-password"
               placeholder="••••••••"
               required
               className="tp-card"
