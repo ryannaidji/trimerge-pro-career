@@ -595,6 +595,11 @@ export function EmployerDashboard() {
     }
   };
 
+  const handleSetJobStatus = async (id: string, status: 'OPEN' | 'CLOSED') => {
+    const ok = await updateJob(id, { status });
+    if (ok) setRefreshKey((k) => k + 1);
+  };
+
   const handleDeleteConfirm = async (id: string) => {
     const ok = await deleteJob(id);
     if (ok) {
@@ -705,14 +710,14 @@ export function EmployerDashboard() {
           const entry = (countriesData ?? FALLBACK_COUNTRIES).find((c) => c.country === locationCountry);
           setCitiesForState(entry?.cities ?? null);
           const draftCity = draftLocationRef.current?.city;
-          setLocationCity(draftCity && entry?.cities?.includes(draftCity) ? draftCity : entry?.cities?.[0] ?? '');
+          setLocationCity(draftCity || entry?.cities?.[0] || '');
           draftLocationRef.current = null;
         }
       })
       .catch(() => {
         const entry = (countriesData ?? FALLBACK_COUNTRIES).find((c) => c.country === locationCountry);
         setCitiesForState(entry?.cities ?? null);
-        setLocationCity(entry?.cities?.[0] ?? '');
+        setLocationCity(draftLocationRef.current?.city || entry?.cities?.[0] || '');
         draftLocationRef.current = null;
       });
   }, [locationCountry, showCreateModal, countriesData]);
@@ -738,19 +743,19 @@ export function EmployerDashboard() {
         if (Array.isArray(cities) && cities.length > 0) {
           setCitiesForState(cities);
           const draftCity = draftLocationRef.current?.city;
-          setLocationCity(draftCity && cities.includes(draftCity) ? draftCity : cities[0] ?? '');
+          setLocationCity(draftCity || cities[0] || '');
           draftLocationRef.current = null;
         } else {
           const entry = (countriesData ?? FALLBACK_COUNTRIES).find((c) => c.country === locationCountry);
           setCitiesForState(entry?.cities ?? null);
-          setLocationCity(entry?.cities?.[0] ?? '');
+          setLocationCity(draftLocationRef.current?.city || entry?.cities?.[0] || '');
           draftLocationRef.current = null;
         }
       })
       .catch(() => {
         const entry = (countriesData ?? FALLBACK_COUNTRIES).find((c) => c.country === locationCountry);
         setCitiesForState(entry?.cities ?? null);
-        setLocationCity(entry?.cities?.[0] ?? '');
+        setLocationCity(draftLocationRef.current?.city || entry?.cities?.[0] || '');
         draftLocationRef.current = null;
       });
   }, [locationState, locationCountry, showCreateModal, countriesData]);
@@ -1001,6 +1006,16 @@ export function EmployerDashboard() {
                                 <Users size={12} />
                                 Applications
                               </button>
+                              {(job.status === 'OPEN' || job.status === 'CLOSED') && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSetJobStatus(jobId, job.status === 'OPEN' ? 'CLOSED' : 'OPEN')}
+                                  disabled={updatingJob}
+                                  style={{ fontSize: '0.78rem', padding: '0.3rem 0.6rem', borderRadius: '8px', border: '1px solid rgba(148,163,184,0.3)', background: 'transparent', cursor: 'pointer', fontWeight: 600 }}
+                                >
+                                  {job.status === 'OPEN' ? 'Close job' : 'Reopen job'}
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 title="Edit job"
@@ -1931,8 +1946,8 @@ export function EmployerDashboard() {
                     {creating ? 'Saving…' : 'Save Draft'}
                   </button>
                 )}
-                <button type="button" onClick={createForm.status === 'OPEN' ? handleSaveChanges : handlePublish} disabled={creating} style={{ padding: '0.7rem 1.5rem', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg, #07172e, #1d4ed8)', color: 'white', fontWeight: 700, fontSize: '0.92rem', cursor: creating ? 'not-allowed' : 'pointer' }}>
-                  {creating ? 'Saving…' : createForm.status === 'OPEN' ? 'Save Changes →' : 'Publish Job →'}
+                <button type="button" onClick={createForm.status !== 'DRAFT' ? handleSaveChanges : handlePublish} disabled={creating} style={{ padding: '0.7rem 1.5rem', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg, #07172e, #1d4ed8)', color: 'white', fontWeight: 700, fontSize: '0.92rem', cursor: creating ? 'not-allowed' : 'pointer' }}>
+                  {creating ? 'Saving…' : createForm.status !== 'DRAFT' ? 'Save Changes →' : 'Publish Job →'}
                 </button>
               </>
             ) : (

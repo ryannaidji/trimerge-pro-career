@@ -14,15 +14,14 @@ export default function JoinNowClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const initialRole = 'Candidate' as const;
-
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [terms, setTerms] = useState(false);
     const [updates, setUpdates] = useState(false);
-    const [role] = useState<'Candidate'>('Candidate');
+    // "Post a Position" links here with ?role=recruiter
+    const [role, setRole] = useState<'Candidate' | 'Recruiter'>(searchParams?.get('role') === 'recruiter' ? 'Recruiter' : 'Candidate');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [localError, setLocalError] = useState<string | null>(null);
@@ -45,8 +44,8 @@ export default function JoinNowClient() {
             return;
         }
 
-        if (password.length < 8) {
-            setLocalError('Use at least 8 characters for your password.');
+        if (password.length < 12) {
+            setLocalError('Use at least 12 characters for your password.');
             return;
         }
 
@@ -126,6 +125,20 @@ export default function JoinNowClient() {
                     </div>
                 </div>
 
+                <fieldset style={{ border: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.45rem' }}>
+                    <legend style={{ fontWeight: 800, color: 'var(--tp-ink)', padding: 0, marginBottom: '0.45rem' }}>I am</legend>
+                    <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+                        <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <input type='radio' name='role' checked={role === 'Candidate'} onChange={() => setRole('Candidate')} />
+                            Looking for a job
+                        </label>
+                        <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <input type='radio' name='role' checked={role === 'Recruiter'} onChange={() => setRole('Recruiter')} />
+                            Hiring (employer)
+                        </label>
+                    </div>
+                </fieldset>
+
                 <div style={{ display: 'grid', gap: '1rem' }}>
                     <label style={{ display: 'grid', gap: '0.45rem' }}>
                         <span style={{ fontWeight: 800, color: 'var(--tp-ink)' }}>Full name</span>
@@ -173,7 +186,7 @@ export default function JoinNowClient() {
                 {(localError || error) && <div role="alert" style={{ color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '16px', fontWeight: 700 }}>{localError || error}</div>}
 
                 <div style={{ fontSize: '0.92rem', color: 'var(--tp-muted)', lineHeight: 1.6 }}>
-                    Password must be at least 8 characters. We will send you to email verification after registration.
+                    Password must be at least 12 characters. We will send you to email verification after registration.
                 </div>
 
                 <SlowRequestNotice active={loading} />

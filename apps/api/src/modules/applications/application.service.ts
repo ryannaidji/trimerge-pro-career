@@ -98,6 +98,13 @@ function buildFinalCoverLetterText(input: {
   return undefined;
 }
 
+async function assertCandidateProfile(candidateId: string) {
+  const profile = await CandidateProfileModel.exists({ userId: candidateId });
+  if (!profile) {
+    throw new AppError('Complete your profile before applying', 403);
+  }
+}
+
 export const applicationService = {
   async create(
    candidateId: string | null,
@@ -118,6 +125,10 @@ export const applicationService = {
   if (user.accountType !== 'TALENT') {
     throw new AppError('Forbidden', 403);
   }
+
+  await assertCandidateProfile(candidateId);
+
+
 
   const job = await JobModel.findById(input.jobId);
 
@@ -307,6 +318,10 @@ export const applicationService = {
     if (user.accountType !== 'TALENT') {
       throw new AppError('Forbidden', 403);
     }
+
+    await assertCandidateProfile(candidateId);
+
+
 
     const job = await JobModel.findById(input.jobId);
 

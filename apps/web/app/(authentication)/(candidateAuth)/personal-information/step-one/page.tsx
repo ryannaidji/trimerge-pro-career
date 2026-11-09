@@ -143,7 +143,7 @@ function Page() {
             fd.append('location', payload.location);
             fd.append('jobTitleOrDesiredRole', payload.jobTitleOrDesiredRole);
             fd.append('yearsOfExperience', payload.yearsOfExperience);
-            fd.append('linkedinUrl', payload.linkedinUrl || '');
+            if (payload.linkedinUrl.trim()) fd.append('linkedinUrl', payload.linkedinUrl.trim());
             fd.append('resume', resumeFile, resumeFile.name);
             result = await submit(fd);
         } else {

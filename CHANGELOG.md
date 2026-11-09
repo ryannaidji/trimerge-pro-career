@@ -93,7 +93,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - MFA mockup pages (`/mfa`, `/mfa/set-up`) that looked functional but did nothing (#61).
 - Mockup change-password page (now redirects to Settings).
 
+### Added
+- Browse Jobs filters by sector and employment type (#95).
+- Employers can close and reopen a job from the dashboard (#90).
+
 ### Fixed
+- Employers can sign up from the website; the recruiter link preselects the employer option (#87).
+- Candidate onboarding no longer fails with a resume and no LinkedIn URL (#88).
+- Editing a job keeps its city (#89).
+- Sign-up and password reset forms check the real 12-character password rule (#91).
+- Browse Jobs shows the real job count and loads every job; signed-in users no longer see drafts or closed jobs there (#90, #92).
+- Accounts that did not finish onboarding return to it at login, and the API refuses applications without a candidate profile (#93).
+- Jobs already applied to show "Applied" instead of "Apply Now" (#94).
 - Refresh tokens now have a unique ID: two logins by the same user in the same second no longer get an identical token that could be revoked together (#84).
 - Admins are no longer treated as candidates: their account menu has Admin dashboard and Settings only, and "Apply Now", "Save job" and "Delete account" are not offered (#72).
 - Page access by account type: `RequireRole` sends visitors to `/login` and other account types to their own home page, on candidate, employer, Settings and onboarding pages; employers no longer see a raw "Forbidden", and visitors are no longer told their session expired (#73, #75, #76, #77, #78, #79).
