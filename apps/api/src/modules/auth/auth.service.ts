@@ -230,6 +230,8 @@ export const authService = {
         accountType: user.accountType,
         isVerified: user.isVerified,
         status: user.status,
+        onboardingStep: user.onboardingStep ?? 1,
+        onboardingCompleted: user.onboardingCompleted ?? false,
         profile: user.profile,
       },
     };

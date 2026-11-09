@@ -50,9 +50,10 @@ interface JobDetailDrawerProps {
   job: Job | null;
   onClose: () => void;
   onApply?: () => void;
+  applied?: boolean;
 }
 
-export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps) {
+export function JobDetailDrawer({ job, onClose, onApply, applied = false }: JobDetailDrawerProps) {
   const { state } = useUser();
   // Note: we can't call hooks conditionally; we'll use a simple window.location fallback for now.
   const [visible, setVisible] = useState(false);
@@ -217,6 +218,9 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
 
           {state.user?.accountType !== 'EMPLOYER' && state.user?.accountType !== 'ADMIN' && (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+              {applied ? (
+                <span style={{ padding: '0.55rem 1.4rem', borderRadius: 10, background: '#dcfce7', color: '#166534', fontWeight: 700, fontSize: '0.88rem' }}>Applied</span>
+              ) : (
               <button
                 // Applying requires a candidate account (#19): visitors sign in first instead of
                 // filling the whole form and getting an error at the end
@@ -225,6 +229,7 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
               >
                 {state.user ? 'Apply Now' : 'Log in to apply'}
               </button>
+              )}
               <SaveJobButton jobId={job._id ?? (job as { id?: string }).id} />
             </div>
           )}

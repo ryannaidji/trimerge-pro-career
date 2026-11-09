@@ -33,7 +33,8 @@ export const candidateStep2Schema = z.object({
   location: z.string().trim().min(1),
   jobTitleOrDesiredRole: z.string().trim().min(1),
   yearsOfExperience: z.string().trim().min(1),
-  linkedinUrl: z.string().url().optional(),
+  // The form sends an empty value when this optional field is left blank
+  linkedinUrl: z.literal('').transform(() => undefined).or(z.string().url()).optional(),
   resumeUrl: z.string().trim().optional(),
 });
 

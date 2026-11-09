@@ -7,7 +7,8 @@ const FALLBACK_COUNTRIES: { country: string; cities?: string[] }[] = [
 ]
 
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { authFetch } from '@/app/util/session';
 import { fetchLocations } from '@/app/util/locations';
 // avoid useSearchParams (requires Suspense boundary) — read from window.location in effects instead
 import SlowRequestNotice from '@/app/components/ui/SlowRequestNotice';
@@ -137,6 +138,12 @@ function BrowseJobs() {
 
   const [jobs, setJobs] = useState<Job[] | null>(null)
   const [loadingJobs, setLoadingJobs] = useState(true)
+  const [filterDepartment, setFilterDepartment] = useState('')
+  const [filterType, setFilterType] = useState('')
+  const [jobTotal, setJobTotal] = useState<number | null>(null)
+  const [jobPage, setJobPage] = useState(1)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set())
   const { createJob, loading: creating, error: createError, setError: setCreateError } = useCreateJob()
   const [showCreateModal, setShowCreateModal] = useState(false)
 
@@ -491,16 +498,58 @@ function BrowseJobs() {
   // If there's no logged-in user, load public jobs. Otherwise use authenticated fetchJobs.
   // Re-runs whenever the search/location terms change so the homepage hero search
   // (q/where) and any in-page edits actually reach the server.
+  const jobsIn = (res: unknown) => (res && typeof res === 'object' && Array.isArray((res as { jobs?: unknown }).jobs))
+    ? (res as { jobs: unknown[] }).jobs as Job[]
+    : []
+  const totalIn = (res: unknown) => (res as { pagination?: { total?: number } } | null)?.pagination?.total ?? null
+
+  // Only open jobs belong here: the signed-in endpoint also returns drafts and closed jobs
+  const jobQuery = useMemo(() => ({
+    limit: 50,
+    status: 'OPEN',
+    search: searchTerm.trim() || undefined,
+    location: locationTerm.trim() || undefined,
+    department: filterDepartment || undefined,
+    employmentType: filterType || undefined,
+  }), [searchTerm, locationTerm, filterDepartment, filterType])
+
+  const loadMoreJobs = async () => {
+    setLoadingMore(true)
+    const next = jobPage + 1
+    const params = { ...jobQuery, page: next }
+    const res = await (state.user ? fetchJobs(params) : fetchPublicJobs(params))
+    const more = jobsIn(res)
+    setJobs((current) => {
+      const seen = new Set((current ?? []).map((j) => String(j._id ?? j.id)))
+      return [...(current ?? []), ...more.filter((j) => !seen.has(String(j._id ?? j.id)))]
+    })
+    setJobPage(next)
+    setLoadingMore(false)
+  }
+
+  // Jobs this candidate already applied to; refreshed when the application form closes
+  const isTalent = state.user?.accountType === 'TALENT'
+  useEffect(() => {
+    if (!isTalent || applyingToJob) return
+    let mounted = true
+    authFetch('/api/v1/applications/my-applications?limit=50')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { applications?: { jobId?: string | { _id?: string }; job?: { id?: string; _id?: string } | null }[] } | null) => {
+        if (!mounted || !data) return
+        setAppliedIds(new Set((data.applications ?? []).map((a) => String(
+          (typeof a.jobId === 'string' ? a.jobId : a.jobId?._id) ?? a.job?.id ?? a.job?._id
+        ))))
+      })
+      .catch(() => {})
+    return () => { mounted = false }
+  }, [isTalent, applyingToJob])
+
   useEffect(() => {
     let mounted = true
     const load = async () => {
       setLoadingJobs(true)
-      const commonParams = {
-        page: 1,
-        limit: 50,
-        search: searchTerm.trim() || undefined,
-        location: locationTerm.trim() || undefined,
-      }
+      const commonParams = { ...jobQuery, page: 1 }
+      setJobPage(1)
       let res
       if (!state.user) {
         res = await fetchPublicJobs(commonParams)
@@ -516,6 +565,7 @@ function BrowseJobs() {
 
       if (payload.length > 0) {
         setJobs(payload as Job[])
+        setJobTotal(totalIn(res))
         setLoadingJobs(false)
         return
       }
@@ -528,14 +578,16 @@ function BrowseJobs() {
           : []
         if (!mounted) return
         setJobs(pubPayload as Job[])
+        setJobTotal(totalIn(pub))
       } else {
         setJobs([])
+        setJobTotal(0)
       }
       setLoadingJobs(false)
     }
     load()
     return () => { mounted = false }
-  }, [state.user, searchTerm, locationTerm, fetchJobs, fetchPublicJobs])
+  }, [state.user, jobQuery, fetchJobs, fetchPublicJobs])
 
   // If q/where query params are present (from the homepage hero search), prefill
   // the keyword and location search so they reach the server-side filter above.
@@ -592,7 +644,7 @@ function BrowseJobs() {
             <h1 style={{ margin: '0.2rem 0 0', fontSize: 'clamp(1.4rem, 2.5vw, 1.9rem)', letterSpacing: '-0.04em', color: '#0f172a', fontWeight: 800 }}>Browse jobs</h1>
           </div>
           <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#64748b' }}>
-            <span style={{ fontWeight: 800, color: '#1d4ed8', fontSize: '1.1rem' }}>{filteredJobs.length}</span>{' '}{filteredJobs.length === 1 ? 'job' : 'jobs'} found
+            <span style={{ fontWeight: 800, color: '#1d4ed8', fontSize: '1.1rem' }}>{jobTotal ?? filteredJobs.length}</span>{' '}{(jobTotal ?? filteredJobs.length) === 1 ? 'job' : 'jobs'} found
           </div>
         </div>
 
@@ -625,9 +677,23 @@ function BrowseJobs() {
             </div>
           </div>
 
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: -12, marginBottom: 16 }}>
+            <select aria-label="Filter jobs by sector" value={filterDepartment} onChange={e => setFilterDepartment(e.target.value)} style={{ flex: '1 1 12rem', minWidth: 0, padding: '0.55rem 0.75rem', borderRadius: 10, border: '1px solid rgba(148,163,184,0.35)', background: 'white', fontSize: 14, color: '#0f172a' }}>
+              <option value="">All sectors</option>
+              {DEPARTMENTS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+            </select>
+            <select aria-label="Filter jobs by employment type" value={filterType} onChange={e => setFilterType(e.target.value)} style={{ flex: '1 1 10rem', minWidth: 0, padding: '0.55rem 0.75rem', borderRadius: 10, border: '1px solid rgba(148,163,184,0.35)', background: 'white', fontSize: 14, color: '#0f172a' }}>
+              <option value="">All employment types</option>
+              <option value="FULL_TIME">Full time</option>
+              <option value="PART_TIME">Part time</option>
+              <option value="CONTRACT">Contract</option>
+              <option value="INTERNSHIP">Internship</option>
+            </select>
+          </div>
+
           {/* Section heading for screen readers keeps heading levels sequential (h1 > h2 > h3 job titles) */}
           <h2 className="sr-only">Job listings</h2>
-          <div className="flex gap-10 flex-col overflow-y-scroll max-h-[70vh] tp-job-scroll" role="region" aria-label="Job listings" tabIndex={0} style={{ rowGap: 20, paddingBottom: "5rem", paddingRight: '0.5rem' }}>
+          <div className="flex gap-10 flex-col overflow-y-scroll max-h-[62vh] tp-job-scroll" role="region" aria-label="Job listings" tabIndex={0} style={{ rowGap: 20, paddingBottom: "5rem", paddingRight: '0.5rem' }}>
             {/* top-match card removed — anonymous users now see public jobs, and personalized top-match is hidden */}
             {loadingJobs ? (
               <div role="status" style={{ padding: 32, textAlign: 'center', color: '#64748B', display: 'grid', gap: 12 }}>
@@ -635,7 +701,7 @@ function BrowseJobs() {
                 <SlowRequestNotice active={loadingJobs} />
               </div>
             ) : filteredJobs.length === 0 ? (
-              <div role="status" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>No jobs match your search. Try other keywords or clear the location.</div>
+              <div role="status" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>No jobs match your search. Try other keywords or clear the filters.</div>
             ) : (
               displayedJobs.map((job, index) => (
                 // Map the API job object to the JobCard props. JobCard expects a few fields; ensure defaults.
@@ -659,6 +725,11 @@ function BrowseJobs() {
                   )
                 })()
               ))
+            )}
+            {!loadingJobs && (jobs?.length ?? 0) < (jobTotal ?? 0) && (
+              <button type="button" onClick={() => { void loadMoreJobs(); }} disabled={loadingMore} className="tp-btn-secondary" style={{ alignSelf: 'center' }}>
+                {loadingMore ? 'Loading…' : 'Load more jobs'}
+              </button>
             )}
           </div>
 
@@ -692,6 +763,7 @@ function BrowseJobs() {
               job={selectedJob as DrawerJob}
               onClose={() => setSelectedJob(null)}
               onApply={() => { void handleApply(); }}
+              applied={appliedIds.has(String(selectedJob._id ?? selectedJob.id))}
             />
           </div>
         )}
