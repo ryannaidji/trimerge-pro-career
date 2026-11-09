@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { authFetch } from "@/app/util/session";
 import { API_URL } from "@/app/util/apiUrl";
+import { useUser } from "@/contexts/userContext/userContext";
 
 const field: React.CSSProperties = { padding: "0.7rem 0.9rem", borderRadius: 10, border: "1px solid #cbd5e1", fontSize: "1rem", width: "100%", boxSizing: "border-box" };
 const labelStyle: React.CSSProperties = { display: "grid", gap: "0.35rem", fontWeight: 700, fontSize: "0.9rem" };
@@ -23,6 +24,9 @@ function Message({ m }: { m: { kind: "ok" | "error"; text: string } | null }) {
 }
 
 export default function SettingsPage() {
+  const { state } = useUser();
+  // The API refuses to delete admin accounts, so admins are not offered the form
+  const canDeleteAccount = state.user?.accountType !== "ADMIN";
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -110,7 +114,7 @@ export default function SettingsPage() {
         <div><button type="submit" className="tp-btn-primary" disabled={pwBusy}>{pwBusy ? "Saving…" : "Change password"}</button></div>
       </form>
 
-      <form onSubmit={deleteAccount} className="tp-card" style={{ padding: "1.5rem", display: "grid", gap: "1rem", borderColor: "#fecaca" }} aria-labelledby="delete-heading">
+      {canDeleteAccount && <form onSubmit={deleteAccount} className="tp-card" style={{ padding: "1.5rem", display: "grid", gap: "1rem", borderColor: "#fecaca" }} aria-labelledby="delete-heading">
         <h2 id="delete-heading" style={{ margin: 0, fontSize: "1.2rem", color: "#991b1b" }}>Delete account</h2>
         <p style={{ margin: 0, color: "#475569" }}>
           This permanently removes your account and its data: profile, uploaded documents, saved jobs and applications
@@ -123,7 +127,7 @@ export default function SettingsPage() {
             {delBusy ? "Deleting…" : "Delete my account"}
           </button>
         </div>
-      </form>
+      </form>}
     </div>
   );
 }

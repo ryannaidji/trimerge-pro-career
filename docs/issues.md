@@ -43,4 +43,11 @@ broken), **Medium** (degraded feature or hardening gap), **Low** (cosmetic / con
 | D33 | Medium | API · privacy | Deleting an account left uploaded files on disk | Fixed | #58 |
 | D34 | Medium | Web · a11y | Resume picker in the application form was a clickable div (not keyboard accessible); editor toolbar ignored Enter/Space | Fixed | #63 |
 | D35 | Low | Web · UX | Visitors could fill the whole application form before being told to log in | Fixed | #47 |
+| D36 | Medium | Web · admin | Admins were treated as candidates: candidate menu with no link to `/admin`, candidate pages reachable, "Apply Now" and "Delete account" offered | Fixed (admin menu, redirect to `/admin`, candidate actions hidden) | #72 |
+| D37 | High | Web · access | Candidates and admins could open the employer dashboard; its data calls failed with no message | Fixed (`RequireRole`) | #73 |
+| D38 | High | Web · navigation | Empty navbar on `/browse-jobs` for employers and visitors | Fixed | #74 |
+| D39 | Medium | Web · access | Raw "Forbidden" for employers on candidate pages; "session expired" shown to visitors; Settings and onboarding open to the wrong users | Fixed (`RequireRole`) | #75–#78 |
+| D40 | Low | Web · access | Talent search form shown to candidates and visitors; login and sign-up shown to signed-in users | Fixed (`RequireRole`, `GuestOnly`) | #79, #80 |
+| D41 | Low | Web · help | Help assistant always started in Candidate mode | Fixed | #81 |
+| D42 | Low | Web · session | Unused `updateProfile` would have erased the stored account type | Fixed (removed) | #82 |
 

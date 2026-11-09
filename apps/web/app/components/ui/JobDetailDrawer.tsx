@@ -215,7 +215,7 @@ export function JobDetailDrawer({ job, onClose, onApply }: JobDetailDrawerProps)
             <span style={{ fontWeight: 600, color: '#0F172A', fontSize: '0.92rem' }}>{posted ? new Date(posted).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }) : 'Unknown'}</span>
           </div>
 
-          {state.user?.accountType !== 'EMPLOYER' && (
+          {state.user?.accountType !== 'EMPLOYER' && state.user?.accountType !== 'ADMIN' && (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
               <button
                 // Applying requires a candidate account (#19): visitors sign in first instead of

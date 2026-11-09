@@ -94,6 +94,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Mockup change-password page (now redirects to Settings).
 
 ### Fixed
+- Admins are no longer treated as candidates: their account menu has Admin dashboard and Settings only, and "Apply Now", "Save job" and "Delete account" are not offered (#72).
+- Page access by account type: `RequireRole` sends visitors to `/login` and other account types to their own home page, on candidate, employer, Settings and onboarding pages; employers no longer see a raw "Forbidden", and visitors are no longer told their session expired (#73, #75, #76, #77, #78, #79).
+- Signed-in users skip `/login` and `/join-now` (#80).
+- Employers and visitors keep their normal navbar on `/browse-jobs` (#74).
+- The help assistant starts in Employer mode for employers (#81).
+- Removed the unused `updateProfile` context function, which would have erased the stored account type (#82).
 - ESLint: 0 errors (was 51); lint is now blocking in CI; `set-state-in-effect` kept as a documented warning (#63).
 - Resume/cover-letter picker in the application form is a real button (keyboard and screen readers); editor toolbar works with Enter/Space (#63).
 - Applying for a job uses the session-renewing fetch, so an expired token no longer fails the application.

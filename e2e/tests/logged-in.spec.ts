@@ -121,6 +121,95 @@ test('admin: dashboard lists users and jobs', async ({ page }) => {
   await expect(page.getByRole('cell', { name: jobTitle, exact: true })).toBeVisible({ timeout: 20_000 });
 });
 
+test('admin: account menu has admin links only', async ({ page }) => {
+  await signIn(page, 'admin');
+  await page.goto('/admin');
+  const menuButton = page.getByRole('button', { name: /My account/ });
+  // Wide screens show the account button; narrow ones put the links in the toggle menu
+  if (await page.getByRole('button', { name: 'Toggle navigation' }).isVisible()) {
+    await page.getByRole('button', { name: 'Toggle navigation' }).click();
+  } else {
+    await menuButton.click();
+  }
+  await expect(page.getByRole('link', { name: 'Admin dashboard', exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Settings', exact: true }).first()).toBeVisible();
+  for (const label of ['My applications', 'Recommended jobs', 'Saved jobs', 'My profile']) {
+    await expect(page.getByRole('link', { name: label, exact: true })).toHaveCount(0);
+  }
+});
+
+test('admin: candidate pages redirect to the dashboard', async ({ page }) => {
+  await signIn(page, 'admin');
+  for (const path of ['/applications', '/recommended-jobs', '/saved-jobs', '/profile']) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
+  }
+});
+
+test('admin: settings has no delete-account form', async ({ page }) => {
+  await signIn(page, 'admin');
+  await page.goto('/settings');
+  await expect(page.getByRole('heading', { name: 'Change password' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Delete account' })).toHaveCount(0);
+});
+
+// Page access by account type (#73, #75-#80): [role, pages opened, where they must land]
+const accessRules: [string, string[], RegExp][] = [
+  ['candidate', ['/employer-dashboard', '/talent-search', '/recruiter-information/step-one', '/login', '/join-now'], /\/browse-jobs$/],
+  ['employer', ['/applications', '/saved-jobs', '/recommended-jobs', '/profile', '/personal-information/step-one', '/login'], /\/employer-dashboard$/],
+  ['admin', ['/employer-dashboard', '/personal-information/step-one', '/recruiter-information/step-one', '/join-now'], /\/admin$/],
+  ['visitor', ['/settings', '/applications', '/saved-jobs', '/recommended-jobs', '/profile', '/employer-dashboard', '/talent-search', '/personal-information/step-one', '/recruiter-information/step-one'], /\/login$/],
+];
+
+for (const [role, paths, landing] of accessRules) {
+  test(`${role}: pages for other users redirect home`, async ({ page }) => {
+    test.setTimeout(120_000);
+    if (role !== 'visitor') await signIn(page, role);
+    for (const path of paths) {
+      await page.goto(path);
+      await expect(page, `opening ${path}`).toHaveURL(landing, { timeout: 20_000 });
+    }
+  });
+}
+
+test('employer: login form still lands on the dashboard (#80)', async ({ page }) => {
+  await page.goto('/login');
+  await page.locator('input[type="email"]').fill(employer.email);
+  await page.locator('input[type="password"]').fill(password);
+  await page.locator('form button[type="submit"]').click();
+  await expect(page).toHaveURL(/\/employer-dashboard$/, { timeout: 20_000 });
+});
+
+test('new candidate: email verification continues into onboarding (#78)', async ({ page }) => {
+  const email = `pw.signup.${Date.now()}.${test.info().project.name}@example.test`;
+  await api('/api/v1/onboarding/register', { method: 'POST', body: { fullName: 'Sam Newcomer', email, password, confirmPassword: password, role: 'Candidate', agreeToTerms: true } });
+  await page.goto(`/email-sent?email=${encodeURIComponent(email)}&role=Candidate`);
+  const otp = readOtp(email)!;
+  const boxes = page.locator('input');
+  for (let i = 0; i < otp.length; i++) await boxes.nth(i).fill(otp[i]);
+  await page.locator('main button, form button').filter({ hasText: /verify|continue|confirm/i }).first().click();
+  await expect(page).toHaveURL(/\/email-verified/, { timeout: 20_000 });
+  await page.goto('/personal-information/step-one');
+  await expect(page).toHaveURL(/\/personal-information\/step-one$/);
+  await expect(page.locator('h1').first()).toBeVisible();
+});
+
+test('employer: help assistant starts in Employer mode (#81)', async ({ page }) => {
+  await signIn(page, 'employer');
+  await page.goto('/about');
+  await page.waitForLoadState('networkidle');
+  await page.getByRole('button', { name: /Ask TriMerge/ }).last().click();
+  await expect(page.getByRole('button', { name: 'Post jobs' })).toBeVisible();
+});
+
+test('navbar on Browse Jobs keeps employer and visitor navigation (#74)', async ({ page }) => {
+  await page.goto('/browse-jobs');
+  await expect(page.getByRole('link', { name: 'Sign up' })).toBeVisible();
+  await signIn(page, 'employer');
+  await page.goto('/browse-jobs');
+  await expect(page.getByRole('button', { name: 'Logout' })).toBeVisible();
+});
+
 test('candidate: onboarding pages are accessible', async ({ page }) => {
   await signIn(page, 'candidate');
   for (const path of ['/personal-information/step-one', '/personal-information/step-two']) {
