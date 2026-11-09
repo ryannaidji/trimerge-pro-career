@@ -40,7 +40,10 @@ function LoginPage() {
       return;
     }
 
-    const hasProfile = Boolean(resolvedUser?.profile && Object.keys(resolvedUser.profile).length > 0);
+    // Accounts that did not finish onboarding go back to the step they reached
+    const progress = resolvedUser as { onboardingCompleted?: boolean; onboardingStep?: number };
+    const finished = progress.onboardingCompleted !== false;
+    const nextStep = (progress.onboardingStep ?? 1) >= 2 ? 'step-two' : 'step-one';
 
     if (accountType === 'admin') {
       router.replace('/admin');
@@ -48,12 +51,12 @@ function LoginPage() {
     }
 
     if (accountType === 'candidate' || accountType === 'talent') {
-      router.replace(hasProfile ? '/browse-jobs' : '/personal-information/step-one');
+      router.replace(finished ? '/browse-jobs' : `/personal-information/${nextStep}`);
       return;
     }
 
     if (accountType === 'recruiter' || accountType === 'employer') {
-      router.replace(hasProfile ? '/employer-dashboard' : '/recruiter-information/step-one');
+      router.replace(finished ? '/employer-dashboard' : `/recruiter-information/${nextStep}`);
       return;
     }
 

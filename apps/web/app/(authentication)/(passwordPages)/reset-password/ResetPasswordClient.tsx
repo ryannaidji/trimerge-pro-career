@@ -40,6 +40,11 @@ export default function ResetPasswordClient() {
         event.preventDefault()
         setLocalError(null)
 
+        if (newPassword.length < 12) {
+            setLocalError('Use at least 12 characters for your password.')
+            return
+        }
+
         if (newPassword !== confirmPassword) {
             setLocalError('Passwords do not match.')
             return

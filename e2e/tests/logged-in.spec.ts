@@ -13,6 +13,8 @@ const employer = { email: `pw.employer.${run}@example.test`, name: `Pat Employer
 const candidate = { email: `pw.candidate.${run}@example.test`, name: `Robin Candidate${run}` };
 const admin = { email: process.env.ADMIN_EMAIL || 'admin@trimerge.local', password: process.env.ADMIN_PASSWORD || 'Admin-Local-2026!' };
 const jobTitle = `Grants Analyst ${run}`;
+const cityJob = `Emergency Planner ${run}`;
+const closeJob = `Closing Soon ${run}`;
 
 async function api(path: string, init: { method?: string; body?: unknown; token?: string } = {}, attempt = 1): Promise<{ status: number; data: any }> {
   // Retry once on a network error (Docker on Windows occasionally drops a connection)
@@ -47,6 +49,8 @@ test.beforeAll(async () => {
   await api('/api/v1/onboarding/recruiter/step-3', { method: 'POST', token: emp.accessToken, body: { companyOverview: 'We support county programs.', benefitsAndOpportunities: 'Training and hybrid work.', primaryHiringNeeds: 'Analysts' } });
   const job = await api('/api/v1/jobs', { method: 'POST', token: emp.accessToken, body: { title: jobTitle, description: 'Manage federal and state grant reporting.', department: 'OPERATIONS', employmentType: 'FULL_TIME', status: 'OPEN', skills: ['Grants Management', 'Excel'], location: 'Orlando, FL' } });
   const jobId = job.data?.job?.id || job.data?.job?._id || job.data?.id;
+  await api('/api/v1/jobs', { method: 'POST', token: emp.accessToken, body: { title: cityJob, description: 'Coordinate emergency planning.', department: 'EMERGENCY_MANAGEMENT', employmentType: 'CONTRACT', status: 'OPEN', skills: ['FEMA'], location: 'Tallahassee, Florida, United States' } });
+  await api('/api/v1/jobs', { method: 'POST', token: emp.accessToken, body: { title: closeJob, description: 'A posting to close.', department: 'OPERATIONS', employmentType: 'FULL_TIME', status: 'OPEN', skills: ['Excel'], location: 'Miami, Florida, United States' } });
 
   const cand = await signUp(candidate.email, candidate.name, 'Candidate');
   await api('/api/v1/onboarding/candidate/step-2', { method: 'POST', token: cand.accessToken, body: { location: 'Orlando, FL', jobTitleOrDesiredRole: 'Grants Analyst', yearsOfExperience: '6-8' } });
@@ -208,6 +212,112 @@ test('navbar on Browse Jobs keeps employer and visitor navigation (#74)', async 
   await signIn(page, 'employer');
   await page.goto('/browse-jobs');
   await expect(page.getByRole('button', { name: 'Logout' })).toBeVisible();
+});
+
+// ---------------- Walkthrough fixes (#87-#95) ----------------
+
+const publicJobs = async (search: string) => (await api(`/api/v1/public/jobs?page=1&limit=5&search=${encodeURIComponent(search)}`)).data.jobs as { title: string; location: string }[];
+
+test('visitor: employer sign-up from the recruiter link (#87)', async ({ page }) => {
+  const email = `pw.newemployer.${Date.now()}.${test.info().project.name}@example.test`;
+  await page.goto('/join-now?role=recruiter');
+  await expect(page.getByRole('radio', { name: 'Hiring (employer)' })).toBeChecked();
+  await page.getByPlaceholder('Full name *').fill('Nia Employer');
+  await page.getByPlaceholder('Email *').fill(email);
+  await page.getByPlaceholder('Password *', { exact: true }).fill(password);
+  await page.getByPlaceholder('Confirm password *').fill(password);
+  await page.locator('#terms').check();
+  const [request] = await Promise.all([page.waitForRequest((r) => r.url().includes('/onboarding/register')), page.getByRole('button', { name: 'Create account' }).click()]);
+  expect(JSON.parse(request.postData() || '{}').role).toBe('Recruiter');
+  await expect(page).toHaveURL(/email-sent.*role=Recruiter/, { timeout: 20_000 });
+});
+
+test('visitor: sign-up form explains the 12-character password rule (#91)', async ({ page }) => {
+  await page.goto('/join-now');
+  await page.getByPlaceholder('Full name *').fill('Short Password');
+  await page.getByPlaceholder('Email *').fill('short.password@example.test');
+  await page.getByPlaceholder('Password *', { exact: true }).fill('Abcd1234!xy');
+  await page.getByPlaceholder('Confirm password *').fill('Abcd1234!xy');
+  await page.locator('#terms').check();
+  await page.getByRole('button', { name: 'Create account' }).click();
+  await expect(page.getByRole('alert').filter({ hasText: 'at least 12 characters' })).toBeVisible();
+});
+
+test('new candidate: unfinished onboarding returns to onboarding and blocks applying (#93)', async ({ page }) => {
+  const email = `pw.unfinished.${Date.now()}.${test.info().project.name}@example.test`;
+  const session = await signUp(email, 'Una Finished', 'Candidate');
+  const job = (await api(`/api/v1/public/jobs?page=1&limit=1&search=${encodeURIComponent(jobTitle)}`)).data.jobs[0];
+  const refused = await api('/api/v1/applications', { method: 'POST', token: session.accessToken, body: { jobId: job._id } });
+  expect(refused.status).toBe(403);
+  expect(refused.data.message).toContain('Complete your profile');
+  await page.goto('/login');
+  await page.locator('input[name="email"]').fill(email);
+  await page.locator('input[name="password"]').fill(password);
+  await page.locator('form button[type="submit"]').click();
+  await expect(page).toHaveURL(/\/personal-information\/step-one$/, { timeout: 20_000 });
+});
+
+test('employer: editing a job keeps the city (#89)', async ({ page }) => {
+  await signIn(page, 'employer');
+  await page.goto('/employer-dashboard');
+  const row = page.locator('div').filter({ hasText: cityJob }).filter({ has: page.getByTitle('Edit job') }).last();
+  await row.getByTitle('Edit job').click();
+  for (let i = 0; i < 8 && await page.getByRole('button', { name: 'Next →' }).isVisible(); i++) {
+    await page.getByRole('button', { name: 'Next →' }).click();
+    await page.waitForTimeout(300);
+  }
+  await page.getByRole('button', { name: /Save Changes/ }).click();
+  await expect(page.getByRole('button', { name: 'Post a Job' })).toBeVisible({ timeout: 20_000 });
+  await expect.poll(async () => (await publicJobs(cityJob))[0]?.location).toBe('Tallahassee, Florida, United States');
+});
+
+test('employer: close and reopen a job (#90)', async ({ page }) => {
+  await signIn(page, 'employer');
+  await page.goto('/employer-dashboard');
+  const row = page.locator('div').filter({ hasText: closeJob }).filter({ has: page.getByTitle('Edit job') }).last();
+  await row.getByRole('button', { name: 'Close job' }).click();
+  await expect(row.getByRole('button', { name: 'Reopen job' })).toBeVisible({ timeout: 20_000 });
+  await expect.poll(async () => (await publicJobs(closeJob)).length).toBe(0);
+  // A closed job is also hidden from signed-in candidates
+  await signIn(page, 'candidate');
+  await page.goto('/browse-jobs');
+  await page.getByPlaceholder('Job title, keywords, or company').fill(closeJob);
+  await expect(page.getByText('No jobs match your search')).toBeVisible({ timeout: 20_000 });
+  await signIn(page, 'employer');
+  await page.goto('/employer-dashboard');
+  await row.getByRole('button', { name: 'Reopen job' }).click();
+  await expect(row.getByRole('button', { name: 'Close job' })).toBeVisible({ timeout: 20_000 });
+  await expect.poll(async () => (await publicJobs(closeJob)).length).toBe(1);
+});
+
+test('candidate: an applied job shows Applied instead of Apply Now (#94)', async ({ page }) => {
+  await signIn(page, 'candidate');
+  await page.goto('/browse-jobs');
+  await page.getByPlaceholder('Job title, keywords, or company').fill(jobTitle);
+  await page.getByText(jobTitle).first().click();
+  await expect(page.getByText('Applied', { exact: true })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('button', { name: 'Apply Now' })).toHaveCount(0);
+});
+
+test('visitor: filter jobs by sector and employment type (#95)', async ({ page }) => {
+  await page.goto('/browse-jobs');
+  await page.getByPlaceholder('Job title, keywords, or company').fill(String(run));
+  await expect(page.getByText(cityJob).first()).toBeVisible({ timeout: 20_000 });
+  await page.getByLabel('Filter jobs by sector').selectOption('EMERGENCY_MANAGEMENT');
+  await expect(page.getByText(jobTitle)).toHaveCount(0, { timeout: 20_000 });
+  await expect(page.getByText(cityJob).first()).toBeVisible();
+  await page.getByLabel('Filter jobs by employment type').selectOption('FULL_TIME');
+  await expect(page.getByText('No jobs match your search')).toBeVisible({ timeout: 20_000 });
+  await expectAccessible(page);
+});
+
+test('visitor: load more reaches every job (#92)', async ({ page }) => {
+  const total = (await api('/api/v1/public/jobs?page=1&limit=1')).data.pagination.total as number;
+  test.skip(total <= 50, 'needs more than 50 open jobs');
+  await page.goto('/browse-jobs');
+  await expect(page.getByText(`${total} jobs found`)).toBeVisible({ timeout: 20_000 });
+  await page.getByRole('button', { name: 'Load more jobs' }).click();
+  await expect(page.getByRole('button', { name: 'Load more jobs' })).toHaveCount(0, { timeout: 20_000 });
 });
 
 test('candidate: onboarding pages are accessible', async ({ page }) => {
@@ -389,7 +499,8 @@ test('employer: departments match TriMerge sectors (#62)', async ({ page }) => {
 test('candidate: resume picker in the application form is keyboard accessible (#24, #63)', async ({ page }) => {
   await signIn(page, 'candidate');
   await page.goto('/browse-jobs');
-  await page.getByText(jobTitle).first().click();
+  await page.getByPlaceholder('Job title, keywords, or company').fill(cityJob);
+  await page.getByText(cityJob).first().click();
   await page.getByRole('button', { name: 'Apply Now' }).click();
   await expect(page.getByRole('button', { name: /Resume: choose a file/ })).toBeVisible({ timeout: 15_000 });
   const chooser = page.waitForEvent('filechooser');

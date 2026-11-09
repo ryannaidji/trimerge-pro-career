@@ -7,6 +7,7 @@ type GetJobsParams = {
   limit?: number
   status?: 'OPEN' | 'CLOSED' | 'DRAFT' | string
   employmentType?: 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP' | string
+  department?: string
   location?: string
   search?: string
 }
@@ -26,6 +27,7 @@ export const useGetJobs = () => {
       if (params.limit !== undefined) qs.append('limit', String(params.limit))
       if (params.status) qs.append('status', String(params.status))
       if (params.employmentType) qs.append('employmentType', String(params.employmentType))
+      if (params.department) qs.append('department', params.department)
       if (params.location) qs.append('location', params.location)
       if (params.search) qs.append('search', params.search)
 

@@ -51,4 +51,12 @@ broken), **Medium** (degraded feature or hardening gap), **Low** (cosmetic / con
 | D41 | Low | Web · help | Help assistant always started in Candidate mode | Fixed | #81 |
 | D42 | Low | Web · session | Unused `updateProfile` would have erased the stored account type | Fixed (removed) | #82 |
 | D43 | Low | API · auth | Two logins by the same user in the same second produced an identical refresh token, so revoking one also revoked the other | Fixed (unique token ID) | #84 |
+| D44 | Critical | Web · sign-up | No way to create an employer account from the website | Fixed | #87 |
+| D45 | Critical | API · onboarding | Resume upload with a blank LinkedIn URL failed with "Validation error" | Fixed | #88 |
+| D46 | High | Web · employer | Editing a job lost a free-text city | Fixed | #89 |
+| D47 | High | Web · employer | Employers could not close a job; signed-in users could see drafts and closed jobs in Browse Jobs | Fixed | #90 |
+| D48 | Medium | Web · sign-up | Form accepted 8 characters but the API requires 12 | Fixed | #91 |
+| D49 | Medium | Web · jobs | Browse Jobs stopped at 50 jobs | Fixed (load more) | #92 |
+| D50 | Medium | API · applications | Candidates could skip onboarding and apply with no profile | Fixed | #93 |
+| D51 | Low | Web · jobs | "Apply Now" offered on jobs already applied to | Fixed | #94 |
 
