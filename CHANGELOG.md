@@ -94,6 +94,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Mockup change-password page (now redirects to Settings).
 
 ### Fixed
+- Refresh tokens now have a unique ID: two logins by the same user in the same second no longer get an identical token that could be revoked together (#84).
 - Admins are no longer treated as candidates: their account menu has Admin dashboard and Settings only, and "Apply Now", "Save job" and "Delete account" are not offered (#72).
 - Page access by account type: `RequireRole` sends visitors to `/login` and other account types to their own home page, on candidate, employer, Settings and onboarding pages; employers no longer see a raw "Forbidden", and visitors are no longer told their session expired (#73, #75, #76, #77, #78, #79).
 - Signed-in users skip `/login` and `/join-now` (#80).

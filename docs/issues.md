@@ -50,4 +50,5 @@ broken), **Medium** (degraded feature or hardening gap), **Low** (cosmetic / con
 | D40 | Low | Web · access | Talent search form shown to candidates and visitors; login and sign-up shown to signed-in users | Fixed (`RequireRole`, `GuestOnly`) | #79, #80 |
 | D41 | Low | Web · help | Help assistant always started in Candidate mode | Fixed | #81 |
 | D42 | Low | Web · session | Unused `updateProfile` would have erased the stored account type | Fixed (removed) | #82 |
+| D43 | Low | API · auth | Two logins by the same user in the same second produced an identical refresh token, so revoking one also revoked the other | Fixed (unique token ID) | #84 |
 
