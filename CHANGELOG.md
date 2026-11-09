@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `scripts/seed-demo.mjs`: demo candidate, employer (with 3 jobs) and admin logins for local testing.
 - Job departments aligned with TriMerge's 12 sectors (Government & Public Sector, Technology, Accounting & Finance, Emergency Management…); legacy values still accepted and shown with readable labels (#62).
 - Employer applicant manager: real candidate details, cover letter, documents, search and status filter, and a status control (New, Reviewed, Shortlisted, Not selected, Hired) with email to the candidate (#47, #48).
 - Candidate account menu (My applications, Recommended jobs, Saved jobs, My profile, Settings, Log out), keyboard accessible, also in the mobile menu (#49).
@@ -93,6 +94,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Mockup change-password page (now redirects to Settings).
 
 ### Fixed
+- Refresh tokens now have a unique ID: two logins by the same user in the same second no longer get an identical token that could be revoked together (#84).
+- Admins are no longer treated as candidates: their account menu has Admin dashboard and Settings only, and "Apply Now", "Save job" and "Delete account" are not offered (#72).
+- Page access by account type: `RequireRole` sends visitors to `/login` and other account types to their own home page, on candidate, employer, Settings and onboarding pages; employers no longer see a raw "Forbidden", and visitors are no longer told their session expired (#73, #75, #76, #77, #78, #79).
+- Signed-in users skip `/login` and `/join-now` (#80).
+- Employers and visitors keep their normal navbar on `/browse-jobs` (#74).
+- The help assistant starts in Employer mode for employers (#81).
+- Removed the unused `updateProfile` context function, which would have erased the stored account type (#82).
 - ESLint: 0 errors (was 51); lint is now blocking in CI; `set-state-in-effect` kept as a documented warning (#63).
 - Resume/cover-letter picker in the application form is a real button (keyboard and screen readers); editor toolbar works with Enter/Space (#63).
 - Applying for a job uses the session-renewing fetch, so an expired token no longer fails the application.
@@ -110,6 +118,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## 2026-10-28 — Monorepo restructure
 
 ### Added
+- `scripts/seed-demo.mjs`: demo candidate, employer (with 3 jobs) and admin logins for local testing.
 - `CHANGELOG.md` to track notable changes.
 - Root `CLAUDE.md` with project rules (English-only outputs, changelog, branching).
 - `dev` integration branch; `main` is now the default, protected production branch.

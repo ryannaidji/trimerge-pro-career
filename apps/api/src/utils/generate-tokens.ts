@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { env } from '../config/env';
 
@@ -15,8 +16,11 @@ export function generateTokens(payload: TokenPayload) {
     expiresIn: env.JWT_ACCESS_EXPIRES_IN as SignOptions['expiresIn'],
   };
 
+  // A unique ID keeps two logins in the same second from producing the same token,
+  // which would let revoking one session also revoke the other.
   const refreshOptions: SignOptions = {
     expiresIn: env.JWT_REFRESH_EXPIRES_IN as SignOptions['expiresIn'],
+    jwtid: randomUUID(),
   };
 
   const accessToken = jwt.sign(payload, accessSecret, accessOptions);

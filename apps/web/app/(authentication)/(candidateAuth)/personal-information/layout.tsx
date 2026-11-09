@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RequireRole } from "@/app/components/ui/RouteGuards";
 
 export const metadata: Metadata = {
   title: "Candidate Registration",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <RequireRole allow={["TALENT"]}>{children}</RequireRole>;
 }
