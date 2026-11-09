@@ -22,7 +22,9 @@ const nextId = () => {
 export default function AskTriMergeAI() {
   const { state } = useUser()
   const [open, setOpen] = useState(false)
-  const [mode, setMode] = useState<'Candidate' | 'Employer'>(state.user?.accountType === 'EMPLOYER' ? 'Employer' : 'Candidate')
+  // The session is restored after the first render, so the default mode is derived, not stored
+  const [pickedMode, setPickedMode] = useState<'Candidate' | 'Employer' | null>(null)
+  const mode = pickedMode ?? (state.user?.accountType === 'EMPLOYER' ? 'Employer' : 'Candidate')
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -88,7 +90,7 @@ export default function AskTriMergeAI() {
               <button
                 key={tab}
                 type="button"
-                onClick={() => setMode(tab)}
+                onClick={() => setPickedMode(tab)}
                 className={mode === tab ? 'tp-btn-primary' : 'tp-btn-secondary'}
                 style={{ padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
               >

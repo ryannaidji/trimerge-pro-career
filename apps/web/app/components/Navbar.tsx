@@ -17,7 +17,9 @@ function Navbar() {
   const profileRef = React.useRef<HTMLDivElement>(null)
   const displayName = user?.profile?.firstName ? `${user.profile.firstName}${user.profile.lastName ? ' ' + user.profile.lastName : ''}` : (user?.email ?? null)
   const isEmployer = user?.accountType === 'EMPLOYER'
-  const isCandidate = !!user && !isEmployer
+  const isAdmin = user?.accountType === 'ADMIN'
+  // Candidates and admins share the "My account" menu; only its links differ
+  const hasAccountMenu = !!user && !isEmployer
 
   React.useEffect(() => {
     if (!profileOpen) return
@@ -30,15 +32,20 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handler)
   }, [profileOpen])
 
-  // Candidate account menu (#49), reused in both navbars. Accessible menu button:
+  // Account menu (#49), reused in both navbars. Accessible menu button:
   // aria-expanded/aria-controls, Escape closes and returns focus, links close the menu.
-  const candidateLinks = [
-    { href: '/applications', label: 'My applications' },
-    { href: '/recommended-jobs', label: 'Recommended jobs' },
-    { href: '/saved-jobs', label: 'Saved jobs' },
-    { href: '/profile', label: 'My profile' },
-    { href: '/settings', label: 'Settings' },
-  ]
+  const accountLinks = isAdmin
+    ? [
+        { href: '/admin', label: 'Admin dashboard' },
+        { href: '/settings', label: 'Settings' },
+      ]
+    : [
+        { href: '/applications', label: 'My applications' },
+        { href: '/recommended-jobs', label: 'Recommended jobs' },
+        { href: '/saved-jobs', label: 'Saved jobs' },
+        { href: '/profile', label: 'My profile' },
+        { href: '/settings', label: 'Settings' },
+      ]
   const menuButtonRef = React.useRef<HTMLButtonElement>(null)
   React.useEffect(() => {
     if (!profileOpen) return
@@ -52,14 +59,14 @@ function Navbar() {
     return () => document.removeEventListener('keydown', onKey)
   }, [profileOpen])
 
-  const CandidateControls = isCandidate ? (
+  const AccountControls = hasAccountMenu ? (
     <div ref={profileRef} style={{ position: 'relative' }}>
       <button
         ref={menuButtonRef}
         type="button"
         onClick={() => setProfileOpen(o => !o)}
         aria-expanded={profileOpen}
-        aria-controls="candidate-menu"
+        aria-controls="account-menu"
         style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.3rem 0.75rem 0.3rem 0.3rem', borderRadius: '999px', border: '1px solid rgba(148,163,184,0.3)', background: 'white', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem', color: '#0f172a' }}
       >
         <span aria-hidden="true" style={{ width: '30px', height: '30px', borderRadius: '999px', background: 'linear-gradient(135deg, #07172e, #1d4ed8)', color: 'white', display: 'grid', placeItems: 'center', fontWeight: 800, fontSize: '0.75rem' }}>
@@ -68,13 +75,13 @@ function Navbar() {
         My account
       </button>
       {profileOpen && (
-        <div id="candidate-menu" style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'white', borderRadius: '12px', boxShadow: '0 8px 24px rgba(15,23,42,0.12)', border: '1px solid rgba(148,163,184,0.18)', padding: '0.5rem', minWidth: '230px', zIndex: 200 }}>
+        <div id="account-menu" style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'white', borderRadius: '12px', boxShadow: '0 8px 24px rgba(15,23,42,0.12)', border: '1px solid rgba(148,163,184,0.18)', padding: '0.5rem', minWidth: '230px', zIndex: 200 }}>
           <div style={{ padding: '0.4rem 0.6rem 0.6rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.35rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Signed in as</div>
             <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all' }}>{user!.email}</div>
           </div>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid' }}>
-            {candidateLinks.map((l) => (
+            {accountLinks.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
@@ -97,15 +104,15 @@ function Navbar() {
     </div>
   ) : null
 
-  // Browse jobs page: logo + candidate controls only
-  if (pathname === '/browse-jobs') {
+  // Browse jobs page: logo + account menu only; employers and visitors keep their usual navbar
+  if (pathname === '/browse-jobs' && hasAccountMenu) {
     return (
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(148,163,184,0.18)', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(18px)', boxShadow: '0 1px 3px rgba(15,23,42,0.06)' }}>
         <div className="tp-container" style={{ padding: '0.75rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
             <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.4rem', width: 'auto' }} />
           </Link>
-          {CandidateControls}
+          {AccountControls}
         </div>
       </nav>
     )
@@ -180,11 +187,11 @@ function Navbar() {
     >
       <div className="tp-container" style={{ padding: '1rem 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-          <Link href={isCandidate ? '/browse-jobs' : '/'} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+          <Link href={isAdmin ? '/admin' : hasAccountMenu ? '/browse-jobs' : '/'} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
             <Image src="/Logo.png" alt="TriMergePRO Logo" width={190} height={84} style={{ objectFit: 'contain', height: '2.8rem', width: 'auto' }} />
           </Link>
 
-          {!isCandidate && (
+          {!hasAccountMenu && (
             <div className="tp-nav-links" style={{ alignItems: 'center', gap: '0.35rem' }}>
               {navLinks.map((link) => (
                 <Link key={link.href} href={link.href} className="tp-nav-link">
@@ -200,8 +207,8 @@ function Navbar() {
                 Employers / Post Job
               </Link>
             )} */}
-            {isCandidate ? (
-              CandidateControls
+            {hasAccountMenu ? (
+              AccountControls
             ) : user ? (
               <>
                 <div style={{ display: 'none', alignItems: 'center', gap: '0.65rem', padding: '0.55rem 0.8rem', borderRadius: '999px', background: 'rgba(29,78,216,0.08)', color: 'var(--tp-primary-dark)' }} className="md:flex">
@@ -239,12 +246,12 @@ function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              {isCandidate && candidateLinks.map((l) => (
+              {hasAccountMenu && accountLinks.map((l) => (
                 <Link key={l.href} href={l.href} className="tp-nav-link" onClick={() => setOpen(false)}>
                   {l.label}
                 </Link>
               ))}
-              {!isCandidate && (
+              {!hasAccountMenu && (
                 <Link href="/employers" className="tp-nav-link" onClick={() => setOpen(false)}>
                   Employers / Post Job
                 </Link>

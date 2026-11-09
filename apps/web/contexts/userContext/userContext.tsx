@@ -84,7 +84,6 @@ function reducer(state: State, action: Action): State {
 type UserContextType = {
   state: State;
   logout: () => void;
-  updateProfile: (patch: Partial<User>) => void;
   restoreSession: () => void;
   // Basic setters/clears so external hooks can control state directly
   // Accept either a full auth Response, a User object, or null
@@ -141,13 +140,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("tm_refresh");
     dispatch({ type: "LOGOUT" });
     router.push("/login");
-  }
-
-  function updateProfile(patch: Partial<User>) {
-    if (!state.user) return;
-    const updated = { ...state.user, ...patch };
-    localStorage.setItem("tm_user", JSON.stringify({ id: updated.id, name: updated.name, email: updated.email }));
-    dispatch({ type: "UPDATE", user: patch });
   }
 
   // Minimal, explicit setters for external hooks to call
@@ -230,7 +222,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <UserContext.Provider value={{ state, logout, updateProfile, restoreSession, setUser, clearState, setLoadingFlag, setError }}>
+    <UserContext.Provider value={{ state, logout, restoreSession, setUser, clearState, setLoadingFlag, setError }}>
       {children}
     </UserContext.Provider>
   );
